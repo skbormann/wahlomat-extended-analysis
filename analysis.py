@@ -7,11 +7,14 @@ Created on Fri Nov 12 01:37:35 2021
 Copy of the original wahlomat script stripped of the downloading part
 and modified to allow looping
 
-Not complete yet, just made initial modifications to make the code loopable,
-but no integration yet into the main loop.
+Based on the code found on
+https://github.com/microraptor/wahlomat_analysis
+https://www.reddit.com/r/de/comments/bqubdv/wahlomat_analyse_zur_euparlamentswahl_2019_oc/eo7zmaq/
+
 """
-#import urllib
+
 import re
+import os
 import pandas as pd
 from pandas.core.frame import DataFrame
 from sklearn.decomposition import PCA
@@ -20,11 +23,10 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker
 from matplotlib.patches import Rectangle
 import seaborn as sns
-import os
 #import pathlib
 
 # %% Settings
-#ELECTION: str = "bundestagswahl2021"  # Part of the URL: www.wahl-o-mat.de/ELECTION/...
+# ELECTION: str = "bundestagswahl2021"  # Part of the URL: www.wahl-o-mat.de/ELECTION/...
 N_CLUSTERS: int = 6
 EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
     "die linke",
@@ -42,14 +44,21 @@ EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
 ]
 
 # Set seaborn theme and config
-sns.set(rc={"savefig.dpi": 300, "figure.dpi": 300})  # resets style for some reason
+# resets style for some reason
+sns.set(rc={"savefig.dpi": 300, "figure.dpi": 300})
 sns.set_theme()
 sns.set_context("paper")
 sns.set_style("darkgrid")
 #GRAPHDIR = pathlib.PurePath('../graphs/')
 
 # %% Scrape data
+
 def analysis(module_content, module_stem_folder):
+    """
+    Analyse the questions:
+        Run PCA and K-Means, plot the results and
+        save the figures.
+    """
     # Download the raw JS data
     raw_data_js: str = module_content
     # Extract the data points with regex, regex needed slight changes compared to original
@@ -71,7 +80,7 @@ def analysis(module_content, module_stem_folder):
         raw_data_js,
         re.MULTILINE,
     )
-    
+
     # %% Create dataframes
     question_df: DataFrame = pd.DataFrame(
         zip(titles, questions), columns=["title", "question"]
@@ -89,11 +98,12 @@ def analysis(module_content, module_stem_folder):
     for party in bad_parties:
         answer_df = answer_df[answer_df["party"] != party]
     # Pivot answer dataframe to have parties as columns
-    answer_df["party_name"] = answer_df["party"].apply(lambda x: party_df.loc[x, "party"])
+    answer_df["party_name"] = answer_df["party"].apply(
+        lambda x: party_df.loc[x, "party"])
     answer_df = pd.pivot_table(
         answer_df, values="answer", index="question", columns="party_name"
     )
-    
+
     # %% Calculate correlation, PCA and clusters
     answer_corr: DataFrame = answer_df.corr()
     corr_overlay: DataFrame = answer_corr.apply(
@@ -109,7 +119,7 @@ def analysis(module_content, module_stem_folder):
     pca_influences: DataFrame = question_df.join(
         pd.DataFrame(pca.components_.T, columns=["pca_x", "pca_y"])
     ).join(answer_df.sum(axis="columns").rename("answers_sum"))
-    
+
     # %% Draw correlation matrix
     c_matrix: sns.matrix.ClusterGrid = sns.clustermap(
         data=answer_corr,
@@ -162,10 +172,11 @@ def analysis(module_content, module_stem_folder):
                 )
             )
     # Save as a file
-    os.chdir('../graphs') #Change dir because savefig does not work well with paths
+    # Change dir because savefig does not work well with paths
+    os.chdir('../graphs')
     plt.savefig(f"{module_stem_folder}_c_matrix.png", bbox_inches="tight")
     # plt.show()
-    
+
     # %% Draw PCA map
     plt.figure(figsize=(10, 10))
     pca_map: plt.Axes = sns.scatterplot(
@@ -215,7 +226,7 @@ def analysis(module_content, module_stem_folder):
     # Save as a file
     plt.savefig(f"{module_stem_folder}_pca_map.png", bbox_inches="tight")
     # plt.show()
-    
+
     # %% Draw PCA influence barplot
     # Scale data and adjust dataframe for plotting
     infl_prep = pca_influences.copy()
@@ -258,13 +269,14 @@ def analysis(module_content, module_stem_folder):
         facecolor="white",
         shadow=True,
     )
-    inf_barplot.set_yticks([x - 0.5 for x in inf_barplot.get_yticks()], minor=True)
+    inf_barplot.set_yticks(
+        [x - 0.5 for x in inf_barplot.get_yticks()], minor=True)
     inf_barplot.grid(False, axis="x")
     inf_barplot.grid(True, which="minor", axis="y", linewidth=1)
     inf_barplot.xaxis.set_label_position("top")
     plt.suptitle("Einfluss der Fragen", y=0.95)
     # Save as a file
-    plt.savefig(f"{module_stem_folder}_pca_influences.png", bbox_inches="tight")
+    plt.savefig(f"{module_stem_folder}_pca_influences.png",
+                bbox_inches="tight")
     # plt.show()
-    os.chdir('../data') #Reset path
-
+    os.chdir('../data')  # Reset path
