@@ -5,7 +5,8 @@ His analysis in return have been inspired by Reddit users /u/d_loose/ and /u/ask
 The analysis script generates a correlation matrix and a principal component analysis map, where also clusters are marked.
 
 The analysis is extended in the sense that it is run for available wahl-o-mat questionnaires. 
-Further explanations of the extensions to the original analysis are documented in the section __Changes__
+Further explanations of the extensions to the original analysis are documented in the section __Changes__.
+The core analysis was not changed except for minor fixes to deal with errors in the input files.
 
 ## Analysis steps
 
@@ -29,7 +30,8 @@ or his [German explanation](https://www.reddit.com/r/de/comments/bqubdv/wahlomat
 ## Changes
 - Added get_zip_files.py to download all questionnaires
 - Added load_modules.py and deal with elections who have their modules.js file encoded with latin1 instead utf8.
-- Minor changes to the regular expressions used to read the data from the file modules.js to deal with some inconsistencies across elections 
+- Minor changes to the regular expressions used to read the data from the file modules.js to deal with some inconsistencies across elections.
+- Created an analysis function in analysis.py to make it to possible to iterate over all elections. 
 - Added build_dataframe.py, a WIP file to create one dataframe containing the data from all elections.
 
 
