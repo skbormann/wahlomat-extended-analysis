@@ -35,6 +35,12 @@ or his [German explanation](https://www.reddit.com/r/de/comments/bqubdv/wahlomat
 - Added build_dataframe.py, a WIP file to create one dataframe containing the data from all elections.
 
 
+## Things to add/change
+- Add function to select and download individual elections (download index file, extract elections and create menu or download files on election name)
+- Add possibility to run analysis for individual election.
+- Add update function to build_dataframe.py to allow easier updating of the dataframe after for every new election.
+
+
 ## Dependencies for Local Execution
 See [requirement.txt](requirement.txt).
 This script requires to have Python 3.8+.
