@@ -11,8 +11,12 @@ Based on the code found on
 https://github.com/microraptor/wahlomat_analysis
 https://www.reddit.com/r/de/comments/bqubdv/wahlomat_analyse_zur_euparlamentswahl_2019_oc/eo7zmaq/
 
+Supports legacy module_definition.js and bpb Excel bundle sheets (see parse_excel_election).
 """
 
+from __future__ import annotations
+
+import pathlib
 import re
 import os
 import pandas as pd
@@ -23,10 +27,8 @@ import matplotlib.pyplot as plt
 from matplotlib import ticker
 from matplotlib.patches import Rectangle
 import seaborn as sns
-#import pathlib
 
 # %% Settings
-# ELECTION: str = "bundestagswahl2021"  # Part of the URL: www.wahl-o-mat.de/ELECTION/...
 N_CLUSTERS: int = 6
 EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
     "die linke",
@@ -43,37 +45,68 @@ EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
     "afd",
 ]
 
+# bpb Excel (Wahl-O-Mat-Datensätze): column labels and position strings
+EXCEL_COL_PARTY_ABBR = "Partei: Kurzbezeichnung"
+EXCEL_COL_PARTY_NAME = "Partei: Name"
+EXCEL_COL_THESIS_NR = "These: Nr."
+EXCEL_COL_THESIS_TITLE = "These: Titel"
+EXCEL_COL_THESIS_TEXT = "These: These"
+EXCEL_COL_POSITION = "Position: Position"
+EXCEL_REQUIRED_COLUMNS = (
+    EXCEL_COL_PARTY_ABBR,
+    EXCEL_COL_PARTY_NAME,
+    EXCEL_COL_THESIS_NR,
+    EXCEL_COL_THESIS_TITLE,
+    EXCEL_COL_THESIS_TEXT,
+    EXCEL_COL_POSITION,
+)
+
 # Set seaborn theme and config
-# resets style for some reason
 sns.set(rc={"savefig.dpi": 300, "figure.dpi": 300})
 sns.set_theme()
 sns.set_context("paper")
 sns.set_style("darkgrid")
-#GRAPHDIR = pathlib.PurePath('../graphs/')
 
-# %% Scrape data
 
-def analysis(module_content, module_stem_folder):
+def _excel_answer_code(val) -> float:
+    """Map bpb Excel position text to -1 / 0 / 1; NaN if unknown."""
+    if pd.isna(val):
+        return float("nan")
+    k = str(val).strip().casefold()
+    if k == "stimme zu":
+        return 1.0
+    if k == "stimme nicht zu":
+        return -1.0
+    if k == "neutral":
+        return 0.0
+    return float("nan")
+
+
+def parse_module_js(module_content: str) -> tuple[DataFrame, DataFrame]:
     """
-    Analyse the questions:
-        Run PCA and K-Means, plot the results and
-        save the figures.
+    Parse module_definition.js into question_df (title, question) and pivoted
+    answers (index = thesis index 0..n-1, columns = party abbrev).
     """
-    # Download the raw JS data
     raw_data_js: str = module_content
-    # Extract the data points with regex, regex needed slight changes compared to original
-    # to match even if some spaces are missing.
     titles: list = re.findall(
-        r"^WOMT_aThesen\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
+        r"^WOMT_aThesen\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$",
+        raw_data_js,
+        re.MULTILINE,
     )
     questions: list = re.findall(
-        r"^WOMT_aThesen\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
+        r"^WOMT_aThesen\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$",
+        raw_data_js,
+        re.MULTILINE,
     )
     party_names: list = re.findall(
-        r"^WOMT_aParteien\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
+        r"^WOMT_aParteien\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$",
+        raw_data_js,
+        re.MULTILINE,
     )
     party_abbrevs: list = re.findall(
-        r"^WOMT_aParteien\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
+        r"^WOMT_aParteien\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$",
+        raw_data_js,
+        re.MULTILINE,
     )
     raw_answers: list = re.findall(
         r"^WOMT_aThesenParteien\[(\d+)\]\[(\d+)\] ?= ?\'(.+?)\';$",
@@ -81,7 +114,6 @@ def analysis(module_content, module_stem_folder):
         re.MULTILINE,
     )
 
-    # %% Create dataframes
     question_df: DataFrame = pd.DataFrame(
         zip(titles, questions), columns=["title", "question"]
     )
@@ -91,27 +123,125 @@ def analysis(module_content, module_stem_folder):
     answer_df: DataFrame = pd.DataFrame(
         raw_answers, columns=["question", "party", "answer"]
     ).astype("int")
-    # Exclude bad parties
-    bad_parties: pd.core.indexes.base.Index = party_df.loc[
-        answer_df.groupby("party")["answer"].std() == 0
-    ].index
-    for party in bad_parties:
+
+    zero_std = answer_df.groupby("party")["answer"].std() == 0
+    bad_party_ids = zero_std[zero_std].index
+    for party in bad_party_ids:
         answer_df = answer_df[answer_df["party"] != party]
-    # Pivot answer dataframe to have parties as columns
+
+    answer_df = answer_df.copy()
     answer_df["party_name"] = answer_df["party"].apply(
-        lambda x: party_df.loc[x, "party"])
-    answer_df = pd.pivot_table(
+        lambda x: party_df.loc[x, "party"]
+    )
+    answer_pivot = pd.pivot_table(
         answer_df, values="answer", index="question", columns="party_name"
     )
+    return question_df, answer_pivot
 
-    # %% Calculate correlation, PCA and clusters
+
+def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
+    """
+    One sheet from the bpb Wahl-O-Mat-Datensätze workbook (long / tidy rows).
+    Returns the same shapes as parse_module_js.
+    """
+    missing = [c for c in EXCEL_REQUIRED_COLUMNS if c not in df.columns]
+    if missing:
+        raise ValueError(f"Excel sheet missing columns: {missing}")
+
+    work = df[list(EXCEL_REQUIRED_COLUMNS)].copy()
+    work.columns = [
+        "abbr",
+        "pname",
+        "tnr",
+        "ttitle",
+        "ttext",
+        "pos",
+    ]
+    work["answer"] = work["pos"].map(lambda v: _excel_answer_code(v))
+    work = work.dropna(subset=["answer"])  # type: ignore[arg-type]
+    work["answer"] = work["answer"].astype(int)
+
+    work["tnr"] = pd.to_numeric(work["tnr"], errors="coerce")
+    work = work.dropna(subset=["tnr"])
+    work["tnr"] = work["tnr"].astype(int)
+    work = work.drop_duplicates(subset=["tnr", "abbr"], keep="last")
+
+    these_order = sorted(work["tnr"].unique())
+    tnr_to_q = {t: i for i, t in enumerate(these_order)}
+    work["question"] = work["tnr"].map(lambda v: tnr_to_q[int(v)])
+
+    question_rows = []
+    for t in these_order:
+        row = work.loc[work["tnr"] == t].iloc[0]
+        question_rows.append((row["ttitle"], row["ttext"]))
+    question_df = pd.DataFrame(question_rows, columns=["title", "question"])
+
+    abbrevs = sorted(work["abbr"].unique())
+    party_df = pd.DataFrame(
+        {
+            "full_name": [
+                work.loc[work["abbr"] == a, "pname"].iloc[0] for a in abbrevs
+            ],
+            "party": abbrevs,
+        }
+    )
+    abbrev_to_pid = {a: i for i, a in enumerate(abbrevs)}
+    work["party"] = work["abbr"].map(lambda v: abbrev_to_pid[v])
+
+    answer_long: DataFrame = work[["question", "party", "answer"]].copy()
+    std_by_party = answer_long.groupby("party")["answer"].std()
+    bad_party_ids = std_by_party[std_by_party == 0].index
+    for pid in bad_party_ids:
+        answer_long = answer_long[answer_long["party"] != pid]
+
+    answer_long = answer_long.copy()
+    answer_long["party_name"] = answer_long["party"].apply(
+        lambda x: party_df.loc[x, "party"]
+    )
+    answer_pivot = pd.pivot_table(
+        answer_long, values="answer", index="question", columns="party_name"
+    )
+    return question_df, answer_pivot
+
+
+def excel_sheet_has_data_columns(df_columns) -> bool:
+    colset = set(pd.Index(df_columns).astype(str))
+    return set(EXCEL_REQUIRED_COLUMNS) <= colset
+
+
+def discover_bpb_excel_path(root: pathlib.Path) -> pathlib.Path | None:
+    """Newest matching xlsx under root (e.g. data/)."""
+    matches = sorted(
+        set(root.glob("**/*Wahl-O-Mat*.xlsx"))
+        | set(root.glob("**/*Wahl-o-mat*.xlsx")),
+        key=lambda p: p.name,
+        reverse=True,
+    )
+    if not matches:
+        alt = list(root.glob("**/*Datens*.xlsx"))
+        matches = sorted(
+            (p for p in alt if "wahl" in p.name.casefold()),
+            key=lambda p: p.name,
+            reverse=True,
+        )
+    return matches[0] if matches else None
+
+
+def run_analysis(
+    question_df: DataFrame, answer_df: DataFrame, module_stem_folder: str
+) -> None:
+    """
+    Correlation / PCA / KMeans plots. answer_df is pivoted (question x party).
+    """
     answer_corr: DataFrame = answer_df.corr()
     corr_overlay: DataFrame = answer_corr.apply(
         lambda s: pd.Series([str(int(100 * x)) if x != 1 else "" for x in s])
     )
     pca: PCA = PCA(n_components=2)
     party_pca: DataFrame = pd.DataFrame(
-        pca.fit_transform(answer_df.T), columns=["pca_x", "pca_y"], index=answer_df.T.index
+        pca.fit_transform(answer_df.T),
+        columns=["pca_x", "pca_y"],
+        index=answer_df.T.index,
     )
     pca_xvr, pca_yvr = pca.explained_variance_ratio_
     km: KMeans = KMeans(N_CLUSTERS)
@@ -120,7 +250,6 @@ def analysis(module_content, module_stem_folder):
         pd.DataFrame(pca.components_.T, columns=["pca_x", "pca_y"])
     ).join(answer_df.sum(axis="columns").rename("answers_sum"))
 
-    # %% Draw correlation matrix
     c_matrix: sns.matrix.ClusterGrid = sns.clustermap(
         data=answer_corr,
         cmap="RdYlGn",
@@ -136,7 +265,6 @@ def analysis(module_content, module_stem_folder):
     c_matrix.ax_heatmap.set(xlabel=None, ylabel=None)
     c_matrix.ax_row_dendrogram.set(title="Cluster-Hierarchie")
     c_matrix.fig.suptitle("Übereinstimmungen der Parteien (in %)", y=0.86)
-    # Emphasize specific parties
     labels_row: list = c_matrix.ax_heatmap.get_yticklabels()
     labels_col: list = c_matrix.ax_heatmap.get_xticklabels()
     for party_label in labels_row:
@@ -171,16 +299,17 @@ def analysis(module_content, module_stem_folder):
                     clip_on=False,
                 )
             )
-    # Save as a file
-    # Change dir because savefig does not work well with paths
-    os.chdir('../graphs')
+    os.chdir("../graphs")
     plt.savefig(f"{module_stem_folder}_c_matrix.png", bbox_inches="tight")
-    # plt.show()
 
-    # %% Draw PCA map
     plt.figure(figsize=(10, 10))
-    pca_map: plt.Axes = sns.scatterplot(
-        data=party_pca, x="pca_x", y="pca_y", hue="cluster", palette="bright", legend="full"
+    pca_map = sns.scatterplot(
+        data=party_pca,
+        x="pca_x",
+        y="pca_y",
+        hue="cluster",
+        palette="bright",
+        legend="full",
     )
     pca_map.set(
         title="Hauptkomponentenanalyse (PCA) der Parteien",
@@ -201,14 +330,12 @@ def analysis(module_content, module_stem_folder):
         shadow=True,
         borderaxespad=1,
     )
-    # Grid
     pca_map.set_xticks([0])
     pca_map.set_yticks([0])
     pca_map.xaxis.set_minor_locator(ticker.AutoLocator())
     pca_map.yaxis.set_minor_locator(ticker.AutoLocator())
     pca_map.grid(True, which="major", linewidth=1.2)
     pca_map.grid(True, which="minor", linewidth=0.3)
-    # Add labels to the dots
     for party_name in party_pca.index:
         color: str = "black"
         fontweight: str = "normal"
@@ -223,12 +350,8 @@ def analysis(module_content, module_stem_folder):
             fontweight=fontweight,
             fontsize="small",
         )
-    # Save as a file
     plt.savefig(f"{module_stem_folder}_pca_map.png", bbox_inches="tight")
-    # plt.show()
 
-    # %% Draw PCA influence barplot
-    # Scale data and adjust dataframe for plotting
     infl_prep = pca_influences.copy()
     infl_prep["answers_sum"] *= (
         infl_prep[["pca_x", "pca_y"]].abs().max().max()
@@ -240,9 +363,8 @@ def analysis(module_content, module_stem_folder):
         var_name="component",
         value_name="influence",
     )
-    # Plot prepared data
     plt.figure(figsize=(5, 18))
-    inf_barplot: plt.Axes = sns.barplot(
+    inf_barplot = sns.barplot(
         data=infl_prep,
         x="influence",
         y="title",
@@ -270,13 +392,46 @@ def analysis(module_content, module_stem_folder):
         shadow=True,
     )
     inf_barplot.set_yticks(
-        [x - 0.5 for x in inf_barplot.get_yticks()], minor=True)
+        [x - 0.5 for x in inf_barplot.get_yticks()], minor=True
+    )
     inf_barplot.grid(False, axis="x")
     inf_barplot.grid(True, which="minor", axis="y", linewidth=1)
     inf_barplot.xaxis.set_label_position("top")
     plt.suptitle("Einfluss der Fragen", y=0.95)
-    # Save as a file
-    plt.savefig(f"{module_stem_folder}_pca_influences.png",
-                bbox_inches="tight")
-    # plt.show()
-    os.chdir('../data')  # Reset path
+    plt.savefig(
+        f"{module_stem_folder}_pca_influences.png", bbox_inches="tight"
+    )
+    os.chdir("../data")
+
+
+def analysis(module_content: str, module_stem_folder: str) -> None:
+    """Analyse from legacy module_definition.js text."""
+    run_analysis(*parse_module_js(module_content), module_stem_folder)
+
+
+def analysis_from_excel(df: DataFrame, module_stem_folder: str) -> None:
+    """Analyse from one bpb Excel data sheet."""
+    run_analysis(*parse_excel_election(df), module_stem_folder)
+
+
+def election_to_long_rows(
+    question_df: DataFrame,
+    answer_pivot: DataFrame,
+    election_id: str,
+    source: str,
+) -> DataFrame:
+    """Stack pivot + metadata for CSV export (one row per thesis/party)."""
+    meta = question_df.copy()
+    meta["these_index"] = range(len(meta))
+    long = answer_pivot.reset_index().melt(
+        id_vars="question", var_name="party", value_name="answer"
+    )
+    long = long.merge(
+        meta.rename(columns={"question": "these_text"}),
+        left_on="question",
+        right_on="these_index",
+        how="left",
+    ).drop(columns=["these_index"])
+    long.insert(0, "source", source)
+    long.insert(0, "election_id", election_id)
+    return long

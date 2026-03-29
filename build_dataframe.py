@@ -8,114 +8,101 @@ Created on Fri Mar 11 01:23:25 2022
 Build dataframe:
     Build a dataframe which contains the results of all wahlomats and export
     the result as a CSV.
-    
-How to do it:
-    Use the code from load_module.py and analysis.py to create the dataframes
-    for each wahlomat and then append them.
+
+Uses parse_module_js / parse_excel_election from analysis.py for both legacy JS
+modules and the bpb Wahl-O-Mat-Datensätze Excel bundle under data/.
 """
 
 # %% Setup
 import pathlib
-import re
 import os
 import pandas as pd
-from pandas.core.frame import DataFrame
 
-os.chdir('data')
-p = pathlib.Path('.')
-module_list = list(p.glob('**/module_definition.js'))
+from analysis import (
+    discover_bpb_excel_path,
+    election_to_long_rows,
+    excel_sheet_has_data_columns,
+    parse_excel_election,
+    parse_module_js,
+)
 
-fail_list = ['schleswigholstein2005',
- 'niedersachsen2008',
- 'saarland2004',
- 'bundestagswahl2005',
- 'rlp2006',
- 'sachsen2004',
- 'sachsenanhalt2006',
- 'bayern2003',
- 'nrw2005',
- 'bundestagswahl2009',
- 'hamburg2008',
- 'europa2004',
- 'bremen2007',
- 'bw2006']
+os.chdir("data")
+p = pathlib.Path(".")
+module_list = list(p.glob("**/module_definition.js"))
 
-# %% Loop over all modules
-# Run over all modules which previously were successful and exclude the failed
-# ones for now.
-success = []
-fail = {}
+fail_list = [
+    "schleswigholstein2005",
+    "niedersachsen2008",
+    "saarland2004",
+    "bundestagswahl2005",
+    "rlp2006",
+    "sachsen2004",
+    "sachsenanhalt2006",
+    "bayern2003",
+    "nrw2005",
+    "bundestagswahl2009",
+    "hamburg2008",
+    "europa2004",
+    "bremen2007",
+    "bw2006",
+]
+
+all_parts: list[pd.DataFrame] = []
+
+# %% Loop over JS modules
 for module in module_list:
     module_stem_folder = module.parts[0]
-    if module_stem_folder not in fail_list:
-        try:
-            with open(module) as f:
-                module_content = f.read()
-    
-        except UnicodeDecodeError:  # Some files are not correctly encoded with utf-8
-            try:
-                with open(module, encoding='latin1') as f:
-                    module_content = f.read()
-    
-            except Exception as e:
-                print(f'Unexpected error {e}')
-        print(f"Running analysis for {module_stem_folder}")
-        try:
-            #analysis(module_content, module_stem_folder)
-            '''
-            Add here the code to build append the dataframes
-            
-            
-            '''
-            # Download the raw JS data
-            raw_data_js: str = module_content
-            # Extract the data points with regex, regex needed slight changes compared to original
-            # to match even if some spaces are missing.
-            titles: list = re.findall(
-                r"^WOMT_aThesen\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
-            )
-            questions: list = re.findall(
-                r"^WOMT_aThesen\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
-            )
-            party_names: list = re.findall(
-                r"^WOMT_aParteien\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
-            )
-            party_abbrevs: list = re.findall(
-                r"^WOMT_aParteien\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$", raw_data_js, re.MULTILINE
-            )
-            raw_answers: list = re.findall(
-                r"^WOMT_aThesenParteien\[(\d+)\]\[(\d+)\] ?= ?\'(.+?)\';$",
-                raw_data_js,
-                re.MULTILINE,
-            )
-
-            # %% Create dataframes
-            question_df: DataFrame = pd.DataFrame(
-                zip(titles, questions), columns=["title", "question"]
-            )
-            party_df: DataFrame = pd.DataFrame(
-                zip(party_names, party_abbrevs), columns=["full_name", "party"]
-            )
-            answer_df: DataFrame = pd.DataFrame(
-                raw_answers, columns=["question", "party", "answer"]
-            ).astype("int")
-            # Exclude bad parties
-            bad_parties: pd.core.indexes.base.Index = party_df.loc[
-                answer_df.groupby("party")["answer"].std() == 0
-            ].index
-            for party in bad_parties:
-                answer_df = answer_df[answer_df["party"] != party]
-            # Pivot answer dataframe to have parties as columns
-            answer_df["party_name"] = answer_df["party"].apply(
-                lambda x: party_df.loc[x, "party"])
-            answer_df = pd.pivot_table(
-                answer_df, values="answer", index="question", columns="party_name"
-            )
-            success.append(f'{module_stem_folder}')
-        except Exception as e:
-            print(
-                f"Problem {e} occured while running analysis for {module_stem_folder}")
-    else:
+    if module_stem_folder in fail_list:
         continue
-        #fail[f'{module_stem_folder}'] = f"{e}"
+    module_content = None
+    try:
+        with open(module, encoding="utf-8") as f:
+            module_content = f.read()
+    except UnicodeDecodeError:
+        try:
+            with open(module, encoding="latin1") as f:
+                module_content = f.read()
+        except Exception as e:
+            print(f"Unexpected error {e}")
+    if module_content is None:
+        continue
+    print(f"Parsing JS module {module_stem_folder}")
+    try:
+        qdf, pivot = parse_module_js(module_content)
+        all_parts.append(
+            election_to_long_rows(qdf, pivot, module_stem_folder, "js")
+        )
+    except Exception as e:
+        print(
+            f"Problem {e} occurred while parsing JS module {module_stem_folder}"
+        )
 
+# %% bpb Excel bundle (optional)
+xlsx_path = discover_bpb_excel_path(p)
+if xlsx_path is not None:
+    print(f"Reading Excel bundle {xlsx_path}")
+    xl = pd.ExcelFile(xlsx_path, engine="openpyxl")
+    for sheet_name in xl.sheet_names:
+        df = pd.read_excel(xlsx_path, sheet_name=sheet_name, engine="openpyxl")
+        if not excel_sheet_has_data_columns(df.columns):
+            continue
+        safe_id = sheet_name.replace(" ", "_")
+        print(f"  sheet {sheet_name}")
+        try:
+            qdf, pivot = parse_excel_election(df)
+            all_parts.append(
+                election_to_long_rows(qdf, pivot, safe_id, "excel")
+            )
+        except Exception as e:
+            print(f"  skip {sheet_name}: {e}")
+else:
+    print("No Wahl-O-Mat Excel bundle found under data/ (optional).")
+
+# %% Export
+if all_parts:
+    out = pd.concat(all_parts, ignore_index=True)
+    out_path = pathlib.Path("..") / "all_wahlomat_answers.csv"
+    out.to_csv(out_path, index=False)
+    print(f"Wrote {len(out)} rows to {out_path.resolve()}")
+else:
+    print("No data collected; CSV not written.")
