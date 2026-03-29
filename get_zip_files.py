@@ -22,6 +22,8 @@ import os
 import zipfile
 from urllib.parse import urlparse
 
+from analysis import discover_bpb_excel_path
+
 INTERNAL_LINK_START = "https://www.bpb.de"
 WEITERE_WAHLEN_URL = (
     "https://www.bpb.de/politik/wahlen/wahl-o-mat/45817/weitere-wahlen"
@@ -153,27 +155,6 @@ def pick_datensaetze_bundle_url(html: str) -> str:
     return max(candidates, key=lambda u: u.split("/")[-1])
 
 
-def discover_datensaetze_xlsx_under(root: pathlib.Path) -> pathlib.Path | None:
-    """
-    Same discovery rules as analysis.discover_bpb_excel_path (keep in sync).
-    Used to confirm the Datensätze bundle unpacked a usable workbook.
-    """
-    matches = sorted(
-        set(root.glob("**/*Wahl-O-Mat*.xlsx"))
-        | set(root.glob("**/*Wahl-o-mat*.xlsx")),
-        key=lambda p: p.name,
-        reverse=True,
-    )
-    if not matches:
-        alt = list(root.glob("**/*Datens*.xlsx"))
-        matches = sorted(
-            (p for p in alt if "wahl" in p.name.casefold()),
-            key=lambda p: p.name,
-            reverse=True,
-        )
-    return matches[0] if matches else None
-
-
 # %% Download the raw html website which lists the available zip files.
 election_html = fetch_html(WEITERE_WAHLEN_URL)
 
@@ -233,7 +214,7 @@ for file in os.listdir():
         os.remove(file_name)
 
 # %% Confirm Datensätze workbook (for build_dataframe / Excel pipeline)
-_xlsx = discover_datensaetze_xlsx_under(pathlib.Path("."))
+_xlsx = discover_bpb_excel_path(pathlib.Path("."), pathlib.Path(".."))
 if _xlsx is not None and _xlsx.is_file() and _xlsx.stat().st_size > 0:
     print(
         "Datensätze workbook OK (matches build_dataframe discovery): "
@@ -244,6 +225,6 @@ else:
         "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
         "with 'wahl' in the name) was found after extraction. "
         "The bundle from the Datensätze page may have changed its inner layout; "
-        "see analysis.discover_bpb_excel_path and "
+        "see analysis.discover_bpb_excel_path(..., repo root) and "
         "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
     )

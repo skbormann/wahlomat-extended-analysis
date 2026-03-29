@@ -67,6 +67,31 @@ sns.set(rc={"savefig.dpi": 300, "figure.dpi": 300})
 sns.set_theme()
 sns.set_context("paper")
 sns.set_style("darkgrid")
+# DejaVu ships with matplotlib and covers German text; avoids Arial missing glyphs.
+plt.rcParams["font.family"] = "sans-serif"
+plt.rcParams["font.sans-serif"] = [
+    "DejaVu Sans",
+    "DejaVu Sans Display",
+    "Arial",
+    "Helvetica",
+    "sans-serif",
+]
+
+
+def _fix_cp1252_c1_glyphs(s: str) -> str:
+    """
+    Map U+0080–U+009F to Windows-1252 characters. Those code points often appear
+    when CP1252 text was decoded as Latin-1; fonts like Arial have no glyphs for
+    the raw C1 controls.
+    """
+    out: list[str] = []
+    for c in s:
+        o = ord(c)
+        if 0x80 <= o <= 0x9F:
+            out.append(bytes([o]).decode("cp1252", errors="replace"))
+        else:
+            out.append(c)
+    return "".join(out)
 
 
 def _excel_answer_code(val) -> float:
@@ -114,6 +139,11 @@ def parse_module_js(module_content: str) -> tuple[DataFrame, DataFrame]:
         raw_data_js,
         re.MULTILINE,
     )
+
+    titles = [_fix_cp1252_c1_glyphs(t) for t in titles]
+    questions = [_fix_cp1252_c1_glyphs(q) for q in questions]
+    party_names = [_fix_cp1252_c1_glyphs(n) for n in party_names]
+    party_abbrevs = [_fix_cp1252_c1_glyphs(a) for a in party_abbrevs]
 
     question_df: DataFrame = pd.DataFrame(
         zip(titles, questions), columns=["title", "question"]
@@ -170,6 +200,9 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     work["tnr"] = work["tnr"].astype(int)
     work = work.drop_duplicates(subset=["tnr", "abbr"], keep="last")
 
+    for col in ("ttitle", "ttext", "pname", "abbr"):
+        work[col] = work[col].astype(str).map(_fix_cp1252_c1_glyphs)
+
     these_order = sorted(work["tnr"].unique())
     tnr_to_q = {t: i for i, t in enumerate(these_order)}
     work["question"] = work["tnr"].map(lambda v: tnr_to_q[int(v)])
@@ -213,8 +246,7 @@ def excel_sheet_has_data_columns(df_columns) -> bool:
     return set(EXCEL_REQUIRED_COLUMNS) <= colset
 
 
-def discover_bpb_excel_path(root: pathlib.Path) -> pathlib.Path | None:
-    """Newest matching xlsx under root (e.g. data/)."""
+def _bpb_xlsx_candidates_under(root: pathlib.Path) -> list[pathlib.Path]:
     matches = sorted(
         set(root.glob("**/*Wahl-O-Mat*.xlsx"))
         | set(root.glob("**/*Wahl-o-mat*.xlsx")),
@@ -228,7 +260,31 @@ def discover_bpb_excel_path(root: pathlib.Path) -> pathlib.Path | None:
             key=lambda p: p.name,
             reverse=True,
         )
-    return matches[0] if matches else None
+    return matches
+
+
+def discover_bpb_excel_path(*roots: pathlib.Path) -> pathlib.Path | None:
+    """
+    Newest matching xlsx by filename under any of the given roots.
+
+    Pass e.g. ``Path(\"data\")`` and ``Path(\".\")`` (repo root) so a workbook
+    placed next to the project root is still found after ``chdir(\"data\")``.
+    """
+    if not roots:
+        roots = (pathlib.Path("."),)
+    pooled: list[pathlib.Path] = []
+    for root in roots:
+        try:
+            r = root.resolve()
+        except OSError:
+            r = root
+        if not r.exists():
+            continue
+        pooled.extend(_bpb_xlsx_candidates_under(r))
+    if not pooled:
+        return None
+    pooled = sorted(set(pooled), key=lambda p: p.name, reverse=True)
+    return pooled[0]
 
 
 def run_analysis(
@@ -248,7 +304,9 @@ def run_analysis(
         index=answer_df.T.index,
     )
     pca_xvr, pca_yvr = pca.explained_variance_ratio_
-    km: KMeans = KMeans(N_CLUSTERS)
+    n_parties = party_pca.shape[0]
+    n_clusters = min(N_CLUSTERS, max(1, n_parties))
+    km: KMeans = KMeans(n_clusters)
     party_pca["cluster"] = km.fit_predict(party_pca)
     pca_influences: DataFrame = question_df.join(
         pd.DataFrame(pca.components_.T, columns=["pca_x", "pca_y"])
@@ -304,7 +362,10 @@ def run_analysis(
                 )
             )
     os.chdir("../graphs")
-    plt.savefig(f"{module_stem_folder}_c_matrix.png", bbox_inches="tight")
+    c_matrix.figure.savefig(
+        f"{module_stem_folder}_c_matrix.png", bbox_inches="tight"
+    )
+    plt.close(c_matrix.figure)
 
     plt.figure(figsize=(10, 10))
     pca_map = sns.scatterplot(
@@ -355,6 +416,7 @@ def run_analysis(
             fontsize="small",
         )
     plt.savefig(f"{module_stem_folder}_pca_map.png", bbox_inches="tight")
+    plt.close()
 
     infl_prep = pca_influences.copy()
     infl_prep["answers_sum"] *= (
@@ -405,6 +467,7 @@ def run_analysis(
     plt.savefig(
         f"{module_stem_folder}_pca_influences.png", bbox_inches="tight"
     )
+    plt.close()
     os.chdir("../data")
 
 
@@ -439,3 +502,36 @@ def election_to_long_rows(
     long.insert(0, "source", source)
     long.insert(0, "election_id", election_id)
     return long
+
+
+def long_rows_to_run_analysis(long_df: DataFrame) -> tuple[DataFrame, DataFrame]:
+    """
+    Rebuild (question_df, answer_pivot) from one election's rows as produced by
+    election_to_long_rows / all_wahlomat_answers.csv.
+    """
+    required = {"question", "party", "answer", "title", "these_text"}
+    missing = required - set(long_df.columns)
+    if missing:
+        raise ValueError(f"long_df missing columns: {sorted(missing)}")
+    work = long_df.copy()
+    work["answer"] = pd.to_numeric(work["answer"], errors="coerce")
+    work = work.dropna(subset=["answer"])
+    work["answer"] = work["answer"].astype(int)
+    work = work.drop_duplicates(subset=["question", "party"], keep="last")
+    work["_q"] = pd.to_numeric(work["question"], errors="coerce")
+    if work["_q"].isna().sum() > 0:
+        raise ValueError("long_df 'question' must be numeric thesis indices")
+    work["_q"] = work["_q"].astype(int)
+    q_order = sorted(work["_q"].unique())
+    rows: list[tuple[str, str]] = []
+    for qi in q_order:
+        sub = work.loc[work["_q"] == qi]
+        rows.append((str(sub.iloc[0]["title"]), str(sub.iloc[0]["these_text"])))
+    question_df = pd.DataFrame(rows, columns=["title", "question"])
+    party_order = work.loc[work["_q"] == q_order[0]]["party"].astype(str).tolist()
+    answer_pivot = work.pivot(index="_q", columns="party", values="answer")
+    answer_pivot = answer_pivot.reindex(index=q_order)
+    answer_pivot.index.name = "question"
+    answer_pivot = answer_pivot.reindex(columns=party_order)
+    answer_pivot.columns.name = "party_name"
+    return question_df, answer_pivot

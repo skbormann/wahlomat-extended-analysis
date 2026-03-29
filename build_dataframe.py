@@ -25,34 +25,18 @@ from analysis import (
     parse_excel_election,
     parse_module_js,
 )
+from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
 
 os.chdir("data")
 p = pathlib.Path(".")
 module_list = list(p.glob("**/module_definition.js"))
-
-fail_list = [
-    "schleswigholstein2005",
-    "niedersachsen2008",
-    "saarland2004",
-    "bundestagswahl2005",
-    "rlp2006",
-    "sachsen2004",
-    "sachsenanhalt2006",
-    "bayern2003",
-    "nrw2005",
-    "bundestagswahl2009",
-    "hamburg2008",
-    "europa2004",
-    "bremen2007",
-    "bw2006",
-]
 
 all_parts: list[pd.DataFrame] = []
 
 # %% Loop over JS modules
 for module in module_list:
     module_stem_folder = module.parts[0]
-    if module_stem_folder in fail_list:
+    if module_stem_folder in OMIT_FROM_BUILD_DATAFRAME:
         continue
     module_content = None
     try:
@@ -78,7 +62,7 @@ for module in module_list:
         )
 
 # %% bpb Excel bundle (optional)
-xlsx_path = discover_bpb_excel_path(p)
+xlsx_path = discover_bpb_excel_path(p, pathlib.Path(".."))
 if xlsx_path is not None:
     print(f"Reading Excel bundle {xlsx_path}")
     xl = pd.ExcelFile(xlsx_path, engine="openpyxl")

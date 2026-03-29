@@ -1,101 +1,64 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Nov 14 02:40:11 2021
+Diagnostics for elections omitted from build_dataframe (see skipped_elections.py).
 
-@author: sven-kristjanbormann
+Run from the repository root:
+    python failed_analysis.py
 
-Fail analysis:
-    Finding out which wahlomat create problems and why
-    using a modifed load_modules and analysis script
+For each listed election folder under data/, loads module_definition.js, runs
+parse_module_js, then optionally run_analysis to surface parse vs plot errors
+(e.g. KMeans when fewer parties than N_CLUSTERS).
 """
-#%% Basic setup
-import pathlib
+
+from __future__ import annotations
+
 import os
-import re
-import pandas as pd
-from pandas.core.frame import DataFrame
-os.chdir('data')
-p = pathlib.Path('.')
-module_list = list(p.glob('**/module_definition.js'))
-fail_list = ['schleswigholstein2005',
- 'niedersachsen2008',
- 'saarland2004',
- 'bundestagswahl2005',
- 'rlp2006',
- 'sachsen2004',
- 'sachsenanhalt2006',
- 'bayern2003',
- 'nrw2005',
- 'bundestagswahl2009',
- 'hamburg2008',
- 'europa2004',
- 'bremen2007',
- 'bw2006']
+import pathlib
 
-#%% Run the debugging analysis
-for module in module_list:
-    module_stem_folder = module.parts[0]
-    if not module_stem_folder in fail_list:
-        continue
-    else:
+from analysis import parse_module_js, run_analysis
+from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
+
+
+def _read_module(path: pathlib.Path) -> str | None:
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
         try:
-            with open(module) as f:
-                globals()[f'{module_stem_folder}_module_content'] = f.read()
-            
-        except UnicodeDecodeError: # Some files are not correctly encoded with utf-8
-           try:
-               with open(module, encoding='latin1') as f:
-                 globals()[f'{module_stem_folder}_module_content'] = f.read()
-                 failed_analysis(globals()[f'{module_stem_folder}_module_content'])
-           except Exception as e:
-                print(f'Unexpected error {e}')
-        print(f"Running analysis for {module_stem_folder}")
+            return path.read_text(encoding="latin1")
+        except OSError as e:
+            print(f"  read error: {e}")
+            return None
 
 
-#%%
-def failed_analysis(module_content):
-# A shortened version of the original analysis code for debugging
-    globals()[f'{module_stem_folder}_raw_data_js']: str = module_content
-    # Extract the data points with regex, regex needed slight changes compared to original
-    # to match even if some spaces are missing.
-    globals()[f'{module_stem_folder}_titles']: list = re.findall(
-        r"^WOMT_aThesen\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$", globals()[f'{module_stem_folder}_raw_data_js'], re.MULTILINE
-    )
-    globals()[f'{module_stem_folder}_questions']: list = re.findall(
-        r"^WOMT_aThesen\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$", globals()[f'{module_stem_folder}_raw_data_js'], re.MULTILINE
-    )
-    globals()[f'{module_stem_folder}_party_names']: list = re.findall(
-        r"^WOMT_aParteien\[\d+\]\[\d+\]\[0] ?= ?\'(.+?)\';$", globals()[f'{module_stem_folder}_raw_data_js'], re.MULTILINE
-    )
-    globals()[f'{module_stem_folder}_party_abbrevs']: list = re.findall(
-        r"^WOMT_aParteien\[\d+\]\[\d+\]\[1] ?= ?\'(.+?)\';$", globals()[f'{module_stem_folder}_raw_data_js'], re.MULTILINE
-    )
-    globals()[f'{module_stem_folder}_raw_answers']: list = re.findall(
-        r"^WOMT_aThesenParteien\[(\d+)\]\[(\d+)\] ?= ?\'(.+?)\';$",
-        globals()[f'{module_stem_folder}_raw_data_js'],
-        re.MULTILINE,
-    )         
+def main() -> None:
+    os.chdir("data")
+    root = pathlib.Path(".")
+    for stem in OMIT_FROM_BUILD_DATAFRAME:
+        matches = list(root.glob(f"{stem}/**/module_definition.js"))
+        if not matches:
+            print(f"{stem}: no module_definition.js found")
+            continue
+        mod_path = matches[0]
+        print(f"\n=== {stem} ({mod_path}) ===")
+        text = _read_module(mod_path)
+        if text is None:
+            continue
+        try:
+            q_df, ans = parse_module_js(text)
+            print(
+                f"  parse_module_js: {len(q_df)} theses, "
+                f"pivot {ans.shape}, {ans.shape[1]} parties"
+            )
+        except Exception as e:
+            print(f"  parse_module_js FAILED: {e!r}")
+            continue
+        try:
+            run_analysis(q_df, ans, f"debug_{stem}")
+            print("  run_analysis: OK (graphs in ../graphs/)")
+        except Exception as e:
+            print(f"  run_analysis FAILED: {e!r}")
 
-    globals()[f'{module_stem_folder}_question_df']: DataFrame = pd.DataFrame(
-        zip(globals()[f'{module_stem_folder}_titles'], globals()[f'{module_stem_folder}_questions']), columns=["title", "question"]
-    )
-    globals()[f'{module_stem_folder}_party_df']: DataFrame = pd.DataFrame(
-        zip(globals()[f'{module_stem_folder}_party_names'], globals()[f'{module_stem_folder}_party_abbrevs']), columns=["full_name", "party"]
-    )
-    globals()[f'{module_stem_folder}_answers_df']: DataFrame = pd.DataFrame(
-        globals()[f'{module_stem_folder}_raw_answers'], columns=["question", "party", "answer"]
-    ).astype("int")
-    # Exclude bad parties
-# =============================================================================
-#     bad_parties: pd.core.indexes.base.Index = party_df.loc[
-#         answer_df.groupby("party")["answer"].std() == 0
-#     ].index
-#     for party in bad_parties:
-#         answer_df = answer_df[answer_df["party"] != party]
-#     # Pivot answer dataframe to have parties as columns
-#     answer_df["party_name"] = answer_df["party"].apply(lambda x: party_df.loc[x, "party"])
-#     answer_df = pd.pivot_table(
-#         answer_df, values="answer", index="question", columns="party_name"
-#     )
-# =============================================================================
+
+if __name__ == "__main__":
+    main()
