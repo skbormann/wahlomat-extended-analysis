@@ -4,33 +4,73 @@
 Created on Sat Nov  6 19:53:15 2021
 
 @author: sven-kristjanbormann
-Download the list of available wahlomat zip files,  create new list to download
+Download the list of available wahlomat zip files, create new list to download
 the zip files with the wahlomat definitions, download the zip files and extract
 the content.
+
+Also downloads the bundled Wahl-O-Mat-Datensätze zip linked from the bpb
+article (URL discovered from HTML so it survives filename updates). Use of the
+data is subject to the terms on that page:
+https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/
 """
 import re
-import urllib
+import urllib.request
 import os
 import zipfile
 
-# %% Download the raw html website which lists the available zip files.
-raw_zip_hmtl: str = urllib.request.urlopen(
-    "https://www.bpb.de/politik/wahlen/wahl-o-mat/45817/weitere-wahlen"
-).read().decode()
-
-# %% Extract the zip files, clean the links and create working links for internallly linked zip-files
-zip_files: list = re.findall(r'href=\".+?\.zip\"', raw_zip_hmtl, re.MULTILINE)
-
-zip_files = [f.replace("href=", "").strip('"') for f in zip_files]
-
 INTERNAL_LINK_START = "https://www.bpb.de"
+WEITERE_WAHLEN_URL = (
+    "https://www.bpb.de/politik/wahlen/wahl-o-mat/45817/weitere-wahlen"
+)
+DATENSAETZE_PAGE_URL = (
+    "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
+)
+
+
+def fetch_html(url: str) -> str:
+    return urllib.request.urlopen(url).read().decode()
+
+
+def extract_zip_hrefs(html: str) -> list:
+    zip_attrs = re.findall(r'href=\".+?\.zip\"', html, re.MULTILINE)
+    return [f.replace("href=", "").strip('"') for f in zip_attrs]
+
+
+def resolve_internal_bpb_zip(href: str) -> str:
+    if re.search('/system', href):
+        return f"{INTERNAL_LINK_START}{href}"
+    return href
+
+
+def pick_datensaetze_bundle_url(html: str) -> str:
+    """Return the newest matching bundle URL (by zip basename) or raise."""
+    candidates = []
+    prefix = "https://www.bpb.de/system/files/datei/"
+    for href in extract_zip_hrefs(html):
+        url = resolve_internal_bpb_zip(href)
+        if url.startswith(prefix) and "datensaetze" in url.lower():
+            candidates.append(url)
+    if not candidates:
+        raise RuntimeError(
+            "No Wahl-O-Mat-Datensätze zip link found under "
+            "/system/files/datei/ on the bpb Datensätze page."
+        )
+    return max(candidates, key=lambda u: u.split("/")[-1])
+
+
+# %% Download the raw html website which lists the available zip files.
+election_html = fetch_html(WEITERE_WAHLEN_URL)
+
+# %% Extract the zip files, clean the links and create working links
+zip_files = extract_zip_hrefs(election_html)
+
 zip_files_links = []
-# Create final list with the prefix for the internal links added
 for f in zip_files:
-    if re.search('/system', f):
-        zip_files_links.append(f"{INTERNAL_LINK_START}" + f)
-    else:
-        zip_files_links.append(f)
+    zip_files_links.append(resolve_internal_bpb_zip(f))
+
+# %% Bundled datasets archive (dynamic link from article)
+datensaetze_html = fetch_html(DATENSAETZE_PAGE_URL)
+zip_files_links.append(pick_datensaetze_bundle_url(datensaetze_html))
 
 # %% Create folder names
 zip_files_names = []
