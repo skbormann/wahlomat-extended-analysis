@@ -1,0 +1,39 @@
+# Byte-compiled / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# This project: downloaded ZIPs, extracted elections, generated plots
+data/
+graphs/
+graphs_backup_*/
+
+# Built long table (regenerate with build_dataframe.py)
+all_wahlomat_answers.csv
+
+# Large bpb workbooks often kept next to the repo; use data/ for tracked small samples
+/*.xlsx
