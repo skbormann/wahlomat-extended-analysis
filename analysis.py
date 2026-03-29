@@ -17,6 +17,7 @@ Supports legacy module_definition.js and bpb Excel bundle sheets (see parse_exce
 from __future__ import annotations
 
 import pathlib
+from typing import cast
 import re
 import os
 import pandas as pd
@@ -125,9 +126,9 @@ def parse_module_js(module_content: str) -> tuple[DataFrame, DataFrame]:
     ).astype("int")
 
     zero_std = answer_df.groupby("party")["answer"].std() == 0
-    bad_party_ids = zero_std[zero_std].index
-    for party in bad_party_ids:
-        answer_df = answer_df[answer_df["party"] != party]
+    bad_party_ids = list(zero_std[zero_std].index)
+    if bad_party_ids:
+        answer_df = answer_df.loc[~answer_df["party"].isin(bad_party_ids)]
 
     answer_df = answer_df.copy()
     answer_df["party_name"] = answer_df["party"].apply(
@@ -148,7 +149,10 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     if missing:
         raise ValueError(f"Excel sheet missing columns: {missing}")
 
-    work = df[list(EXCEL_REQUIRED_COLUMNS)].copy()
+    work = cast(
+        DataFrame,
+        df.loc[:, list(EXCEL_REQUIRED_COLUMNS)].copy(),
+    )
     work.columns = [
         "abbr",
         "pname",
@@ -188,11 +192,11 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     abbrev_to_pid = {a: i for i, a in enumerate(abbrevs)}
     work["party"] = work["abbr"].map(lambda v: abbrev_to_pid[v])
 
-    answer_long: DataFrame = work[["question", "party", "answer"]].copy()
+    answer_long = work.loc[:, ["question", "party", "answer"]].copy()
     std_by_party = answer_long.groupby("party")["answer"].std()
-    bad_party_ids = std_by_party[std_by_party == 0].index
-    for pid in bad_party_ids:
-        answer_long = answer_long[answer_long["party"] != pid]
+    bad_pids = list(std_by_party[std_by_party == 0].index)
+    if bad_pids:
+        answer_long = answer_long.loc[~answer_long["party"].isin(bad_pids)]
 
     answer_long = answer_long.copy()
     answer_long["party_name"] = answer_long["party"].apply(
@@ -233,8 +237,8 @@ def run_analysis(
     """
     Correlation / PCA / KMeans plots. answer_df is pivoted (question x party).
     """
-    answer_corr: DataFrame = answer_df.corr()
-    corr_overlay: DataFrame = answer_corr.apply(
+    answer_corr = answer_df.corr()
+    corr_overlay = answer_corr.apply(
         lambda s: pd.Series([str(int(100 * x)) if x != 1 else "" for x in s])
     )
     pca: PCA = PCA(n_components=2)
