@@ -58,9 +58,14 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**.
 - **`load_modules.py`**: deprecated; set **`WAHLOMAT_LEGACY_LOAD_MODULES=1`** for the old JS-only loop.
 - **`analysis.py`**: **`parse_module_js`**, **`parse_excel_election`**, **`long_rows_to_run_analysis`**, **`run_analysis`**; **`analysis_from_excel`** for a single sheet.
-- Dependencies: **`openpyxl`** for reading `.xlsx` (see [requirements.txt](requirements.txt)).
+- Dependencies: **`openpyxl`** for reading `.xlsx`; pinned versions in [requirements.txt](requirements.txt) and [pyproject.toml](pyproject.toml).
 - **`skipped_elections.py`**: shared list omitted from **`build_dataframe`**; **`failed_analysis.py`** diagnoses those elections.
+- **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
 ## Dependencies
 
-See [requirements.txt](requirements.txt). Use **Python 3.8+**. Core stack: **pandas**, **numpy**, **scikit-learn**, **matplotlib**, **seaborn**, **openpyxl**.
+- **Python 3.10+** (the code uses PEP 604 type hints, e.g. `Path | None`; Python 3.8 is EOL).
+- **Last verified:** Python **3.12.8** with the pinned packages below (adjust the README when you re-verify).
+- Install: `pip install -r requirements.txt` from the repository root, or `pip install .` for the same pins via [pyproject.toml](pyproject.toml) (the latter installs a minimal **`wahlomat_extended_analysis`** package so the build is unambiguous next to **`data/`** and **`graphs/`**).
+
+[requirements.txt](requirements.txt) pins **matplotlib**, **seaborn**, **numpy**, **pandas**, **scikit-learn**, and **openpyxl** for reproducible installs. After upgrading packages, re-run **`build_dataframe.py`** and **`build_graphs_from_csv.py`** on at least one election before committing new pins.
