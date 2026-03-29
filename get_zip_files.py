@@ -13,10 +13,14 @@ article (URL discovered from HTML so it survives filename updates). Use of the
 data is subject to the terms on that page:
 https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/
 """
+import pathlib
 import re
+import time
+import urllib.error
 import urllib.request
 import os
 import zipfile
+from urllib.parse import urlparse
 
 INTERNAL_LINK_START = "https://www.bpb.de"
 WEITERE_WAHLEN_URL = (
@@ -26,20 +30,111 @@ DATENSAETZE_PAGE_URL = (
     "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
 )
 
+# bpb (and similar) often return 403 for Python's default urllib user-agent.
+_BPB_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/131.0.0.0 Safari/537.36"
+    ),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "de,en-US;q=0.9,en;q=0.8",
+}
+
 
 def fetch_html(url: str) -> str:
-    return urllib.request.urlopen(url).read().decode()
+    req = urllib.request.Request(url, headers=_BPB_HEADERS)
+    with urllib.request.urlopen(req) as resp:
+        return resp.read().decode()
+
+
+def _download_request_headers(url: str) -> dict:
+    """
+    Referer / Origin matter: wahl-o-mat.de often 403s without a same-origin
+    referer; bpb /system/files/ expects a bpb page referer.
+    """
+    p = urlparse(url)
+    path = p.path or ""
+    host = (p.netloc or "").lower()
+    scheme = p.scheme or "https"
+    base = f"{scheme}://{p.netloc}" if p.netloc else "https://www.bpb.de"
+
+    if "bpb.de" in host and "/system/files/" in path:
+        referer = DATENSAETZE_PAGE_URL
+    elif "wahl-o-mat" in host or "wahlomat" in host:
+        # Same-site referer; many hosts reject bpb as referer for direct ZIP GETs.
+        referer = f"{base}/"
+    else:
+        referer = WEITERE_WAHLEN_URL
+
+    headers = {
+        **_BPB_HEADERS,
+        "Accept": "*/*",
+        "Referer": referer,
+    }
+    if p.netloc:
+        headers["Origin"] = base
+    return headers
+
+
+def download_to_file(url: str, path: str) -> None:
+    """Download binary file (ZIP) with headers that avoid 403 on bpb / wahl-o-mat."""
+    headers = _download_request_headers(url)
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            data = resp.read()
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            # Retry once: some stacks want the listing page as referer for external zips.
+            retry_headers = {**headers, "Referer": WEITERE_WAHLEN_URL}
+            req2 = urllib.request.Request(url, headers=retry_headers)
+            with urllib.request.urlopen(req2, timeout=120) as resp:
+                data = resp.read()
+        else:
+            raise
+    with open(path, "wb") as out:
+        out.write(data)
 
 
 def extract_zip_hrefs(html: str) -> list:
-    zip_attrs = re.findall(r'href=\".+?\.zip\"', html, re.MULTILINE)
-    return [f.replace("href=", "").strip('"') for f in zip_attrs]
+    """
+    bpb uses href=\"/path/file.zip?download=1\". A naive .+?\\.zip\" match fails
+    because the next double-quote is after ?download=1, so the regex can span
+    the whole page and produce invalid URLs.
+    """
+    matches = re.findall(
+        r'href\s*=\s*["\'](https?://[^"\']*\.zip(?:\?[^"\']*)?|/[^"\']*\.zip(?:\?[^"\']*)?)["\']',
+        html,
+        re.IGNORECASE | re.MULTILINE,
+    )
+    out = []
+    for m in matches:
+        m = m.strip()
+        if not m or "<" in m or ">" in m:
+            continue
+        out.append(m)
+    return out
 
 
 def resolve_internal_bpb_zip(href: str) -> str:
-    if re.search('/system', href):
+    if href.startswith(("http://", "https://")):
+        return href
+    if href.startswith("/system"):
         return f"{INTERNAL_LINK_START}{href}"
     return href
+
+
+def upgrade_wahl_o_mat_zip_url(url: str) -> str:
+    """
+    Listing pages still link http://www.wahl-o-mat.de/.../wahlomat.zip .
+    That host returns 403 on HTTP; HTTPS works (verified 2026-03).
+    """
+    if url.startswith("http://www.wahl-o-mat.de"):
+        return "https://www.wahl-o-mat.de" + url[len("http://www.wahl-o-mat.de") :]
+    if url.startswith("http://wahl-o-mat.de"):
+        return "https://wahl-o-mat.de" + url[len("http://wahl-o-mat.de") :]
+    return url
 
 
 def pick_datensaetze_bundle_url(html: str) -> str:
@@ -58,6 +153,27 @@ def pick_datensaetze_bundle_url(html: str) -> str:
     return max(candidates, key=lambda u: u.split("/")[-1])
 
 
+def discover_datensaetze_xlsx_under(root: pathlib.Path) -> pathlib.Path | None:
+    """
+    Same discovery rules as analysis.discover_bpb_excel_path (keep in sync).
+    Used to confirm the Datensätze bundle unpacked a usable workbook.
+    """
+    matches = sorted(
+        set(root.glob("**/*Wahl-O-Mat*.xlsx"))
+        | set(root.glob("**/*Wahl-o-mat*.xlsx")),
+        key=lambda p: p.name,
+        reverse=True,
+    )
+    if not matches:
+        alt = list(root.glob("**/*Datens*.xlsx"))
+        matches = sorted(
+            (p for p in alt if "wahl" in p.name.casefold()),
+            key=lambda p: p.name,
+            reverse=True,
+        )
+    return matches[0] if matches else None
+
+
 # %% Download the raw html website which lists the available zip files.
 election_html = fetch_html(WEITERE_WAHLEN_URL)
 
@@ -66,7 +182,7 @@ zip_files = extract_zip_hrefs(election_html)
 
 zip_files_links = []
 for f in zip_files:
-    zip_files_links.append(resolve_internal_bpb_zip(f))
+    zip_files_links.append(upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(f)))
 
 # %% Bundled datasets archive (dynamic link from article)
 datensaetze_html = fetch_html(DATENSAETZE_PAGE_URL)
@@ -97,8 +213,11 @@ os.chdir('data')
 # %%Download all zip files and extract them
 
 for i, f in enumerate(zip_files_links):
-    urllib.request.urlretrieve(
-        f, filename=f"{os.getcwd()}/{zip_files_names[i]}.zip")
+    dest = f"{os.getcwd()}/{zip_files_names[i]}.zip"
+    print(f"Downloading {zip_files_names[i]}.zip …")
+    download_to_file(f, dest)
+    # Reduce rate-limit / WAF blocks on rapid sequential GETs
+    time.sleep(0.8)
 
 # Based on https://stackoverflow.com/questions/31346790/unzip-all-zipped-files-in-a-folder-to-that-same-folder-using-python-2-7-5
 for file in os.listdir():
@@ -112,3 +231,19 @@ for file in os.listdir():
             f.extractall(
                 path=f"{os.path.join(os.getcwd(),file.split(sep='.')[0])}")
         os.remove(file_name)
+
+# %% Confirm Datensätze workbook (for build_dataframe / Excel pipeline)
+_xlsx = discover_datensaetze_xlsx_under(pathlib.Path("."))
+if _xlsx is not None and _xlsx.is_file() and _xlsx.stat().st_size > 0:
+    print(
+        "Datensätze workbook OK (matches build_dataframe discovery): "
+        f"{_xlsx.resolve()}"
+    )
+else:
+    print(
+        "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
+        "with 'wahl' in the name) was found after extraction. "
+        "The bundle from the Datensätze page may have changed its inner layout; "
+        "see analysis.discover_bpb_excel_path and "
+        "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
+    )
