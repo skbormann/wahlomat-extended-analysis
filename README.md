@@ -62,6 +62,16 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`skipped_elections.py`**: shared list omitted from **`build_dataframe`**; **`failed_analysis.py`** diagnoses those elections.
 - **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
+## Roadmap (things to add / change)
+
+This continues the intent of the older **“Things to add/change”** list on [skbormann/wahlomat-extended-analysis](https://github.com/skbormann/wahlomat-extended-analysis) **main**, updated for the CSV-first pipeline.
+
+| Idea | Status |
+|------|--------|
+| Select and download **individual** elections (index / menu / by name) | **Open** — [get_zip_files.py](get_zip_files.py) still fetches **all** ZIPs from the weitere Wahlen page plus the Datensätze bundle. A natural extension is CLI filtering on top of the same HTML parsing ([`extract_zip_hrefs`](get_zip_files.py), URL normalization, download loop). |
+| Run analysis for an **individual** election | **Mostly done** — After **`build_dataframe.py`**, use [build_graphs_from_csv.py](build_graphs_from_csv.py) **`--election`** (repeat or comma-separated) or **`ELECTION_IDS`**; see [Analysis steps](#analysis-steps). |
+| **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today the script **rebuilds the full CSV** from all JS modules and Excel sheets. A future mode could append or merge rows for new **`election_id`** values only; until then, a full rebuild is usually fine. |
+
 ## Dependencies
 
 - **Python 3.10+** (the code uses PEP 604 type hints, e.g. `Path | None`; Python 3.8 is EOL).
