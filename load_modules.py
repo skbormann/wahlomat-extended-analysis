@@ -24,6 +24,7 @@ success = []
 fail = {}
 for module in module_list:
     module_stem_folder = module.parts[0]
+    module_content = None
     try:
         with open(module) as f:
             module_content = f.read()
@@ -35,6 +36,11 @@ for module in module_list:
 
         except Exception as e:
             print(f'Unexpected error {e}')
+            fail[f'{module_stem_folder}'] = f"{e}"
+
+    if module_content is None:
+        continue
+
     print(f"Running analysis for {module_stem_folder}")
     try:
         analysis(module_content, module_stem_folder)
