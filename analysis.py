@@ -265,10 +265,10 @@ def run_analysis(
         linewidths=0.8,
         figsize=(12, 12),
     )
-    c_matrix.fig.delaxes(c_matrix.ax_col_dendrogram)
+    c_matrix.figure.delaxes(c_matrix.ax_col_dendrogram)
     c_matrix.ax_heatmap.set(xlabel=None, ylabel=None)
     c_matrix.ax_row_dendrogram.set(title="Cluster-Hierarchie")
-    c_matrix.fig.suptitle("Übereinstimmungen der Parteien (in %)", y=0.86)
+    c_matrix.figure.suptitle("Übereinstimmungen der Parteien (in %)", y=0.86)
     labels_row: list = c_matrix.ax_heatmap.get_yticklabels()
     labels_col: list = c_matrix.ax_heatmap.get_xticklabels()
     for party_label in labels_row:
