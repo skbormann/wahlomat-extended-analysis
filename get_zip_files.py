@@ -155,76 +155,86 @@ def pick_datensaetze_bundle_url(html: str) -> str:
     return max(candidates, key=lambda u: u.split("/")[-1])
 
 
-# %% Download the raw html website which lists the available zip files.
-election_html = fetch_html(WEITERE_WAHLEN_URL)
+def main() -> int:
+    """Download and extract all election ZIPs plus Datensätze bundle into data/."""
+    repo_root = pathlib.Path(__file__).resolve().parent
+    os.chdir(repo_root)
+    try:
+        election_html = fetch_html(WEITERE_WAHLEN_URL)
+        zip_files = extract_zip_hrefs(election_html)
 
-# %% Extract the zip files, clean the links and create working links
-zip_files = extract_zip_hrefs(election_html)
+        zip_files_links: list[str] = []
+        for f in zip_files:
+            zip_files_links.append(
+                upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(f))
+            )
 
-zip_files_links = []
-for f in zip_files:
-    zip_files_links.append(upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(f)))
+        datensaetze_html = fetch_html(DATENSAETZE_PAGE_URL)
+        zip_files_links.append(pick_datensaetze_bundle_url(datensaetze_html))
 
-# %% Bundled datasets archive (dynamic link from article)
-datensaetze_html = fetch_html(DATENSAETZE_PAGE_URL)
-zip_files_links.append(pick_datensaetze_bundle_url(datensaetze_html))
+        zip_files_names: list[str] = []
+        for f in zip_files_links:
+            if re.search(r"wahl-o-mat.de", f):
+                zip_files_names.append(f.split(sep="/")[3])
+            elif f.split(sep="/")[2] == "www.bpb.de":
+                zip_files_names.append(f.split(sep="/")[6].split(sep=".")[0])
+        zip_files_names = [
+            x.replace("wahlomat-", "").replace("-", "") for x in zip_files_names
+        ]
 
-# %% Create folder names
-zip_files_names = []
-for f in zip_files_links:
-    if re.search(r'wahl-o-mat.de', f):
-        zip_files_names.append(f.split(sep="/")[3])
-    elif f.split(sep="/")[2] == "www.bpb.de":
-        zip_files_names.append(f.split(sep="/")[6].split(sep=".")[0])
-zip_files_names = [f.replace("wahlomat-", "").replace("-", "")
-                   for f in zip_files_names]
-
-# %% Create data and graphs folder
-try:
-    os.mkdir(f"{os.path.join(os.getcwd(),'data')}")
-except FileExistsError:
-    print("Folder 'data' already exists.")
-
-try:
-    os.mkdir(f"{os.path.join(os.getcwd(), 'graphs')}")
-except FileExistsError:
-    print("Folder 'graphs' already exists.")
-
-os.chdir('data')
-# %%Download all zip files and extract them
-
-for i, f in enumerate(zip_files_links):
-    dest = f"{os.getcwd()}/{zip_files_names[i]}.zip"
-    print(f"Downloading {zip_files_names[i]}.zip …")
-    download_to_file(f, dest)
-    # Reduce rate-limit / WAF blocks on rapid sequential GETs
-    time.sleep(0.8)
-
-# Based on https://stackoverflow.com/questions/31346790/unzip-all-zipped-files-in-a-folder-to-that-same-folder-using-python-2-7-5
-for file in os.listdir():
-    if zipfile.is_zipfile(file):
-        file_name = os.path.abspath(file)
         try:
-            os.mkdir(f"{os.path.join(os.getcwd(),file.split(sep='.')[0])}")
+            os.mkdir(os.path.join(os.getcwd(), "data"))
         except FileExistsError:
-            pass
-        with zipfile.ZipFile(file_name) as f:
-            f.extractall(
-                path=f"{os.path.join(os.getcwd(),file.split(sep='.')[0])}")
-        os.remove(file_name)
+            print("Folder 'data' already exists.")
 
-# %% Confirm Datensätze workbook (for build_dataframe / Excel pipeline)
-_xlsx = discover_bpb_excel_path(pathlib.Path("."), pathlib.Path(".."))
-if _xlsx is not None and _xlsx.is_file() and _xlsx.stat().st_size > 0:
-    print(
-        "Datensätze workbook OK (matches build_dataframe discovery): "
-        f"{_xlsx.resolve()}"
-    )
-else:
-    print(
-        "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
-        "with 'wahl' in the name) was found after extraction. "
-        "The bundle from the Datensätze page may have changed its inner layout; "
-        "see analysis.discover_bpb_excel_path(..., repo root) and "
-        "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
-    )
+        try:
+            os.mkdir(os.path.join(os.getcwd(), "graphs"))
+        except FileExistsError:
+            print("Folder 'graphs' already exists.")
+
+        os.chdir(repo_root / "data")
+
+        for i, f in enumerate(zip_files_links):
+            dest = f"{os.getcwd()}/{zip_files_names[i]}.zip"
+            print(f"Downloading {zip_files_names[i]}.zip …")
+            download_to_file(f, dest)
+            time.sleep(0.8)
+
+        for file in os.listdir():
+            if zipfile.is_zipfile(file):
+                file_name = os.path.abspath(file)
+                try:
+                    os.mkdir(
+                        os.path.join(os.getcwd(), file.split(sep=".")[0])
+                    )
+                except FileExistsError:
+                    pass
+                with zipfile.ZipFile(file_name) as zf:
+                    zf.extractall(
+                        path=os.path.join(
+                            os.getcwd(), file.split(sep=".")[0]
+                        )
+                    )
+                os.remove(file_name)
+
+        _xlsx = discover_bpb_excel_path(pathlib.Path("."), pathlib.Path(".."))
+        if _xlsx is not None and _xlsx.is_file() and _xlsx.stat().st_size > 0:
+            print(
+                "Datensätze workbook OK (matches build_dataframe discovery): "
+                f"{_xlsx.resolve()}"
+            )
+        else:
+            print(
+                "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
+                "with 'wahl' in the name) was found after extraction. "
+                "The bundle from the Datensätze page may have changed its inner layout; "
+                "see analysis.discover_bpb_excel_path(..., repo root) and "
+                "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
+            )
+    finally:
+        os.chdir(repo_root)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

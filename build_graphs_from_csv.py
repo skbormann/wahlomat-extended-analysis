@@ -40,7 +40,7 @@ def _parse_election_cli(values: list[str] | None) -> list[str]:
     return out
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Generate graphs from all_wahlomat_answers.csv (run build_dataframe.py first)."
@@ -62,7 +62,7 @@ def main() -> int:
             "If omitted, use ELECTION_IDS when set, otherwise all elections in the CSV."
         ),
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     csv_path = args.csv
     if not csv_path.is_file():
         print(f"CSV not found: {csv_path.resolve()}", file=sys.stderr)

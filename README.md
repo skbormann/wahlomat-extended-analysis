@@ -23,6 +23,17 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    - **Subset:** `python build_graphs_from_csv.py --election bundestagswahl2021 --election berlin2021` or comma-separated `--election a,b`  
    - **Environment:** `ELECTION_IDS=bundestagswahl2021,berlin2021 python build_graphs_from_csv.py` (CLI wins if both are set)
 
+### Unified CLI (`wahlomat.py`)
+
+From the repository root you can run the same pipeline with one entry point:
+
+- `python wahlomat.py download` — same as `get_zip_files.py`
+- `python wahlomat.py build-csv` — same as `build_dataframe.py`
+- `python wahlomat.py graphs …` — forwards all arguments after `graphs` to `build_graphs_from_csv.py` (e.g. `python wahlomat.py graphs --election bundestagswahl2021` or `python wahlomat.py graphs -h` for graph options)
+- `python wahlomat.py run-all` — runs download, then build-csv, then graphs with default graph options (stops on the first non-zero exit)
+
+The individual scripts above remain supported.
+
 ### Legacy JS-only path
 
 **`load_modules.py`** is **deprecated** and exits with instructions unless you set **`WAHLOMAT_LEGACY_LOAD_MODULES=1`**. That legacy mode only reads **`module_definition.js`** files and **does not** include Excel-only elections.
@@ -53,6 +64,7 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 
 ## Changes
 
+- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
 - **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**.
 - **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`**.
 - **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**.
@@ -68,7 +80,7 @@ This continues the intent of the older **“Things to add/change”** list on [s
 
 | Idea | Status |
 |------|--------|
-| Select and download **individual** elections (index / menu / by name) | **Open** — [get_zip_files.py](get_zip_files.py) still fetches **all** ZIPs from the weitere Wahlen page plus the Datensätze bundle. A natural extension is CLI filtering on top of the same HTML parsing ([`extract_zip_hrefs`](get_zip_files.py), URL normalization, download loop). |
+| Select and download **individual** elections (index / menu / by name) | **Open** — [get_zip_files.py](get_zip_files.py) / `python wahlomat.py download` still fetches **all** ZIPs from the weitere Wahlen page plus the Datensätze bundle. A natural extension is CLI filtering on top of the same HTML parsing ([`extract_zip_hrefs`](get_zip_files.py), URL normalization, download loop). |
 | Run analysis for an **individual** election | **Mostly done** — After **`build_dataframe.py`**, use [build_graphs_from_csv.py](build_graphs_from_csv.py) **`--election`** (repeat or comma-separated) or **`ELECTION_IDS`**; see [Analysis steps](#analysis-steps). |
 | **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today the script **rebuilds the full CSV** from all JS modules and Excel sheets. A future mode could append or merge rows for new **`election_id`** values only; until then, a full rebuild is usually fine. |
 
