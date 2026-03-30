@@ -127,7 +127,7 @@ def main() -> int:
             try:
                 qdf, pivot = parse_module_js(module_content)
                 all_parts.append(
-                    election_to_long_rows(qdf, pivot, election_id, "js")
+                    election_to_long_rows(qdf, pivot, election_id)
                 )
             except Exception as e:
                 print(
@@ -148,7 +148,7 @@ def main() -> int:
                 try:
                     qdf, pivot = parse_excel_election(df)
                     all_parts.append(
-                        election_to_long_rows(qdf, pivot, safe_id, "excel")
+                        election_to_long_rows(qdf, pivot, safe_id)
                     )
                 except Exception as e:
                     print(f"  skip {sheet_name}: {e}")

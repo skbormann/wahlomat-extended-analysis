@@ -584,7 +584,6 @@ def election_to_long_rows(
     question_df: DataFrame,
     answer_pivot: DataFrame,
     election_id: str,
-    source: str,
 ) -> DataFrame:
     """Stack pivot + metadata for CSV export (one row per thesis/party)."""
     meta = question_df.copy()
@@ -598,7 +597,6 @@ def election_to_long_rows(
         right_on="these_index",
         how="left",
     ).drop(columns=["these_index"])
-    long.insert(0, "source", source)
     long.insert(0, "election_id", election_id)
     return long
 
