@@ -15,7 +15,7 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    After extraction it prints **`Datensätze workbook OK`** with the path to the `.xlsx` if a file matching **`discover_bpb_excel_path`** was found under **`data/`** or the **repository root** (same discovery as **`build_dataframe.py`**); otherwise it prints a **WARNING**.
 
 2. **`build_dataframe.py`** (run from the **repository root**)  
-   Parses all JS modules under **`data/`** (respecting **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py)), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** at the repo root.
+   Parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py); currently empty), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** at the repo root.
 
 3. **`build_graphs_from_csv.py`** (run from the **repository root**)  
    Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (same plots as before: correlation / PCA / influences).  
@@ -48,9 +48,9 @@ Use of bpb data is subject to their [terms on the Datensätze page](https://www.
 
 ### When questionnaires fail
 
-Some elections have too few parties for stable clustering; **`run_analysis`** may still raise on edge cases. A historic subset is **omitted from `build_dataframe`**; folder names live in [skipped_elections.py](skipped_elections.py) as **`OMIT_FROM_BUILD_DATAFRAME`**.
+**`run_analysis`** (correlation / PCA / clustering plots) can still hit unusual cases; [analysis.py](analysis.py) now handles single-party PCA, NaN correlations from zero-variance columns, and tiny matrices more defensively. If a specific election under **`data/`** keeps breaking the pipeline, add its top-level folder name to **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py) until it is fixed.
 
-**`failed_analysis.py`** (repository root: `python failed_analysis.py`) runs **`parse_module_js`** and then **`run_analysis`** for each of those elections only, printing parse/plot outcomes. Debug plots use names like **`debug_<folder>_*.png`** under **`graphs/`**.
+**`failed_analysis.py`** (repository root: `python failed_analysis.py`) runs **`parse_module_js`** and then **`run_analysis`** for each slug in **`OMIT_FROM_BUILD_DATAFRAME`** (if any), printing parse/plot outcomes. Debug plots use names like **`debug_<folder>_*.png`** under **`graphs/`**. When the omit list is empty, the script prints a short notice and exits.
 
 ## What is the Wahl-O-Mat?
 
@@ -71,7 +71,8 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`load_modules.py`**: deprecated; set **`WAHLOMAT_LEGACY_LOAD_MODULES=1`** for the old JS-only loop.
 - **`analysis.py`**: **`parse_module_js`**, **`parse_excel_election`**, **`long_rows_to_run_analysis`**, **`run_analysis`**; **`analysis_from_excel`** for a single sheet.
 - Dependencies: **`openpyxl`** for reading `.xlsx`; pinned versions in [requirements.txt](requirements.txt) and [pyproject.toml](pyproject.toml).
-- **`skipped_elections.py`**: shared list omitted from **`build_dataframe`**; **`failed_analysis.py`** diagnoses those elections.
+- **`skipped_elections.py`**: optional **`OMIT_FROM_BUILD_DATAFRAME`** folder names skipped by **`build_dataframe`** (empty by default); **`failed_analysis.py`** diagnoses that list when non-empty.
+- **`tests/test_analysis_edges.py`**: **`unittest`** checks for **`parse_module_js`** minimal fixture and **`run_analysis`** edge cases (run with `python -m unittest discover` from the repo root).
 - **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
 ## Roadmap (things to add / change)

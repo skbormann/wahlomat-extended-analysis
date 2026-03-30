@@ -17,9 +17,11 @@ Supports legacy module_definition.js and bpb Excel bundle sheets (see parse_exce
 from __future__ import annotations
 
 import pathlib
-from typing import cast
+from typing import Any, cast
 import re
 import os
+import math
+import numpy as np
 import pandas as pd
 from pandas.core.frame import DataFrame
 from sklearn.decomposition import PCA
@@ -293,25 +295,77 @@ def run_analysis(
     """
     Correlation / PCA / KMeans plots. answer_df is pivoted (question x party).
     """
+    if answer_df.shape[1] < 1:
+        raise ValueError("run_analysis needs at least one party column")
+
     answer_corr = answer_df.corr()
+    answer_corr = answer_corr.fillna(0.0)
+    ac = answer_corr.to_numpy(dtype=float, copy=True)
+    np.fill_diagonal(ac, 1.0)
+    answer_corr = pd.DataFrame(
+        ac, index=answer_corr.index, columns=answer_corr.columns
+    )
+
+    def _corr_overlay_cell(x: Any) -> str:
+        v = float(x)
+        if not np.isfinite(v):
+            return ""
+        if v == 1.0:
+            return ""
+        return str(int(100 * v))
+
     corr_overlay = answer_corr.apply(
-        lambda s: pd.Series([str(int(100 * x)) if x != 1 else "" for x in s])
+        lambda s: pd.Series([_corr_overlay_cell(v) for v in s])
     )
-    pca: PCA = PCA(n_components=2)
-    party_pca: DataFrame = pd.DataFrame(
-        pca.fit_transform(answer_df.T),
-        columns=["pca_x", "pca_y"],
-        index=answer_df.T.index,
-    )
-    pca_xvr, pca_yvr = pca.explained_variance_ratio_
-    n_parties = party_pca.shape[0]
-    n_clusters = min(N_CLUSTERS, max(1, n_parties))
-    km: KMeans = KMeans(n_clusters)
-    party_pca["cluster"] = km.fit_predict(party_pca)
+
+    n_parties = answer_df.shape[1]
+    n_questions = answer_df.shape[0]
+
+    # PCA needs at least two party-rows; with one party sklearn divides by n_samples-1 → NaN EVR.
+    if n_parties < 2:
+        party_pca = pd.DataFrame(
+            {"pca_x": np.zeros(n_parties), "pca_y": np.zeros(n_parties)},
+            index=answer_df.columns,
+        )
+        party_pca["cluster"] = 0
+        pca_xvr = 0.0
+        pca_yvr = 0.0
+        comps = np.zeros((n_questions, 2))
+    else:
+        n_pca = int(min(2, n_parties, n_questions))
+        X = answer_df.T.to_numpy(dtype=float)
+        pca: PCA = PCA(n_components=n_pca)
+        Xt = pca.fit_transform(X)
+        evr = pca.explained_variance_ratio_
+        pca_xvr = float(evr[0])
+        pca_yvr = float(evr[1]) if len(evr) > 1 else 0.0
+
+        if n_pca == 1:
+            party_pca = pd.DataFrame(
+                {"pca_x": Xt.ravel(), "pca_y": 0.0},
+                index=answer_df.columns,
+            )
+        else:
+            party_pca = pd.DataFrame(
+                Xt,
+                columns=["pca_x", "pca_y"],
+                index=answer_df.columns,
+            )
+
+        n_clusters = min(N_CLUSTERS, max(1, n_parties))
+        km: KMeans = KMeans(n_clusters, random_state=0)
+        party_pca["cluster"] = km.fit_predict(
+            party_pca.loc[:, ["pca_x", "pca_y"]].to_numpy(dtype=float)
+        )
+
+        comps = pca.components_.T
+        if comps.shape[1] == 1:
+            comps = np.column_stack([comps, np.zeros(comps.shape[0])])
     pca_influences: DataFrame = question_df.join(
-        pd.DataFrame(pca.components_.T, columns=["pca_x", "pca_y"])
+        pd.DataFrame(comps, columns=["pca_x", "pca_y"], index=question_df.index)
     ).join(answer_df.sum(axis="columns").rename("answers_sum"))
 
+    do_cluster = answer_corr.shape[0] > 1
     c_matrix: sns.matrix.ClusterGrid = sns.clustermap(
         data=answer_corr,
         cmap="RdYlGn",
@@ -322,8 +376,15 @@ def run_analysis(
         annot_kws={"fontsize": 8},
         linewidths=0.8,
         figsize=(12, 12),
+        row_cluster=do_cluster,
+        col_cluster=do_cluster,
     )
-    c_matrix.figure.delaxes(c_matrix.ax_col_dendrogram)
+    ax_cd = getattr(c_matrix, "ax_col_dendrogram", None)
+    if ax_cd is not None:
+        try:
+            c_matrix.figure.delaxes(ax_cd)
+        except (AttributeError, ValueError):
+            pass
     c_matrix.ax_heatmap.set(xlabel=None, ylabel=None)
     c_matrix.ax_row_dendrogram.set(title="Cluster-Hierarchie")
     c_matrix.figure.suptitle("Übereinstimmungen der Parteien (in %)", y=0.86)
@@ -419,10 +480,10 @@ def run_analysis(
     plt.close()
 
     infl_prep = pca_influences.copy()
-    infl_prep["answers_sum"] *= (
-        infl_prep[["pca_x", "pca_y"]].abs().max().max()
-        / infl_prep["answers_sum"].abs().max()
-    )
+    denom = float(np.nanmax(infl_prep["answers_sum"].abs().to_numpy()))
+    numer = float(np.nanmax(infl_prep[["pca_x", "pca_y"]].abs().to_numpy()))
+    if math.isfinite(denom) and math.isfinite(numer) and denom != 0.0:
+        infl_prep["answers_sum"] *= numer / denom
     infl_prep = infl_prep.melt(
         id_vars=["title"],
         value_vars=["pca_x", "pca_y", "answers_sum"],

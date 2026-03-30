@@ -7,8 +7,13 @@ Run from the repository root:
     python failed_analysis.py
 
 For each listed election folder under data/, loads module_definition.js, runs
-parse_module_js, then optionally run_analysis to surface parse vs plot errors
-(e.g. KMeans when fewer parties than N_CLUSTERS).
+parse_module_js, then run_analysis to surface parse vs plot errors.
+
+Cluster count is capped in analysis.run_analysis
+(``n_clusters = min(N_CLUSTERS, max(1, n_parties))``), so KMeans is not limited
+by the fixed ``N_CLUSTERS`` value when there are few parties. Typical failures
+are legacy JS parse errors, correlation matrices with NaNs, or PCA/clustermap
+edge cases (see recent run_analysis hardening).
 """
 
 from __future__ import annotations
@@ -32,6 +37,12 @@ def _read_module(path: pathlib.Path) -> str | None:
 
 
 def main() -> None:
+    if not OMIT_FROM_BUILD_DATAFRAME:
+        print(
+            "OMIT_FROM_BUILD_DATAFRAME is empty (see skipped_elections.py). "
+            "Nothing to diagnose."
+        )
+        return
     os.chdir("data")
     root = pathlib.Path(".")
     for stem in OMIT_FROM_BUILD_DATAFRAME:
