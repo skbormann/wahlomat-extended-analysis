@@ -40,6 +40,44 @@ def main() -> int:
         "build-csv",
         help="Build all_wahlomat_answers.csv from data/",
     )
+    uc = sub.add_parser(
+        "update-csv",
+        help=(
+            "Merge Excel-only changes into all_wahlomat_answers.csv "
+            "(use when the bpb workbook changed; see update-csv -h)"
+        ),
+    )
+    uc.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print change summary only; do not write files",
+    )
+    uc.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Apply updates without confirmation",
+    )
+    uc.add_argument(
+        "--repo-root",
+        type=pathlib.Path,
+        default=None,
+        help="Repository root (default: directory of wahlomat.py)",
+    )
+    uc.add_argument(
+        "--answers",
+        type=pathlib.Path,
+        default=None,
+        help="Path to all_wahlomat_answers.csv (default: <repo-root>/)",
+    )
+    uc.add_argument(
+        "--prune-superseded-excel",
+        action="store_true",
+        help=(
+            "Drop old versioned sheet ids (e.g. BW26_v1.01) when the workbook "
+            "has a newer XXyy_v… tab (e.g. BW26_v1.02)"
+        ),
+    )
     sub.add_parser(
         "run-all",
         help="Run download, then build-csv, then graphs (default graph options)",
@@ -55,6 +93,10 @@ def main() -> int:
         import build_dataframe
 
         return build_dataframe.main()
+    if args.command == "update-csv":
+        import update_excel_csv
+
+        return update_excel_csv.run(args)
     if args.command == "run-all":
         import build_dataframe
         import build_graphs_from_csv

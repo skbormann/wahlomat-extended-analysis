@@ -20,6 +20,7 @@ from build_metadata import (
     election_slug_from_zip_href,
     excel_row_from_election_id,
 )
+from update_excel_csv import _changed_detail, superseded_excel_election_ids
 
 # Minimal module_definition.js-shaped text (documents regex contract for legacy JS).
 _MINIMAL_JS = """
@@ -142,6 +143,47 @@ class TestBuildMetadataSlugs(unittest.TestCase):
         self.assertEqual(r["state"], "Mecklenburg-Vorpommern")
         self.assertIn("Mecklenburg-Vorpommern", r["display_name_de"])
         self.assertNotIn("MecklenburgVorpommern", r["display_name_de"])
+
+    def test_excel_version_suffix_parsed_for_superseded_ids(self) -> None:
+        """Older bpb sheet ids (not in current workbook) still parse for metadata."""
+        for eid in ("BW26_v1.00", "BW26_v1.01", "RP26_v1.00"):
+            r = excel_row_from_election_id(eid)
+            self.assertIsNotNone(r, msg=eid)
+            self.assertEqual(r["election_id"], eid)
+
+
+class TestSupersededExcelIds(unittest.TestCase):
+    def test_superseded_when_workbook_has_newer_version(self) -> None:
+        import pandas as pd
+
+        answers = pd.DataFrame(
+            {
+                "election_id": ["BW26_v1.01", "BW26_v1.02", "bundestagswahl2021"]
+                * 2,
+                "x": range(6),
+            }
+        )
+        excel_ids = {"BW26_v1.02"}
+        s = superseded_excel_election_ids(answers, excel_ids)
+        self.assertEqual(s, {"BW26_v1.01"})
+
+
+class TestUpdateExcelCsvDetail(unittest.TestCase):
+    def test_changed_one_party_rows_added(self) -> None:
+        self.assertEqual(
+            _changed_detail(1, 38), "+1 party, 38 rows added"
+        )
+
+    def test_changed_rows_only(self) -> None:
+        self.assertEqual(_changed_detail(0, -10), "10 rows removed")
+
+    def test_changed_party_only_unusual(self) -> None:
+        self.assertEqual(_changed_detail(2, 0), "+2 parties")
+
+    def test_changed_remove_party_and_rows(self) -> None:
+        self.assertEqual(
+            _changed_detail(-1, -38), "-1 party, 38 rows removed"
+        )
 
 
 class TestModuleJsDecode(unittest.TestCase):

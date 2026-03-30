@@ -14,8 +14,11 @@ modules and the bpb Wahl-O-Mat-Datensätze Excel bundle under data/.
 """
 
 # %% Setup
+from __future__ import annotations
+
 import os
 import pathlib
+from collections.abc import Iterator
 
 import pandas as pd
 
@@ -32,6 +35,33 @@ from election_id_policy import (
     excel_sheet_safe_ids,
 )
 from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
+
+
+def iter_excel_long_dataframes(
+    xlsx_path: pathlib.Path,
+    *,
+    verbose: bool = True,
+) -> Iterator[tuple[str, pd.DataFrame]]:
+    """
+    Yield (election_id, long_df) for each workbook sheet that has bpb data columns.
+    election_id is the sheet name with spaces replaced by underscores.
+    """
+    xl = pd.ExcelFile(xlsx_path, engine="openpyxl")
+    for sheet_name in xl.sheet_names:
+        df = pd.read_excel(
+            xlsx_path, sheet_name=sheet_name, engine="openpyxl"
+        )
+        if not excel_sheet_has_data_columns(df.columns):
+            continue
+        safe_id = sheet_name.replace(" ", "_")
+        if verbose:
+            print(f"  sheet {sheet_name}")
+        try:
+            qdf, pivot = parse_excel_election(df)
+            yield safe_id, election_to_long_rows(qdf, pivot, safe_id)
+        except Exception as e:
+            if verbose:
+                print(f"  skip {sheet_name}: {e}")
 
 
 def _decode_utf8_latin1_hybrid(raw: bytes) -> str:
@@ -137,22 +167,10 @@ def main() -> int:
 
         if xlsx_path is not None:
             print(f"Reading Excel bundle {xlsx_path.resolve()}")
-            xl = pd.ExcelFile(xlsx_path, engine="openpyxl")
-            for sheet_name in xl.sheet_names:
-                df = pd.read_excel(
-                    xlsx_path, sheet_name=sheet_name, engine="openpyxl"
-                )
-                if not excel_sheet_has_data_columns(df.columns):
-                    continue
-                safe_id = sheet_name.replace(" ", "_")
-                print(f"  sheet {sheet_name}")
-                try:
-                    qdf, pivot = parse_excel_election(df)
-                    all_parts.append(
-                        election_to_long_rows(qdf, pivot, safe_id)
-                    )
-                except Exception as e:
-                    print(f"  skip {sheet_name}: {e}")
+            for _, long_df in iter_excel_long_dataframes(
+                xlsx_path, verbose=True
+            ):
+                all_parts.append(long_df)
         else:
             print("No Wahl-O-Mat Excel bundle found under data/ (optional).")
 

@@ -265,19 +265,25 @@ def build_election_metadata(
             built.append(er)
         else:
             js = by_eid.get(eid)
-            if js is None:
-                missing.append(eid)
+            if js is not None:
+                built.append(
+                    {
+                        "election_id": eid,
+                        "display_name_de": js["display_name_de"],
+                        "display_name_en": js["display_name_en"],
+                        "state": js["state"],
+                        "year": int(js["year"]),
+                        "level": js["level"],
+                    }
+                )
                 continue
-            built.append(
-                {
-                    "election_id": eid,
-                    "display_name_de": js["display_name_de"],
-                    "display_name_en": js["display_name_en"],
-                    "state": js["state"],
-                    "year": int(js["year"]),
-                    "level": js["level"],
-                }
-            )
+            # Superseded Excel sheet ids still in answers CSV (e.g. BW26_v1.01
+            # while the workbook only lists BW26_v1.02): derive from prefix rules.
+            er = excel_row_from_election_id(eid)
+            if er is not None:
+                built.append(er)
+                continue
+            missing.append(eid)
     if missing:
         raise ValueError(
             "No metadata for election_id(s): " + ", ".join(sorted(missing))

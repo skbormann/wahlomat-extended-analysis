@@ -19,7 +19,9 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    **JS vs Excel overlap:** [election_id_policy.py](election_id_policy.py) lists folders whose JS export is **not** ingested when the same election appears in the workbook under the mapped **versioned sheet id** (e.g. skip JS `bundestagswahl2021` when Excel has `BT21_v1.02`). The resolved workbook path is printed when Excel is read — use a current Datensätze bundle if you expect sheets such as **`BW26_v1.01`** / **`RP26_v1.00`** in the CSV.  
    **JS answers:** [analysis.py](analysis.py) `parse_module_js` deduplicates `(thesis, party)` before pivoting and uses **`aggfunc="first"`** so multi-language duplicates are not averaged into fractional codes.
 
-3. **`build_graphs_from_csv.py`** (run from the **repository root**)  
+3. **`update_excel_csv.py`** / **`python wahlomat.py update-csv`** (repository root) — **recommended when only the bpb Excel workbook changed** (e.g. new sheets or extra parties on existing sheets). Compares each qualifying workbook sheet to the current **`all_wahlomat_answers.csv`** by **`election_id`** (sheet name with spaces → underscores): **new** ids or **changed** row counts trigger a replace for those elections only; rows for elections not in the workbook (including all JS-sourced **`election_id`s**) are left unchanged; removed sheets do not delete CSV rows. **`election_metadata.csv`** is regenerated in the **same run** when the answers CSV is written ([build_metadata.py](build_metadata.py)). If **`update-csv`** errors **after** **`Wrote … rows`** (metadata build failed), the CSV is already updated—run **`python build_metadata.py`** (and **`--answers`** if you use a non-default path). **`--prune-superseded-excel`** drops older **versioned** bpb `election_id`s left in the CSV when the workbook has another tab with the same land+year prefix (e.g. remove `BW26_v1.01` / `RP26_v1.00` when `BW26_v1.02` / `RP26_v1.01` are sheets), so **`election_metadata.csv`** matches current workbook tabs. Without pruning, superseded ids stay in both files until a full **`build-csv`**. **`build_metadata`** can still attach display rows for orphaned versioned ids if they remain in the answers CSV. Flags: **`--dry-run`** (print summary, exit), **`-y` / `--yes`** (apply without prompt; default asks **`Proceed? [y/N]`**). Non-interactive terminals must use **`--dry-run`** or **`--yes`**. Detection uses row-count equality only (same count but edited cells is not detected).
+
+4. **`build_graphs_from_csv.py`** (run from the **repository root**)  
    Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (same plots as before: correlation / PCA / influences).  
    - **List valid `election_id` values** (and row counts): `python build_graphs_from_csv.py --list-elections` (or `python wahlomat.py graphs --list-elections`; optional `--csv` path)  
    - **All elections:** `python build_graphs_from_csv.py`  
@@ -33,6 +35,7 @@ From the repository root you can run the same pipeline with one entry point:
 
 - `python wahlomat.py download` — same as `get_zip_files.py`
 - `python wahlomat.py build-csv` — same as `build_dataframe.py`
+- `python wahlomat.py update-csv` — same as `update_excel_csv.py` (see step 3; use **`update-csv -h`** for flags)
 - `python wahlomat.py graphs …` — forwards all arguments after `graphs` to `build_graphs_from_csv.py` (e.g. `python wahlomat.py graphs --list-elections`, `python wahlomat.py graphs --election bundestagswahl2021`, or `python wahlomat.py graphs -h` for graph options)
 - `python wahlomat.py run-all` — runs download, then build-csv, then graphs with default graph options (stops on the first non-zero exit)
 
@@ -94,6 +97,8 @@ federal = answers[answers['election_id'].isin(
 - **Schleswig-Holstein 2005 and 2017** include multilingual theses (e.g. German, Danish, North Frisian). After deduplication in the JS parser, **`title`** and **`these_text`** keep the **first** language variant encountered per thesis.
 - **Folder names `wahlomat_0` and `wahlomat_1`** in the original ZIPs correspond to **`hamburg2011`** and **`berlin2011`** in the CSV (`election_id`); see [election_id_policy.py](election_id_policy.py).
 - **Party names are not normalised** across elections; the same grouping may appear under different strings (e.g. `GRÜNE`, `BÜNDNIS 90/DIE GRÜNEN`, `GRÜNE/B 90`).
+- **`update-csv`** only treats a sheet as changed when the **row count** for that `election_id` differs from the workbook; same row count with edited cells is not detected.
+- **Sheets removed from the Excel bundle** are not removed from **`all_wahlomat_answers.csv`** by **`update-csv`**; run a full **`build-csv`** if you need the CSV to match the workbook exactly.
 
 ### When questionnaires fail
 
@@ -113,9 +118,9 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 
 ## Changes
 
-- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
+- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `update-csv`, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
 - **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**.
-- **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** ([build_metadata.py](build_metadata.py)).
+- **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** ([build_metadata.py](build_metadata.py)); **`update_excel_csv.py`** / **`wahlomat.py update-csv`** for incremental Excel-only updates.
 - **`bpb_urls.py`**: shared bpb **`WEITERE_WAHLEN_URL`** and HTML fetch headers (used by **`get_zip_files.py`** and **`build_metadata.py`**).
 - **`election_id_policy.py`**: JS folders superseded by canonical Excel **`election_id`** when both exist; extend the map when bpb adds overlapping cases.
 - **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**; **`--list-elections`** prints IDs and row counts from the CSV.
