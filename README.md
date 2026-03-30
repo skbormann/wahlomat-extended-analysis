@@ -15,7 +15,9 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    After extraction it prints **`Datensätze workbook OK`** with the path to the `.xlsx` if a file matching **`discover_bpb_excel_path`** was found under **`data/`** or the **repository root** (same discovery as **`build_dataframe.py`**); otherwise it prints a **WARNING**.
 
 2. **`build_dataframe.py`** (run from the **repository root**)  
-   Parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py); currently empty), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** at the repo root.
+   Parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py); currently empty), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** at the repo root.  
+   **JS vs Excel overlap:** [election_id_policy.py](election_id_policy.py) lists folders whose JS export is **not** ingested when the same election appears in the workbook under the mapped **versioned sheet id** (e.g. skip JS `bundestagswahl2021` when Excel has `BT21_v1.02`). The resolved workbook path is printed when Excel is read — use a current Datensätze bundle if you expect sheets such as **`BW26_v1.01`** / **`RP26_v1.00`** in the CSV.  
+   **JS answers:** [analysis.py](analysis.py) `parse_module_js` deduplicates `(thesis, party)` before pivoting and uses **`aggfunc="first"`** so multi-language duplicates are not averaged into fractional codes.
 
 3. **`build_graphs_from_csv.py`** (run from the **repository root**)  
    Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (same plots as before: correlation / PCA / influences).  
@@ -69,6 +71,7 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
 - **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**.
 - **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`**.
+- **`election_id_policy.py`**: JS folders superseded by canonical Excel **`election_id`** when both exist; extend the map when bpb adds overlapping cases.
 - **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**; **`--list-elections`** prints IDs and row counts from the CSV.
 - **`load_modules.py`**: deprecated; set **`WAHLOMAT_LEGACY_LOAD_MODULES=1`** for the old JS-only loop.
 - **`analysis.py`**: **`parse_module_js`**, **`parse_excel_election`**, **`long_rows_to_run_analysis`**, **`run_analysis`**; **`analysis_from_excel`** for a single sheet.

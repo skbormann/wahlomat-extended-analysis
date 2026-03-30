@@ -114,6 +114,7 @@ def parse_module_js(module_content: str) -> tuple[DataFrame, DataFrame]:
     """
     Parse module_definition.js into question_df (title, question) and pivoted
     answers (index = thesis index 0..n-1, columns = party abbrev).
+    Duplicate (thesis, party) rows keep the first (no averaging).
     """
     raw_data_js: str = module_content
     titles: list = re.findall(
@@ -166,10 +167,35 @@ def parse_module_js(module_content: str) -> tuple[DataFrame, DataFrame]:
     answer_df["party_name"] = answer_df["party"].apply(
         lambda x: party_df.loc[x, "party"]
     )
-    answer_pivot = pd.pivot_table(
-        answer_df, values="answer", index="question", columns="party_name"
+    # Duplicate (question, party) rows (e.g. multi-language blocks) would be
+    # averaged by pivot_table's default aggfunc="mean", producing non-integer codes.
+    answer_df = answer_df.drop_duplicates(
+        subset=["question", "party"], keep="first"
     )
+    answer_pivot = pd.pivot_table(
+        answer_df,
+        values="answer",
+        index="question",
+        columns="party_name",
+        aggfunc="first",
+    )
+    _validate_js_answer_pivot(answer_pivot)
     return question_df, answer_pivot
+
+
+def _validate_js_answer_pivot(answer_pivot: DataFrame) -> None:
+    """Ensure no fractional / non-trinary codes after JS pivot (defensive)."""
+    arr = answer_pivot.to_numpy(dtype=float)
+    fin = arr[np.isfinite(arr)]
+    if fin.size == 0:
+        return
+    allowed = np.array([-1.0, 0.0, 1.0])
+    if not np.all(np.isin(fin, allowed)):
+        bad = sorted({float(x) for x in fin if float(x) not in (-1.0, 0.0, 1.0)})
+        raise ValueError(
+            "parse_module_js produced non-trinary answers in pivot "
+            f"(expected -1, 0, 1): {bad[:8]}"
+        )
 
 
 def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
@@ -193,7 +219,19 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
         "ttext",
         "pos",
     ]
-    work["answer"] = work["pos"].map(lambda v: _excel_answer_code(v))
+    # Older sheets: Position: Position = stimme zu / neutral / …; These: Titel + These: These = thesis.
+    # Newer sheets (e.g. BW26): These: Titel = answer label; Position: Position = full thesis text;
+    # These: These = short keyword (same for all parties per thesis).
+    n_ans_pos = work["pos"].map(_excel_answer_code).notna().sum()
+    n_ans_tit = work["ttitle"].map(_excel_answer_code).notna().sum()
+    excel_answers_in_thesis_titel = n_ans_tit > n_ans_pos
+    if excel_answers_in_thesis_titel:
+        work["answer"] = work["ttitle"].map(lambda v: _excel_answer_code(v))
+        q_title_key, q_text_key = "ttext", "pos"
+    else:
+        work["answer"] = work["pos"].map(lambda v: _excel_answer_code(v))
+        q_title_key, q_text_key = "ttitle", "ttext"
+
     work = work.dropna(subset=["answer"])  # type: ignore[arg-type]
     work["answer"] = work["answer"].astype(int)
 
@@ -202,7 +240,7 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     work["tnr"] = work["tnr"].astype(int)
     work = work.drop_duplicates(subset=["tnr", "abbr"], keep="last")
 
-    for col in ("ttitle", "ttext", "pname", "abbr"):
+    for col in ("ttitle", "ttext", "pos", "pname", "abbr"):
         work[col] = work[col].astype(str).map(_fix_cp1252_c1_glyphs)
 
     these_order = sorted(work["tnr"].unique())
@@ -212,7 +250,7 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     question_rows = []
     for t in these_order:
         row = work.loc[work["tnr"] == t].iloc[0]
-        question_rows.append((row["ttitle"], row["ttext"]))
+        question_rows.append((row[q_title_key], row[q_text_key]))
     question_df = pd.DataFrame(question_rows, columns=["title", "question"])
 
     abbrevs = sorted(work["abbr"].unique())
