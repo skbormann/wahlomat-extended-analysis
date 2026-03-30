@@ -303,12 +303,21 @@ def _bpb_xlsx_candidates_under(root: pathlib.Path) -> list[pathlib.Path]:
     return matches
 
 
+def _path_mtime_or_zero(p: pathlib.Path) -> float:
+    try:
+        return float(p.stat().st_mtime)
+    except OSError:
+        return 0.0
+
+
 def discover_bpb_excel_path(*roots: pathlib.Path) -> pathlib.Path | None:
     """
-    Newest matching xlsx by filename under any of the given roots.
+    Pick one matching workbook under the given roots: **newest by file mtime**,
+    then tie-break by **filename** descending (lexicographic), same as the old
+    basename-only ordering when mtimes tie.
 
-    Pass e.g. ``Path(\"data\")`` and ``Path(\".\")`` (repo root) so a workbook
-    placed next to the project root is still found after ``chdir(\"data\")``.
+    Pass e.g. ``Path("data")`` and ``Path(".")`` (repo root) so a workbook
+    placed next to the project root is still found after ``chdir("data")``.
     """
     if not roots:
         roots = (pathlib.Path("."),)
@@ -323,7 +332,11 @@ def discover_bpb_excel_path(*roots: pathlib.Path) -> pathlib.Path | None:
         pooled.extend(_bpb_xlsx_candidates_under(r))
     if not pooled:
         return None
-    pooled = sorted(set(pooled), key=lambda p: p.name, reverse=True)
+    pooled = sorted(
+        set(pooled),
+        key=lambda p: (_path_mtime_or_zero(p), p.name),
+        reverse=True,
+    )
     return pooled[0]
 
 

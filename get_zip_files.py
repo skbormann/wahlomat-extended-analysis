@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Nov  6 19:53:15 2021
+Created on Sat Nov  6, 19:53:15 2021
 
 @author: sven-kristjanbormann
 Download the list of available wahlomat zip files, create new list to download
@@ -13,8 +13,12 @@ article (URL discovered from HTML so it survives filename updates). Use of the
 data is subject to the terms on that page:
 https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/
 """
+from __future__ import annotations
+
+import argparse
 import pathlib
 import re
+import sys
 import time
 import urllib.error
 import urllib.request
@@ -33,6 +37,19 @@ DATENSAETZE_PAGE_URL = (
 
 def fetch_html(url: str) -> str:
     return fetch_bpb_html(url)
+
+
+def fetch_datensaetze_bundle_url() -> str:
+    """Resolve the current Datensätze bundle ZIP URL from the bpb article page."""
+    html = fetch_html(DATENSAETZE_PAGE_URL)
+    return pick_datensaetze_bundle_url(html)
+
+
+def _zipfile_for_extract(path: str | os.PathLike[str]) -> zipfile.ZipFile:
+    """ZipFile for extract; use metadata_encoding on Python 3.11+ for bpb archives."""
+    if sys.version_info >= (3, 11):
+        return zipfile.ZipFile(path, "r", metadata_encoding="cp437")
+    return zipfile.ZipFile(path, "r")
 
 
 def _download_request_headers(url: str) -> dict:
@@ -140,9 +157,58 @@ def pick_datensaetze_bundle_url(html: str) -> str:
     return max(candidates, key=lambda u: u.split("/")[-1])
 
 
-def main() -> int:
+def download_and_extract_datensaetze_bundle(repo_root: pathlib.Path) -> int:
+    """
+    Download only the Datensätze bundle ZIP and extract that archive into data/<stem>/.
+    Does not scan or extract other ZIPs under data/.
+    """
+    repo_root = repo_root.resolve()
+    data_dir = repo_root / "data"
+    graphs_dir = repo_root / "graphs"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    graphs_dir.mkdir(parents=True, exist_ok=True)
+
+    url = fetch_datensaetze_bundle_url()
+    zip_name = pathlib.Path(urlparse(url).path).name
+    if not zip_name.lower().endswith(".zip"):
+        zip_name = f"{zip_name}.zip"
+    zip_path = data_dir / zip_name
+    stem = zip_path.stem
+    extract_dir = data_dir / stem
+
+    print(f"Downloading {zip_name} …")
+    download_to_file(url, str(zip_path))
+
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with _zipfile_for_extract(zip_path) as zf:
+        zf.extractall(path=str(extract_dir))
+    zip_path.unlink(missing_ok=True)
+
+    prev = os.getcwd()
+    try:
+        os.chdir(data_dir)
+        _xlsx = discover_bpb_excel_path(pathlib.Path("."), pathlib.Path(".."))
+        if _xlsx is not None and _xlsx.is_file() and _xlsx.stat().st_size > 0:
+            print(
+                "Datensätze workbook OK (matches build_dataframe discovery): "
+                f"{_xlsx.resolve()}"
+            )
+        else:
+            print(
+                "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
+                "with 'wahl' in the name) was found after extraction. "
+                "The bundle from the Datensätze page may have changed its inner layout; "
+                "see analysis.discover_bpb_excel_path(..., repo root) and "
+                "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
+            )
+    finally:
+        os.chdir(prev)
+    return 0
+
+
+def download_all_election_zips_plus_datensaetze(repo_root: pathlib.Path) -> int:
     """Download and extract all election ZIPs plus Datensätze bundle into data/."""
-    repo_root = pathlib.Path(__file__).resolve().parent
+    repo_root = repo_root.resolve()
     os.chdir(repo_root)
     try:
         election_html = fetch_html(WEITERE_WAHLEN_URL)
@@ -194,7 +260,7 @@ def main() -> int:
                     )
                 except FileExistsError:
                     pass
-                with zipfile.ZipFile(file_name) as zf:
+                with _zipfile_for_extract(file_name) as zf:
                     zf.extractall(
                         path=os.path.join(
                             os.getcwd(), file.split(sep=".")[0]
@@ -219,6 +285,25 @@ def main() -> int:
     finally:
         os.chdir(repo_root)
     return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Download Wahl-O-Mat ZIPs from bpb weitere Wahlen plus the Datensätze bundle, "
+            "or only the Datensätze bundle."
+        ),
+    )
+    parser.add_argument(
+        "--datensaetze-only",
+        action="store_true",
+        help="Download and extract only the Wahl-O-Mat-Datensätze bundle (no election ZIPs).",
+    )
+    args = parser.parse_args(argv)
+    repo_root = pathlib.Path(__file__).resolve().parent
+    if args.datensaetze_only:
+        return download_and_extract_datensaetze_bundle(repo_root)
+    return download_all_election_zips_plus_datensaetze(repo_root)
 
 
 if __name__ == "__main__":

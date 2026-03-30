@@ -32,10 +32,16 @@ def main() -> int:
     )
     sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
-    sub.add_parser(
+    dl = sub.add_parser(
         "download",
         help="Download and extract election ZIPs into data/",
     )
+    dl.add_argument(
+        "--datensaetze-only",
+        action="store_true",
+        help="Only download and extract the bpb Wahl-O-Mat-Datensätze bundle ZIP.",
+    )
+
     sub.add_parser(
         "build-csv",
         help="Build all_wahlomat_answers.csv from data/",
@@ -78,6 +84,32 @@ def main() -> int:
             "has a newer XXyy_v… tab (e.g. BW26_v1.02)"
         ),
     )
+
+    rx = sub.add_parser(
+        "refresh-excel",
+        help=(
+            "Download Datensätze bundle only, then update answers CSV + metadata "
+            "from the workbook (-y, prune superseded Excel ids by default)."
+        ),
+    )
+    rx.add_argument(
+        "--no-prune",
+        action="store_true",
+        help="Do not pass --prune-superseded-excel to update-csv.",
+    )
+    rx.add_argument(
+        "--answers",
+        type=pathlib.Path,
+        default=None,
+        help="Path to all_wahlomat_answers.csv (default: <repo-root>/)",
+    )
+    rx.add_argument(
+        "--repo-root",
+        type=pathlib.Path,
+        default=None,
+        help="Repository root (default: directory of wahlomat.py)",
+    )
+
     sub.add_parser(
         "run-all",
         help="Run download, then build-csv, then graphs (default graph options)",
@@ -88,7 +120,9 @@ def main() -> int:
     if args.command == "download":
         import get_zip_files
 
-        return get_zip_files.main()
+        if args.datensaetze_only:
+            return get_zip_files.main(["--datensaetze-only"])
+        return get_zip_files.main([])
     if args.command == "build-csv":
         import build_dataframe
 
@@ -96,13 +130,37 @@ def main() -> int:
     if args.command == "update-csv":
         import update_excel_csv
 
-        return update_excel_csv.run(args)
+        code, _ = update_excel_csv.run(args)
+        return code
+    if args.command == "refresh-excel":
+        import get_zip_files
+        import update_excel_csv
+
+        r = get_zip_files.main(["--datensaetze-only"])
+        if r != 0:
+            return r
+        uc_args = argparse.Namespace(
+            dry_run=False,
+            yes=True,
+            repo_root=args.repo_root or REPO_ROOT,
+            answers=args.answers,
+            prune_superseded_excel=not args.no_prune,
+        )
+        code, wrote = update_excel_csv.run(uc_args)
+        if code != 0:
+            return code
+        if not wrote:
+            print(
+                "refresh-excel: no updates needed (answers CSV and metadata already "
+                "match the workbook for this run; nothing written)."
+            )
+        return 0
     if args.command == "run-all":
         import build_dataframe
         import build_graphs_from_csv
         import get_zip_files
 
-        r = get_zip_files.main()
+        r = get_zip_files.main([])
         if r != 0:
             return r
         r = build_dataframe.main()

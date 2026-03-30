@@ -73,12 +73,16 @@ def _sort_election_block(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def run(args: argparse.Namespace) -> int:
+def run(args: argparse.Namespace) -> tuple[int, bool]:
+    """
+    Apply update-csv logic. Returns (exit_code, wrote_files).
+    wrote_files is True only after a successful answers CSV write (metadata rebuild attempted).
+    """
     repo_root = (args.repo_root or Path(__file__).resolve().parent).resolve()
     answers_path = (args.answers or repo_root / "all_wahlomat_answers.csv").resolve()
     if not answers_path.is_file():
         print(f"Answers CSV not found: {answers_path}", file=sys.stderr)
-        return 1
+        return 1, False
 
     xlsx_path = discover_bpb_excel_path(repo_root / "data", repo_root)
     if xlsx_path is None:
@@ -86,7 +90,7 @@ def run(args: argparse.Namespace) -> int:
             "No Wahl-O-Mat Excel bundle found under data/ or repo root.",
             file=sys.stderr,
         )
-        return 1
+        return 1, False
 
     answers = pd.read_csv(answers_path)
     dry_run = args.dry_run
@@ -153,10 +157,10 @@ def run(args: argparse.Namespace) -> int:
         print(
             "No Excel updates needed (row counts match for all qualifying sheets)."
         )
-        return 0
+        return 0, False
 
     if dry_run:
-        return 0
+        return 0, False
 
     if not yes:
         if not sys.stdin.isatty():
@@ -164,14 +168,14 @@ def run(args: argparse.Namespace) -> int:
                 "Not a TTY: use --yes to apply or --dry-run to preview.",
                 file=sys.stderr,
             )
-            return 1
+            return 1, False
         try:
             r = input("Proceed? [y/N] ")
         except EOFError:
-            return 1
+            return 1, False
         if r.strip().lower() not in ("y", "yes"):
             print("Aborted.")
-            return 0
+            return 0, False
 
     answers_work = answers
     if pruned_ids:
@@ -203,7 +207,7 @@ def run(args: argparse.Namespace) -> int:
 
     import build_metadata
 
-    return build_metadata.main(
+    meta_rc = build_metadata.main(
         [
             "--repo-root",
             str(repo_root),
@@ -211,6 +215,7 @@ def run(args: argparse.Namespace) -> int:
             str(answers_path),
         ]
     )
+    return meta_rc, True
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -254,7 +259,8 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
-    return run(args)
+    code, _ = run(args)
+    return code
 
 
 if __name__ == "__main__":

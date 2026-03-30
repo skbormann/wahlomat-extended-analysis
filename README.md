@@ -12,6 +12,7 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
 
 1. **`get_zip_files.py`** (run from the **repository root**)  
    Downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and also resolves the current **bundled Datensätze** ZIP from the [Datensätze article](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/) (the exact file URL is read from the page HTML, not hardcoded). Creates **`graphs/`** if missing.  
+   **`python get_zip_files.py --datensaetze-only`** (or **`python wahlomat.py download --datensaetze-only`**) downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.  
    After extraction it prints **`Datensätze workbook OK`** with the path to the `.xlsx` if a file matching **`discover_bpb_excel_path`** was found under **`data/`** or the **repository root** (same discovery as **`build_dataframe.py`**); otherwise it prints a **WARNING**.
 
 2. **`build_dataframe.py`** (run from the **repository root**)  
@@ -20,6 +21,8 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    **JS answers:** [analysis.py](analysis.py) `parse_module_js` deduplicates `(thesis, party)` before pivoting and uses **`aggfunc="first"`** so multi-language duplicates are not averaged into fractional codes.
 
 3. **`update_excel_csv.py`** / **`python wahlomat.py update-csv`** (repository root) — **recommended when only the bpb Excel workbook changed** (e.g. new sheets or extra parties on existing sheets). Compares each qualifying workbook sheet to the current **`all_wahlomat_answers.csv`** by **`election_id`** (sheet name with spaces → underscores): **new** ids or **changed** row counts trigger a replace for those elections only; rows for elections not in the workbook (including all JS-sourced **`election_id`s**) are left unchanged; removed sheets do not delete CSV rows. **`election_metadata.csv`** is regenerated in the **same run** when the answers CSV is written ([build_metadata.py](build_metadata.py)). If **`update-csv`** errors **after** **`Wrote … rows`** (metadata build failed), the CSV is already updated—run **`python build_metadata.py`** (and **`--answers`** if you use a non-default path). **`--prune-superseded-excel`** drops older **versioned** bpb `election_id`s left in the CSV when the workbook has another tab with the same land+year prefix (e.g. remove `BW26_v1.01` / `RP26_v1.00` when `BW26_v1.02` / `RP26_v1.01` are sheets), so **`election_metadata.csv`** matches current workbook tabs. Without pruning, superseded ids stay in both files until a full **`build-csv`**. **`build_metadata`** can still attach display rows for orphaned versioned ids if they remain in the answers CSV. Flags: **`--dry-run`** (print summary, exit), **`-y` / `--yes`** (apply without prompt; default asks **`Proceed? [y/N]`**). Non-interactive terminals must use **`--dry-run`** or **`--yes`**. Detection uses row-count equality only (same count but edited cells is not detected).
+
+   **`python wahlomat.py refresh-excel`** runs **`download --datensaetze-only`** and then **`update-csv`** with **`-y`** and **`--prune-superseded-excel`** by default (use **`refresh-excel --no-prune`** to skip pruning). Optional **`--answers`** matches **`update-csv`**. There is no combined dry-run on this subcommand: preview with **`download --datensaetze-only`** then **`update-csv --dry-run`**. If the download succeeds but **this run** writes nothing to the answers CSV or metadata, **`refresh-excel`** prints a short **no updates needed** line (that refers to the current invocation, not “since last time” unless you add your own bookkeeping).
 
 4. **`build_graphs_from_csv.py`** (run from the **repository root**)  
    Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (same plots as before: correlation / PCA / influences).  
@@ -33,7 +36,8 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
 
 From the repository root you can run the same pipeline with one entry point:
 
-- `python wahlomat.py download` — same as `get_zip_files.py`
+- `python wahlomat.py download` — same as `get_zip_files.py` (add **`--datensaetze-only`** for the Datensätze bundle only)
+- `python wahlomat.py refresh-excel` — Datensätze-only download, then **`update-csv -y`** with **`--prune-superseded-excel`** (see step 3; **`refresh-excel -h`**)
 - `python wahlomat.py build-csv` — same as `build_dataframe.py`
 - `python wahlomat.py update-csv` — same as `update_excel_csv.py` (see step 3; use **`update-csv -h`** for flags)
 - `python wahlomat.py graphs …` — forwards all arguments after `graphs` to `build_graphs_from_csv.py` (e.g. `python wahlomat.py graphs --list-elections`, `python wahlomat.py graphs --election bundestagswahl2021`, or `python wahlomat.py graphs -h` for graph options)
@@ -48,6 +52,8 @@ The individual scripts above remain supported.
 ### Excel bundle (bpb)
 
 Prefer placing the consolidated workbook under **`data/`** (e.g. from the Datensätze ZIP). Discovery also checks the **repository root**, so a copy next to the scripts is picked up when **`data/`** has no match.
+
+When several matching **`.xlsx`** files exist under those roots, **`discover_bpb_excel_path`** chooses the **newest by filesystem mtime**, then breaks ties by **filename** descending. Rename or move stale copies (e.g. to **`*.xlsx.old`**) if the wrong file wins.
 
 [analysis.py](analysis.py) expects the standard bpb columns (`Partei: Kurzbezeichnung`, `These: Nr.`, `Position: Position`, etc.) and maps positions **stimme zu / stimme nicht zu / neutral** to **1 / -1 / 0**, consistent with the JS data.
 
@@ -118,8 +124,8 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 
 ## Changes
 
-- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `update-csv`, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
-- **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**.
+- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `update-csv`, **`refresh-excel`**, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
+- **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; **`--datensaetze-only`**; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**; on Python **3.11+**, bundle extract uses **`ZipFile(..., metadata_encoding="cp437")`** for inner paths.
 - **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** ([build_metadata.py](build_metadata.py)); **`update_excel_csv.py`** / **`wahlomat.py update-csv`** for incremental Excel-only updates.
 - **`bpb_urls.py`**: shared bpb **`WEITERE_WAHLEN_URL`** and HTML fetch headers (used by **`get_zip_files.py`** and **`build_metadata.py`**).
 - **`election_id_policy.py`**: JS folders superseded by canonical Excel **`election_id`** when both exist; extend the map when bpb adds overlapping cases.
@@ -128,7 +134,8 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`analysis.py`**: **`parse_module_js`**, **`parse_excel_election`**, **`long_rows_to_run_analysis`**, **`run_analysis`**; **`analysis_from_excel`** for a single sheet.
 - Dependencies: **`openpyxl`** for reading `.xlsx`; pinned versions in [requirements.txt](requirements.txt) and [pyproject.toml](pyproject.toml).
 - **`skipped_elections.py`**: optional **`OMIT_FROM_BUILD_DATAFRAME`** folder names skipped by **`build_dataframe`** (empty by default); **`failed_analysis.py`** diagnoses that list when non-empty.
-- **`tests/test_analysis_edges.py`**: **`unittest`** checks for **`parse_module_js`** minimal fixture and **`run_analysis`** edge cases (run with `python -m unittest discover` from the repo root).
+- **`tests/test_analysis_edges.py`**: **`unittest`** checks for **`parse_module_js`** minimal fixture and **`run_analysis`** edge cases (run with `python -m unittest discover -s tests -p 'test*.py'` from the repo root).
+- **`tests/test_discover_bpb_excel.py`**: **`discover_bpb_excel_path`** prefers newer **mtime**, then descending name on ties.
 - **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
 ## Roadmap (things to add / change)
@@ -137,7 +144,7 @@ This continues the intent of the older **“Things to add/change”** list on [s
 
 | Idea | Status |
 |------|--------|
-| Select and download **individual** elections (index / menu / by name) | **Open** — [get_zip_files.py](get_zip_files.py) / `python wahlomat.py download` still fetches **all** ZIPs from the weitere Wahlen page plus the Datensätze bundle. A natural extension is CLI filtering on top of the same HTML parsing ([`extract_zip_hrefs`](get_zip_files.py), URL normalization, download loop). |
+| Select and download **individual** elections (index / menu / by name) | **Open** — Full `download` still fetches **all** ZIPs from the weitere Wahlen page plus the Datensätze bundle; **`download --datensaetze-only`** / **`refresh-excel`** fetch **only** the Datensätze bundle. A natural extension is CLI filtering for per-election ZIPs on top of the same HTML parsing ([`extract_zip_hrefs`](get_zip_files.py), URL normalization, download loop). |
 | Run analysis for an **individual** election | **Mostly done** — After **`build_dataframe.py`**, run **`--list-elections`** to see valid **`election_id`** values, then [build_graphs_from_csv.py](build_graphs_from_csv.py) **`--election`** (repeat or comma-separated) or **`ELECTION_IDS`**; see [Analysis steps](#analysis-steps). |
 | **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today the script **rebuilds the full CSV** from all JS modules and Excel sheets. A future mode could append or merge rows for new **`election_id`** values only; until then, a full rebuild is usually fine. |
 
