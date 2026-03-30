@@ -67,6 +67,24 @@ Use of bpb data is subject to their [terms on the Datensätze page](https://www.
 
 **Companion file:** **`election_metadata.csv`** (same build step) has one row per `election_id`, in this column order: **`display_name_de`** (German election wording), **`display_name_en`** (English label), German **`state`** name (or **`Federal`** / **`European`**), four-digit **`year`**, and **`level`** (`federal` | `state` | `european`). JS rows are taken from the bpb [archive / weitere Wahlen](https://www.bpb.de/themen/wahl-o-mat/45817/wahl-o-mat-archiv-weitere-wahlen/) table; Excel rows use sheet-name prefixes (e.g. `BT` = federal, `EU` = European Parliament). Regenerate with [build_metadata.py](build_metadata.py) if needed.
 
+**Using the metadata:** The **`level`** column is one of **`federal`**, **`state`**, or **`european`**. For state-level elections, **`state`** holds the full German Land name as in standard usage (e.g. Bayern, Schleswig-Holstein, Nordrhein-Westfalen); for Bundestag and European Parliament rows it is **`Federal`** or **`European`** respectively. Join on **`election_id`** to filter the long answers table:
+
+```python
+import pandas as pd
+
+answers = pd.read_csv('all_wahlomat_answers.csv')
+metadata = pd.read_csv('election_metadata.csv')
+
+# All Schleswig-Holstein elections
+sh_ids = metadata[metadata['state'] == 'Schleswig-Holstein']['election_id']
+sh = answers[answers['election_id'].isin(sh_ids)]
+
+# All federal elections
+federal = answers[answers['election_id'].isin(
+    metadata[metadata['level'] == 'federal']['election_id']
+)]
+```
+
 **Offline metadata build:** If the archive page cannot be fetched (no network, firewall), save that page as HTML and set **`WAHLOMAT_ARCHIVE_HTML=/path/to/saved.html`** before **`build-csv`**, or run **`python build_metadata.py --archive-html PATH`** after building the answers CSV.
 
 **Caveats for analysts**
