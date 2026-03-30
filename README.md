@@ -26,10 +26,11 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    **`python wahlomat.py refresh-excel`** runs **`download --datensaetze-only`** and then **`update-csv`** with **`-y`** and **`--prune-superseded-excel`** by default (use **`refresh-excel --no-prune`** to skip pruning). Optional **`--answers`** matches **`update-csv`**. There is no combined dry-run on this subcommand: preview with **`download --datensaetze-only`** then **`update-csv --dry-run`**. If the download succeeds but **this run** writes nothing to the answers CSV or metadata, **`refresh-excel`** prints a short **no updates needed** line (that refers to the current invocation, not “since last time” unless you add your own bookkeeping).
 
 4. **`build_graphs_from_csv.py`** (run from the **repository root**)  
-   Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (same plots as before: correlation / PCA / influences).  
-   - **List valid `election_id` values** (and row counts): `python build_graphs_from_csv.py --list-elections` (or `python wahlomat.py graphs --list-elections`; optional `--csv` path)  
+   Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (correlation clustermap, PCA party map, PCA question influences). After each file, the CLI prints **`Saved: <absolute path>`**.  
+   - **List valid `election_id` values** (and row counts): `python build_graphs_from_csv.py --list-elections` (or `python wahlomat.py graphs --list-elections`; optional `--csv` path). Output uses **aligned columns** for readability.  
    - **All elections:** `python build_graphs_from_csv.py`  
    - **Subset:** `python build_graphs_from_csv.py --election bundestagswahl2021 --election berlin2021` or comma-separated `--election a,b`  
+   - **Plot types:** **`--graph`** (repeatable): `c_matrix`, `pca_map`, `pca_influences` — default is all three. Example (one election, PCA map only): `python wahlomat.py graphs --election BT21_v1.02 --graph pca_map`  
    - **Environment:** `ELECTION_IDS=bundestagswahl2021,berlin2021 python build_graphs_from_csv.py` (CLI wins if both are set)  
    - **`--list-elections`** cannot be combined with **`--election`** or **`ELECTION_IDS`**.
 
@@ -41,7 +42,7 @@ From the repository root you can run the same pipeline with one entry point:
 - `python wahlomat.py refresh-excel` — Datensätze-only download, then **`update-csv -y`** with **`--prune-superseded-excel`** (see step 3; **`refresh-excel -h`**)
 - `python wahlomat.py build-csv` — same as `build_dataframe.py`
 - `python wahlomat.py update-csv` — same as `update_excel_csv.py` (see step 3; use **`update-csv -h`** for flags)
-- `python wahlomat.py graphs …` — forwards all arguments after `graphs` to `build_graphs_from_csv.py` (e.g. `python wahlomat.py graphs --list-elections`, `python wahlomat.py graphs --election bundestagswahl2021`, or `python wahlomat.py graphs -h` for graph options)
+- `python wahlomat.py graphs …` — same as `build_graphs_from_csv.py` ( **`graphs`** appears in `wahlomat.py -h` for discoverability; everything after **`graphs`** is forwarded unchanged, so **`--election`**, **`--graph`**, **`--list-elections`**, etc. work. Use **`python wahlomat.py graphs -h`** for the full graph CLI.)
 - `python wahlomat.py run-all` — runs download, then build-csv, then graphs with default graph options (stops on the first non-zero exit)
 
 The individual scripts above remain supported.
@@ -125,12 +126,12 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 
 ## Changes
 
-- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `update-csv`, **`refresh-excel`**, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
+- **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `update-csv`, **`refresh-excel`**, **`graphs`**, `run-all`); **`graphs`** is a normal subcommand delegating to **`build_graphs_from_csv`**.
 - **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; **`--datensaetze-only`**; **`--list-election-zips`** / **`--election-zip`** / **`--with-datensaetze`** for selective weitere-Wahlen downloads (extract only chosen archives); workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**; on Python **3.11+**, bundle extract uses **`ZipFile(..., metadata_encoding="cp437")`** for inner paths.
 - **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** ([build_metadata.py](build_metadata.py)); **`update_excel_csv.py`** / **`wahlomat.py update-csv`** for incremental Excel-only updates.
 - **`bpb_urls.py`**: shared bpb **`WEITERE_WAHLEN_URL`** and HTML fetch headers (used by **`get_zip_files.py`** and **`build_metadata.py`**).
 - **`election_id_policy.py`**: JS folders superseded by canonical Excel **`election_id`** when both exist; extend the map when bpb adds overlapping cases.
-- **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**; **`--list-elections`** prints IDs and row counts from the CSV.
+- **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**; **`--graph`** limits plot types; **`--list-elections`** prints aligned ID/row-count table; **`Saved:`** lines with absolute paths after each PNG.
 - **`load_modules.py`**: deprecated; set **`WAHLOMAT_LEGACY_LOAD_MODULES=1`** for the old JS-only loop.
 - **`analysis.py`**: **`parse_module_js`**, **`parse_excel_election`**, **`long_rows_to_run_analysis`**, **`run_analysis`**; **`analysis_from_excel`** for a single sheet.
 - Dependencies: **`openpyxl`** for reading `.xlsx`; pinned versions in [requirements.txt](requirements.txt) and [pyproject.toml](pyproject.toml).
@@ -139,6 +140,7 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`tests/test_discover_bpb_excel.py`**: **`discover_bpb_excel_path`** prefers newer **mtime**, then descending name on ties.
 - **`tests/test_get_zip_files_filter.py`**: **`local_stem_from_election_zip_url`** and **`filter_zip_jobs`** (selective download matching).
 - **`tests/test_get_zip_files_datensaetze_only.py`**: **`pick_datensaetze_bundle_url`** and **`download_and_extract_datensaetze_bundle`** with mocks (no network).
+- **`tests/test_build_graphs_from_csv.py`**: **`--list-elections`** table formatting.
 - **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
 ## Roadmap (things to add / change)
@@ -154,7 +156,7 @@ This continues the intent of the older **“Things to add/change”** list on [s
 | **`update-csv`**: detect workbook edits when **row count unchanged** | **Open** — Today a sheet counts as unchanged only if row counts match; same count with different cell values is not detected. A future approach could use content hashes or a cell-level diff per **`election_id`** block. |
 | **Tests** for **`get_zip_files --datensaetze-only`** | **Done** — [`tests/test_get_zip_files_datensaetze_only.py`](tests/test_get_zip_files_datensaetze_only.py): mocked fetch/download and ZIP extract layout under **`data/<stem>/`**; HTML parsing for **`pick_datensaetze_bundle_url`**. |
 | **`refresh-excel`**: “unchanged since last run” using **persisted state** | **Later** — Optional: store bundle URL, `ETag` / `Last-Modified`, or ZIP hash (e.g. a small local state file; consider **`.gitignore`**) to report stability across runs. Distinct from the current **this run only** noop message after a successful update. |
-| **`wahlomat.py`**: register **`graphs`** as a normal subcommand | **Later** — **`graphs`** is handled before subparsers today; a **`graphs`** subparser would list it next to **`download`** / **`refresh-excel`** in **`wahlomat.py -h`** (mostly discoverability / consistency). |
+| **`wahlomat.py`**: register **`graphs`** as a normal subcommand | **Done** — **`graphs`** appears next to other commands in **`wahlomat.py -h`**; **`python wahlomat.py graphs -h`** shows **`build_graphs_from_csv`** options. |
 
 ## Dependencies
 

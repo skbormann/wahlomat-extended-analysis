@@ -5,7 +5,7 @@ Build correlation / PCA / cluster graphs from all_wahlomat_answers.csv.
 
 Run from the repository root after the answers CSV exists (see wahlomat.py build-csv / build_dataframe.py).
 Optionally restrict to one or more election_id values (CLI or ELECTION_IDS env).
-Use --list-elections to print valid election_id values and row counts from the CSV.
+Use --list-elections to print valid election_id values and row counts from the CSV (aligned columns).
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import sys
 
 import pandas as pd
 
-from analysis import long_rows_to_run_analysis, run_analysis
+from analysis import GRAPH_KIND_CHOICES, long_rows_to_run_analysis, run_analysis
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent
 _DEFAULT_CSV = REPO_ROOT / "all_wahlomat_answers.csv"
@@ -79,6 +79,21 @@ def _parse_election_cli(values: list[str] | None) -> list[str]:
     return out
 
 
+def _print_election_counts_table(counts: pd.Series) -> None:
+    """Fixed-width columns for terminal readability (not strict TSV)."""
+    rows: list[tuple[str, int]] = [(str(eid), int(n)) for eid, n in counts.items()]
+    col1_h, col2_h = "election_id", "rows"
+    w1 = len(col1_h)
+    w2 = len(col2_h)
+    for eid, n in rows:
+        w1 = max(w1, len(eid))
+        w2 = max(w2, len(str(n)))
+    gap = "  "
+    print(f"{col1_h:<{w1}}{gap}{col2_h:>{w2}}")
+    for eid, n in rows:
+        print(f"{eid:<{w1}}{gap}{n:>{w2}}")
+
+
 def main(argv: list[str] | None = None) -> int:
     if argv is None:
         argv = list(sys.argv[1:])
@@ -110,6 +125,17 @@ def main(argv: list[str] | None = None) -> int:
             "(no graphs). Not with --election or ELECTION_IDS."
         ),
     )
+    parser.add_argument(
+        "--graph",
+        action="append",
+        choices=list(GRAPH_KIND_CHOICES),
+        metavar="KIND",
+        help=(
+            "Only write these plot files per election (repeat for several): "
+            "c_matrix (correlation clustermap), pca_map, pca_influences. "
+            "Default: all three. Combine with --election to limit elections."
+        ),
+    )
     args = parser.parse_args(argv)
     csv_path = args.csv.expanduser()
     if not csv_path.is_absolute():
@@ -131,9 +157,7 @@ def main(argv: list[str] | None = None) -> int:
             print("CSV missing election_id column.", file=sys.stderr)
             return 1
         counts = list_df["election_id"].astype(str).value_counts().sort_index()
-        print("election_id\trows")
-        for eid, n in counts.items():
-            print(f"{eid}\t{int(n)}")
+        _print_election_counts_table(counts)
         return 0
 
     if not csv_path.is_file():
@@ -159,6 +183,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Unknown election_id (not in CSV): {missing}", file=sys.stderr)
         return 1
 
+    graph_kinds: frozenset[str] | None = (
+        frozenset(args.graph) if args.graph else None
+    )
+
     os.chdir(REPO_ROOT / "data")
     fail: dict[str, str] = {}
     for eid in want:
@@ -167,7 +195,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Running analysis for {eid}")
         try:
             qdf, pivot = long_rows_to_run_analysis(sub)
-            run_analysis(qdf, pivot, stem)
+            run_analysis(qdf, pivot, stem, graphs=graph_kinds)
         except Exception as ex:
             print(f"Problem {ex} occurred while running analysis for {eid}")
             fail[str(eid)] = str(ex)

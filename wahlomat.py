@@ -16,20 +16,16 @@ def main() -> int:
     os.chdir(REPO_ROOT)
     argv = sys.argv[1:]
 
+    # Delegate before parse_args: a graphs subparser with REMAINDER does not reliably
+    # forward flags like --election / --graph (parent reports "unrecognized arguments").
     if argv and argv[0] == "graphs":
         import build_graphs_from_csv
 
-        rest = argv[1:]
-        return build_graphs_from_csv.main(rest if rest else [])
+        return build_graphs_from_csv.main(argv[1:])
 
     parser = argparse.ArgumentParser(
         prog="wahlomat.py",
-        description=(
-            "Unified CLI for Wahl-O-Mat extended analysis. "
-            "For graphs, run: python wahlomat.py graphs [OPTIONS] "
-            "(same as build_graphs_from_csv.py; use graphs -h)."
-        ),
-        epilog="Also: python wahlomat.py graphs …  (PNG plots from CSV; use graphs -h).",
+        description="Unified CLI for Wahl-O-Mat extended analysis.",
     )
     sub = parser.add_subparsers(dest="command", metavar="COMMAND", required=False)
 
@@ -137,6 +133,14 @@ def main() -> int:
     sub.add_parser(
         "run-all",
         help="Run download, then build-csv, then graphs (default graph options)",
+    )
+
+    sub.add_parser(
+        "graphs",
+        help=(
+            "PNG plots from CSV (same as build_graphs_from_csv.py); "
+            "run: python wahlomat.py graphs … then pass that script's flags."
+        ),
     )
 
     args = parser.parse_args(argv)

@@ -99,6 +99,32 @@ class TestAnalysisEdges(unittest.TestCase):
             finally:
                 os.chdir(old)
 
+    def test_run_analysis_pca_map_only_writes_one_png(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "data").mkdir()
+            (root / "graphs").mkdir()
+            old = os.getcwd()
+            try:
+                os.chdir(root / "data")
+                question_df = pd.DataFrame(
+                    [("t", "q0"), ("t", "q1"), ("t", "q2")],
+                    columns=["title", "question"],
+                )
+                answer_df = pd.DataFrame({"A": [1, -1, 0], "B": [-1, 1, 0]}, index=[0, 1, 2])
+                run_analysis(
+                    question_df,
+                    answer_df,
+                    "edge_pca_only",
+                    graphs=frozenset({"pca_map"}),
+                )
+                g = root / "graphs"
+                self.assertFalse((g / "edge_pca_only_c_matrix.png").exists())
+                self.assertTrue((g / "edge_pca_only_pca_map.png").is_file())
+                self.assertFalse((g / "edge_pca_only_pca_influences.png").exists())
+            finally:
+                os.chdir(old)
+
 
 class TestBuildMetadataSlugs(unittest.TestCase):
     def test_slug_wahl_o_mat_de_path(self) -> None:

@@ -33,6 +33,8 @@ import seaborn as sns
 
 # %% Settings
 N_CLUSTERS: int = 6
+GRAPH_KIND_CHOICES: tuple[str, ...] = ("c_matrix", "pca_map", "pca_influences")
+GRAPH_KINDS_ALL: frozenset[str] = frozenset(GRAPH_KIND_CHOICES)
 EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
     "die linke",
     "linke",
@@ -340,247 +342,297 @@ def discover_bpb_excel_path(*roots: pathlib.Path) -> pathlib.Path | None:
     return pooled[0]
 
 
+def _print_saved_graph_png(filename: str) -> None:
+    print(f"Saved: {pathlib.Path(filename).resolve()}")
+
+
 def run_analysis(
-    question_df: DataFrame, answer_df: DataFrame, module_stem_folder: str
+    question_df: DataFrame,
+    answer_df: DataFrame,
+    module_stem_folder: str,
+    *,
+    graphs: frozenset[str] | None = None,
 ) -> None:
     """
     Correlation / PCA / KMeans plots. answer_df is pivoted (question x party).
+    graphs: which PNGs to write; None means all of GRAPH_KINDS_ALL.
     """
+    want = GRAPH_KINDS_ALL if graphs is None else frozenset(graphs)
+    if not want:
+        raise ValueError("run_analysis: graphs must not be empty")
+    unknown = want - GRAPH_KINDS_ALL
+    if unknown:
+        raise ValueError(f"Unknown graph kind(s): {sorted(unknown)}")
+
     if answer_df.shape[1] < 1:
         raise ValueError("run_analysis needs at least one party column")
 
-    answer_corr = answer_df.corr()
-    answer_corr = answer_corr.fillna(0.0)
-    ac = answer_corr.to_numpy(dtype=float, copy=True)
-    np.fill_diagonal(ac, 1.0)
-    answer_corr = pd.DataFrame(
-        ac, index=answer_corr.index, columns=answer_corr.columns
-    )
+    need_cm = "c_matrix" in want
+    need_pca_map = "pca_map" in want
+    need_infl = "pca_influences" in want
+    need_pca = need_pca_map or need_infl
+    in_graphs = False
 
-    def _corr_overlay_cell(x: Any) -> str:
-        v = float(x)
-        if not np.isfinite(v):
-            return ""
-        if v == 1.0:
-            return ""
-        return str(int(100 * v))
+    def _ensure_graphs_dir() -> None:
+        nonlocal in_graphs
+        if not in_graphs:
+            os.chdir("../graphs")
+            in_graphs = True
 
-    corr_overlay = answer_corr.apply(
-        lambda s: pd.Series([_corr_overlay_cell(v) for v in s])
-    )
+    def _leave_graphs_if_needed() -> None:
+        nonlocal in_graphs
+        if in_graphs:
+            os.chdir("../data")
+            in_graphs = False
 
-    n_parties = answer_df.shape[1]
-    n_questions = answer_df.shape[0]
-
-    # PCA needs at least two party-rows; with one party sklearn divides by n_samples-1 → NaN EVR.
-    if n_parties < 2:
-        party_pca = pd.DataFrame(
-            {"pca_x": np.zeros(n_parties), "pca_y": np.zeros(n_parties)},
-            index=answer_df.columns,
+    if need_cm:
+        answer_corr = answer_df.corr()
+        answer_corr = answer_corr.fillna(0.0)
+        ac = answer_corr.to_numpy(dtype=float, copy=True)
+        np.fill_diagonal(ac, 1.0)
+        answer_corr = pd.DataFrame(
+            ac, index=answer_corr.index, columns=answer_corr.columns
         )
-        party_pca["cluster"] = 0
-        pca_xvr = 0.0
-        pca_yvr = 0.0
-        comps = np.zeros((n_questions, 2))
-    else:
-        n_pca = int(min(2, n_parties, n_questions))
-        X = answer_df.T.to_numpy(dtype=float)
-        pca: PCA = PCA(n_components=n_pca)
-        Xt = pca.fit_transform(X)
-        evr = pca.explained_variance_ratio_
-        pca_xvr = float(evr[0])
-        pca_yvr = float(evr[1]) if len(evr) > 1 else 0.0
 
-        if n_pca == 1:
+        def _corr_overlay_cell(x: Any) -> str:
+            v = float(x)
+            if not np.isfinite(v):
+                return ""
+            if v == 1.0:
+                return ""
+            return str(int(100 * v))
+
+        corr_overlay = answer_corr.apply(
+            lambda s: pd.Series([_corr_overlay_cell(v) for v in s])
+        )
+
+        do_cluster = answer_corr.shape[0] > 1
+        c_matrix: sns.matrix.ClusterGrid = sns.clustermap(
+            data=answer_corr,
+            cmap="RdYlGn",
+            center=0,
+            cbar_pos=None,
+            annot=corr_overlay,
+            fmt="",
+            annot_kws={"fontsize": 8},
+            linewidths=0.8,
+            figsize=(12, 12),
+            row_cluster=do_cluster,
+            col_cluster=do_cluster,
+        )
+        ax_cd = getattr(c_matrix, "ax_col_dendrogram", None)
+        if ax_cd is not None:
+            try:
+                c_matrix.figure.delaxes(ax_cd)
+            except (AttributeError, ValueError):
+                pass
+        c_matrix.ax_heatmap.set(xlabel=None, ylabel=None)
+        c_matrix.ax_row_dendrogram.set(title="Cluster-Hierarchie")
+        c_matrix.figure.suptitle("Übereinstimmungen der Parteien (in %)", y=0.86)
+        labels_row: list = c_matrix.ax_heatmap.get_yticklabels()
+        labels_col: list = c_matrix.ax_heatmap.get_xticklabels()
+        for party_label in labels_row:
+            if party_label.get_text().casefold() in EMPHASIZED_PARTIES:
+                party_label.set_color("darkblue")
+                party_label.set_fontweight("bold")
+                pos_x, pos_y = party_label.get_position()
+                c_matrix.ax_heatmap.add_patch(
+                    Rectangle(
+                        xy=(pos_x - 1.0, pos_y - 0.5),
+                        width=len(labels_col),
+                        height=1,
+                        fill=False,
+                        edgecolor="black",
+                        lw=2,
+                        clip_on=False,
+                    )
+                )
+        for party_label in labels_col:
+            if party_label.get_text().casefold() in EMPHASIZED_PARTIES:
+                party_label.set_color("darkblue")
+                party_label.set_fontweight("bold")
+                pos_x, pos_y = party_label.get_position()
+                c_matrix.ax_heatmap.add_patch(
+                    Rectangle(
+                        xy=(pos_x - 0.5, pos_y),
+                        width=1,
+                        height=len(labels_row),
+                        fill=False,
+                        edgecolor="black",
+                        lw=2,
+                        clip_on=False,
+                    )
+                )
+        _ensure_graphs_dir()
+        cm_name = f"{module_stem_folder}_c_matrix.png"
+        c_matrix.figure.savefig(cm_name, bbox_inches="tight")
+        _print_saved_graph_png(cm_name)
+        plt.close(c_matrix.figure)
+
+    party_pca: DataFrame | None = None
+    pca_xvr = 0.0
+    pca_yvr = 0.0
+    pca_influences: DataFrame | None = None
+
+    if need_pca:
+        n_parties = answer_df.shape[1]
+        n_questions = answer_df.shape[0]
+
+        if n_parties < 2:
             party_pca = pd.DataFrame(
-                {"pca_x": Xt.ravel(), "pca_y": 0.0},
+                {"pca_x": np.zeros(n_parties), "pca_y": np.zeros(n_parties)},
                 index=answer_df.columns,
             )
+            party_pca["cluster"] = 0
+            pca_xvr = 0.0
+            pca_yvr = 0.0
+            comps = np.zeros((n_questions, 2))
         else:
-            party_pca = pd.DataFrame(
-                Xt,
-                columns=["pca_x", "pca_y"],
-                index=answer_df.columns,
-            )
+            n_pca = int(min(2, n_parties, n_questions))
+            X = answer_df.T.to_numpy(dtype=float)
+            pca: PCA = PCA(n_components=n_pca)
+            Xt = pca.fit_transform(X)
+            evr = pca.explained_variance_ratio_
+            pca_xvr = float(evr[0])
+            pca_yvr = float(evr[1]) if len(evr) > 1 else 0.0
 
-        n_clusters = min(N_CLUSTERS, max(1, n_parties))
-        km: KMeans = KMeans(n_clusters, random_state=0)
-        party_pca["cluster"] = km.fit_predict(
-            party_pca.loc[:, ["pca_x", "pca_y"]].to_numpy(dtype=float)
-        )
-
-        comps = pca.components_.T
-        if comps.shape[1] == 1:
-            comps = np.column_stack([comps, np.zeros(comps.shape[0])])
-    pca_influences: DataFrame = question_df.join(
-        pd.DataFrame(comps, columns=["pca_x", "pca_y"], index=question_df.index)
-    ).join(answer_df.sum(axis="columns").rename("answers_sum"))
-
-    do_cluster = answer_corr.shape[0] > 1
-    c_matrix: sns.matrix.ClusterGrid = sns.clustermap(
-        data=answer_corr,
-        cmap="RdYlGn",
-        center=0,
-        cbar_pos=None,
-        annot=corr_overlay,
-        fmt="",
-        annot_kws={"fontsize": 8},
-        linewidths=0.8,
-        figsize=(12, 12),
-        row_cluster=do_cluster,
-        col_cluster=do_cluster,
-    )
-    ax_cd = getattr(c_matrix, "ax_col_dendrogram", None)
-    if ax_cd is not None:
-        try:
-            c_matrix.figure.delaxes(ax_cd)
-        except (AttributeError, ValueError):
-            pass
-    c_matrix.ax_heatmap.set(xlabel=None, ylabel=None)
-    c_matrix.ax_row_dendrogram.set(title="Cluster-Hierarchie")
-    c_matrix.figure.suptitle("Übereinstimmungen der Parteien (in %)", y=0.86)
-    labels_row: list = c_matrix.ax_heatmap.get_yticklabels()
-    labels_col: list = c_matrix.ax_heatmap.get_xticklabels()
-    for party_label in labels_row:
-        if party_label.get_text().casefold() in EMPHASIZED_PARTIES:
-            party_label.set_color("darkblue")
-            party_label.set_fontweight("bold")
-            pos_x, pos_y = party_label.get_position()
-            c_matrix.ax_heatmap.add_patch(
-                Rectangle(
-                    xy=(pos_x - 1.0, pos_y - 0.5),
-                    width=len(labels_col),
-                    height=1,
-                    fill=False,
-                    edgecolor="black",
-                    lw=2,
-                    clip_on=False,
+            if n_pca == 1:
+                party_pca = pd.DataFrame(
+                    {"pca_x": Xt.ravel(), "pca_y": 0.0},
+                    index=answer_df.columns,
                 )
-            )
-    for party_label in labels_col:
-        if party_label.get_text().casefold() in EMPHASIZED_PARTIES:
-            party_label.set_color("darkblue")
-            party_label.set_fontweight("bold")
-            pos_x, pos_y = party_label.get_position()
-            c_matrix.ax_heatmap.add_patch(
-                Rectangle(
-                    xy=(pos_x - 0.5, pos_y),
-                    width=1,
-                    height=len(labels_row),
-                    fill=False,
-                    edgecolor="black",
-                    lw=2,
-                    clip_on=False,
+            else:
+                party_pca = pd.DataFrame(
+                    Xt,
+                    columns=["pca_x", "pca_y"],
+                    index=answer_df.columns,
                 )
+
+            n_clusters = min(N_CLUSTERS, max(1, n_parties))
+            km: KMeans = KMeans(n_clusters, random_state=0)
+            party_pca["cluster"] = km.fit_predict(
+                party_pca.loc[:, ["pca_x", "pca_y"]].to_numpy(dtype=float)
             )
-    os.chdir("../graphs")
-    c_matrix.figure.savefig(
-        f"{module_stem_folder}_c_matrix.png", bbox_inches="tight"
-    )
-    plt.close(c_matrix.figure)
 
-    plt.figure(figsize=(10, 10))
-    pca_map = sns.scatterplot(
-        data=party_pca,
-        x="pca_x",
-        y="pca_y",
-        hue="cluster",
-        palette="bright",
-        legend="full",
-    )
-    pca_map.set(
-        title="Hauptkomponentenanalyse (PCA) der Parteien",
-        xlabel=f"Komponente X (PC1)\n{round(pca_xvr * 100)}% Varianzanteil",
-        ylabel=f"Komponente Y (PC2)\n{round(pca_yvr * 100)}% Varianzanteil",
-        xticklabels=[],
-        yticklabels=[],
-    )
-    pca_map.legend(
-        title="Clusters",
-        handles=pca_map.get_legend_handles_labels()[0],
-        labels=[""] * party_pca["cluster"].nunique(),
-        facecolor="white",
-        markerscale=1.5,
-        ncol=2,
-        handletextpad=0,
-        columnspacing=0.2,
-        shadow=True,
-        borderaxespad=1,
-    )
-    pca_map.set_xticks([0])
-    pca_map.set_yticks([0])
-    pca_map.xaxis.set_minor_locator(ticker.AutoLocator())
-    pca_map.yaxis.set_minor_locator(ticker.AutoLocator())
-    pca_map.grid(True, which="major", linewidth=1.2)
-    pca_map.grid(True, which="minor", linewidth=0.3)
-    for party_name in party_pca.index:
-        color: str = "black"
-        fontweight: str = "normal"
-        if party_name.casefold() in EMPHASIZED_PARTIES:
-            color = "darkblue"
-            fontweight = "bold"
-        pca_map.text(
-            x=party_pca.loc[party_name, "pca_x"] + 0.05,
-            y=party_pca.loc[party_name, "pca_y"] + 0.05,
-            s=party_name,
-            color=color,
-            fontweight=fontweight,
-            fontsize="small",
+            comps = pca.components_.T
+            if comps.shape[1] == 1:
+                comps = np.column_stack([comps, np.zeros(comps.shape[0])])
+
+        pca_influences = question_df.join(
+            pd.DataFrame(comps, columns=["pca_x", "pca_y"], index=question_df.index)
+        ).join(answer_df.sum(axis="columns").rename("answers_sum"))
+
+    if need_pca_map:
+        assert party_pca is not None
+        _ensure_graphs_dir()
+        plt.figure(figsize=(10, 10))
+        pca_map = sns.scatterplot(
+            data=party_pca,
+            x="pca_x",
+            y="pca_y",
+            hue="cluster",
+            palette="bright",
+            legend="full",
         )
-    plt.savefig(f"{module_stem_folder}_pca_map.png", bbox_inches="tight")
-    plt.close()
+        pca_map.set(
+            title="Hauptkomponentenanalyse (PCA) der Parteien",
+            xlabel=f"Komponente X (PC1)\n{round(pca_xvr * 100)}% Varianzanteil",
+            ylabel=f"Komponente Y (PC2)\n{round(pca_yvr * 100)}% Varianzanteil",
+            xticklabels=[],
+            yticklabels=[],
+        )
+        pca_map.legend(
+            title="Clusters",
+            handles=pca_map.get_legend_handles_labels()[0],
+            labels=[""] * party_pca["cluster"].nunique(),
+            facecolor="white",
+            markerscale=1.5,
+            ncol=2,
+            handletextpad=0,
+            columnspacing=0.2,
+            shadow=True,
+            borderaxespad=1,
+        )
+        pca_map.set_xticks([0])
+        pca_map.set_yticks([0])
+        pca_map.xaxis.set_minor_locator(ticker.AutoLocator())
+        pca_map.yaxis.set_minor_locator(ticker.AutoLocator())
+        pca_map.grid(True, which="major", linewidth=1.2)
+        pca_map.grid(True, which="minor", linewidth=0.3)
+        for party_name in party_pca.index:
+            color: str = "black"
+            fontweight: str = "normal"
+            if party_name.casefold() in EMPHASIZED_PARTIES:
+                color = "darkblue"
+                fontweight = "bold"
+            pca_map.text(
+                x=party_pca.loc[party_name, "pca_x"] + 0.05,
+                y=party_pca.loc[party_name, "pca_y"] + 0.05,
+                s=party_name,
+                color=color,
+                fontweight=fontweight,
+                fontsize="small",
+            )
+        pm_name = f"{module_stem_folder}_pca_map.png"
+        plt.savefig(pm_name, bbox_inches="tight")
+        _print_saved_graph_png(pm_name)
+        plt.close()
 
-    infl_prep = pca_influences.copy()
-    denom = float(np.nanmax(infl_prep["answers_sum"].abs().to_numpy()))
-    numer = float(np.nanmax(infl_prep[["pca_x", "pca_y"]].abs().to_numpy()))
-    if math.isfinite(denom) and math.isfinite(numer) and denom != 0.0:
-        infl_prep["answers_sum"] *= numer / denom
-    infl_prep = infl_prep.melt(
-        id_vars=["title"],
-        value_vars=["pca_x", "pca_y", "answers_sum"],
-        var_name="component",
-        value_name="influence",
-    )
-    plt.figure(figsize=(5, 18))
-    inf_barplot = sns.barplot(
-        data=infl_prep,
-        x="influence",
-        y="title",
-        hue="component",
-        orient="h",
-    )
-    inf_barplot.set(
-        xlabel=r"$\longleftarrow -$ /  Nein "
-        + r"$\qquad\qquad\qquad\qquad +$"
-        + r" /  Ja$\longrightarrow\qquad$",
-        ylabel=None,
-        xticklabels=[],
-    )
-    inf_barplot.legend(
-        title=None,
-        handles=inf_barplot.get_legend_handles_labels()[0],
-        labels=[
-            "Komponente X (PC1)",
-            "Komponente Y (PC2)",
-            "Antworten aller Parteien kumuliert",
-        ],
-        loc="lower center",
-        bbox_to_anchor=(0.5, 1.02),
-        facecolor="white",
-        shadow=True,
-    )
-    inf_barplot.set_yticks(
-        [x - 0.5 for x in inf_barplot.get_yticks()], minor=True
-    )
-    inf_barplot.grid(False, axis="x")
-    inf_barplot.grid(True, which="minor", axis="y", linewidth=1)
-    inf_barplot.xaxis.set_label_position("top")
-    plt.suptitle("Einfluss der Fragen", y=0.95)
-    plt.savefig(
-        f"{module_stem_folder}_pca_influences.png", bbox_inches="tight"
-    )
-    plt.close()
-    os.chdir("../data")
+    if need_infl:
+        assert pca_influences is not None
+        _ensure_graphs_dir()
+        infl_prep = pca_influences.copy()
+        denom = float(np.nanmax(infl_prep["answers_sum"].abs().to_numpy()))
+        numer = float(np.nanmax(infl_prep[["pca_x", "pca_y"]].abs().to_numpy()))
+        if math.isfinite(denom) and math.isfinite(numer) and denom != 0.0:
+            infl_prep["answers_sum"] *= numer / denom
+        infl_prep = infl_prep.melt(
+            id_vars=["title"],
+            value_vars=["pca_x", "pca_y", "answers_sum"],
+            var_name="component",
+            value_name="influence",
+        )
+        plt.figure(figsize=(5, 18))
+        inf_barplot = sns.barplot(
+            data=infl_prep,
+            x="influence",
+            y="title",
+            hue="component",
+            orient="h",
+        )
+        inf_barplot.set(
+            xlabel=r"$\longleftarrow -$ /  Nein "
+            + r"$\qquad\qquad\qquad\qquad +$"
+            + r" /  Ja$\longrightarrow\qquad$",
+            ylabel=None,
+            xticklabels=[],
+        )
+        inf_barplot.legend(
+            title=None,
+            handles=inf_barplot.get_legend_handles_labels()[0],
+            labels=[
+                "Komponente X (PC1)",
+                "Komponente Y (PC2)",
+                "Antworten aller Parteien kumuliert",
+            ],
+            loc="lower center",
+            bbox_to_anchor=(0.5, 1.02),
+            facecolor="white",
+            shadow=True,
+        )
+        inf_barplot.set_yticks(
+            [x - 0.5 for x in inf_barplot.get_yticks()], minor=True
+        )
+        inf_barplot.grid(False, axis="x")
+        inf_barplot.grid(True, which="minor", axis="y", linewidth=1)
+        inf_barplot.xaxis.set_label_position("top")
+        plt.suptitle("Einfluss der Fragen", y=0.95)
+        infl_name = f"{module_stem_folder}_pca_influences.png"
+        plt.savefig(infl_name, bbox_inches="tight")
+        _print_saved_graph_png(infl_name)
+        plt.close()
+
+    _leave_graphs_if_needed()
 
 
 def analysis(module_content: str, module_stem_folder: str) -> None:
