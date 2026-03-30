@@ -14,6 +14,7 @@ matplotlib.use("Agg")
 import pandas as pd
 
 from analysis import parse_module_js, run_analysis
+from build_dataframe import read_module_definition_js
 
 # Minimal module_definition.js-shaped text (documents regex contract for legacy JS).
 _MINIMAL_JS = """
@@ -31,12 +32,21 @@ WOMT_aThesenParteien[1][0] = '0';
 WOMT_aThesenParteien[1][1] = '1';
 """
 
+# Duplicate (question, party): first row wins (would be mean 0.0 with old pivot).
+_DUP_ANSWER_JS = _MINIMAL_JS + """
+WOMT_aThesenParteien[0][0] = '-1';
+"""
+
 
 class TestAnalysisEdges(unittest.TestCase):
     def test_parse_module_js_minimal_fixture(self) -> None:
         q_df, ans = parse_module_js(_MINIMAL_JS)
         self.assertEqual(len(q_df), 2)
         self.assertEqual(ans.shape, (2, 2))
+
+    def test_parse_module_js_duplicate_answer_rows_keep_first(self) -> None:
+        _, ans = parse_module_js(_DUP_ANSWER_JS)
+        self.assertEqual(int(ans.loc[0, "P1"]), 1)
 
     def test_run_analysis_one_party_writes_pngs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -82,6 +92,45 @@ class TestAnalysisEdges(unittest.TestCase):
                 )
             finally:
                 os.chdir(old)
+
+
+class TestModuleJsDecode(unittest.TestCase):
+    def test_read_utf8_plain(self) -> None:
+        with tempfile.NamedTemporaryFile(
+            suffix=".js", delete=False, mode="wb"
+        ) as f:
+            f.write("ascii ütf8".encode("utf-8"))
+            path = Path(f.name)
+        try:
+            s = read_module_definition_js(path)
+            self.assertIn("ü", s)
+            self.assertNotIn("Ã¼", s)
+        finally:
+            path.unlink()
+
+    def test_read_latin1_only_umlaut_byte(self) -> None:
+        """Single-byte Latin-1 (e.g. 0xFC ü): UTF-8 fails, hybrid decodes."""
+        part = "Hallo \xfcber".encode("latin-1")
+        with tempfile.NamedTemporaryFile(suffix=".js", delete=False, mode="wb") as f:
+            f.write(part)
+            path = Path(f.name)
+        try:
+            s = read_module_definition_js(path)
+            self.assertEqual(s, "Hallo über")
+        finally:
+            path.unlink()
+
+    def test_read_mixed_utf8_and_latin1_byte(self) -> None:
+        """UTF-8 multibyte + single Latin-1 ü (0xFC): hybrid path."""
+        part = "prefix ".encode("utf-8") + b"\xfc" + " suffix".encode("utf-8")
+        with tempfile.NamedTemporaryFile(suffix=".js", delete=False, mode="wb") as f:
+            f.write(part)
+            path = Path(f.name)
+        try:
+            s = read_module_definition_js(path)
+            self.assertEqual(s, "prefix ü suffix")
+        finally:
+            path.unlink()
 
 
 if __name__ == "__main__":
