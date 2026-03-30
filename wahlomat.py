@@ -42,6 +42,29 @@ def main() -> int:
         action="store_true",
         help="Only download and extract the bpb Wahl-O-Mat-Datensätze bundle ZIP.",
     )
+    dl.add_argument(
+        "--list-election-zips",
+        action="store_true",
+        help=(
+            "List ZIPs from the weitere-Wahlen page (local_stem, slug, URL); no download. "
+            "Same as get_zip_files.py --list-election-zips."
+        ),
+    )
+    dl.add_argument(
+        "--election-zip",
+        action="append",
+        default=None,
+        metavar="TOKEN",
+        help=(
+            "Download only election ZIPs whose URL, folder stem, or metadata slug contains "
+            "TOKEN (case-insensitive); repeat for multiple tokens. See --list-election-zips."
+        ),
+    )
+    dl.add_argument(
+        "--with-datensaetze",
+        action="store_true",
+        help="With --election-zip, also download the Datensätze bundle.",
+    )
 
     sub.add_parser(
         "build-csv",
@@ -124,9 +147,17 @@ def main() -> int:
     if args.command == "download":
         import get_zip_files
 
+        gargv: list[str] = []
         if args.datensaetze_only:
-            return get_zip_files.main(["--datensaetze-only"])
-        return get_zip_files.main([])
+            gargv.append("--datensaetze-only")
+        if args.list_election_zips:
+            gargv.append("--list-election-zips")
+        if args.election_zip:
+            for tok in args.election_zip:
+                gargv.extend(["--election-zip", tok])
+        if args.with_datensaetze:
+            gargv.append("--with-datensaetze")
+        return get_zip_files.main(gargv)
     if args.command == "build-csv":
         import build_dataframe
 

@@ -13,7 +13,8 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
 1. **`get_zip_files.py`** (run from the **repository root**)  
    Downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and also resolves the current **bundled Datensätze** ZIP from the [Datensätze article](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/) (the exact file URL is read from the page HTML, not hardcoded). Creates **`graphs/`** if missing.  
    **`python get_zip_files.py --datensaetze-only`** (or **`python wahlomat.py download --datensaetze-only`**) downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.  
-   After extraction it prints **`Datensätze workbook OK`** with the path to the `.xlsx` if a file matching **`discover_bpb_excel_path`** was found under **`data/`** or the **repository root** (same discovery as **`build_dataframe.py`**); otherwise it prints a **WARNING**.
+   **Selective election ZIPs:** **`--list-election-zips`** prints **`local_stem`**, metadata **slug** (from [build_metadata.py](build_metadata.py) `election_slug_from_zip_href`), and **URL** for each ZIP on the weitere-Wahlen page (no download). **`--election-zip TOKEN`** (repeatable) downloads and extracts **only** archives where **TOKEN** matches (case-insensitive substring) the URL, **`local_stem`**, or that slug; only those ZIPs are extracted (other **`.zip`** files already in **`data/`** are left alone). Add **`--with-datensaetze`** to include the Datensätze bundle in the same run. **`--datensaetze-only`** cannot be combined with these flags.  
+   **Workbook line:** After a **full** download, **`--datensaetze-only`**, or **selective download that included `--with-datensaetze`**, the script prints **`Datensätze workbook OK`** with the path to the `.xlsx` if **`discover_bpb_excel_path`** finds one under **`data/`** or the **repository root**; otherwise a **WARNING**. Selective **`--election-zip` only** (no bundle in that run) **skips** this check so an older `.xlsx` already in **`data/`** is not reported as if this fetch had added it.
 
 2. **`build_dataframe.py`** (run from the **repository root**)  
    Parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py); currently empty), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** at the repo root ([build_metadata.py](build_metadata.py); see [CSV structure and known caveats](#csv-structure-and-known-caveats)).  
@@ -36,7 +37,7 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
 
 From the repository root you can run the same pipeline with one entry point:
 
-- `python wahlomat.py download` — same as `get_zip_files.py` (add **`--datensaetze-only`** for the Datensätze bundle only)
+- `python wahlomat.py download` — same as `get_zip_files.py` (**`--datensaetze-only`**, **`--list-election-zips`**, **`--election-zip TOKEN`** / **`--with-datensaetze`**; see step 1)
 - `python wahlomat.py refresh-excel` — Datensätze-only download, then **`update-csv -y`** with **`--prune-superseded-excel`** (see step 3; **`refresh-excel -h`**)
 - `python wahlomat.py build-csv` — same as `build_dataframe.py`
 - `python wahlomat.py update-csv` — same as `update_excel_csv.py` (see step 3; use **`update-csv -h`** for flags)
@@ -125,7 +126,7 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 ## Changes
 
 - **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `update-csv`, **`refresh-excel`**, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
-- **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; **`--datensaetze-only`**; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**; on Python **3.11+**, bundle extract uses **`ZipFile(..., metadata_encoding="cp437")`** for inner paths.
+- **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; **`--datensaetze-only`**; **`--list-election-zips`** / **`--election-zip`** / **`--with-datensaetze`** for selective weitere-Wahlen downloads (extract only chosen archives); workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**; on Python **3.11+**, bundle extract uses **`ZipFile(..., metadata_encoding="cp437")`** for inner paths.
 - **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** ([build_metadata.py](build_metadata.py)); **`update_excel_csv.py`** / **`wahlomat.py update-csv`** for incremental Excel-only updates.
 - **`bpb_urls.py`**: shared bpb **`WEITERE_WAHLEN_URL`** and HTML fetch headers (used by **`get_zip_files.py`** and **`build_metadata.py`**).
 - **`election_id_policy.py`**: JS folders superseded by canonical Excel **`election_id`** when both exist; extend the map when bpb adds overlapping cases.
@@ -136,6 +137,7 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`skipped_elections.py`**: optional **`OMIT_FROM_BUILD_DATAFRAME`** folder names skipped by **`build_dataframe`** (empty by default); **`failed_analysis.py`** diagnoses that list when non-empty.
 - **`tests/test_analysis_edges.py`**: **`unittest`** checks for **`parse_module_js`** minimal fixture and **`run_analysis`** edge cases (run with `python -m unittest discover -s tests -p 'test*.py'` from the repo root).
 - **`tests/test_discover_bpb_excel.py`**: **`discover_bpb_excel_path`** prefers newer **mtime**, then descending name on ties.
+- **`tests/test_get_zip_files_filter.py`**: **`local_stem_from_election_zip_url`** and **`filter_zip_jobs`** (selective download matching).
 - **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
 ## Roadmap (things to add / change)
@@ -144,7 +146,7 @@ This continues the intent of the older **“Things to add/change”** list on [s
 
 | Idea | Status |
 |------|--------|
-| Select and download **individual** elections (index / menu / by name) | **Open** — Full `download` still fetches **all** ZIPs from the weitere Wahlen page plus the Datensätze bundle; **`download --datensaetze-only`** / **`refresh-excel`** fetch **only** the Datensätze bundle. A natural extension is CLI filtering for per-election ZIPs on top of the same HTML parsing ([`extract_zip_hrefs`](get_zip_files.py), URL normalization, download loop). |
+| Select and download **individual** elections (index / menu / by name) | **Done (CLI)** — **`download --list-election-zips`**, **`--election-zip TOKEN`** (repeat), optional **`--with-datensaetze`**. Substring match on URL, **`local_stem`**, or metadata slug; extract **only** matched ZIPs. Interactive menu / numeric index not implemented. |
 | Run analysis for an **individual** election | **Mostly done** — After **`build_dataframe.py`**, run **`--list-elections`** to see valid **`election_id`** values, then [build_graphs_from_csv.py](build_graphs_from_csv.py) **`--election`** (repeat or comma-separated) or **`ELECTION_IDS`**; see [Analysis steps](#analysis-steps). |
 | **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today the script **rebuilds the full CSV** from all JS modules and Excel sheets. A future mode could append or merge rows for new **`election_id`** values only; until then, a full rebuild is usually fine. |
 | Full **`download`**: extract **only ZIPs from this run** | **Open** — After a full fetch, the extract loop still processes **every** `.zip` under **`data/`**, not only the archives just downloaded. Narrowing that is a **behaviour change** (stray ZIPs in **`data/`** would no longer be auto-extracted); document if implemented. |
