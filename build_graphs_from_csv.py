@@ -3,7 +3,7 @@
 """
 Build correlation / PCA / cluster graphs from all_wahlomat_answers.csv.
 
-Run from the repository root after build_dataframe.py has written the CSV.
+Run from the repository root after the answers CSV exists (see wahlomat.py build-csv / build_dataframe.py).
 Optionally restrict to one or more election_id values (CLI or ELECTION_IDS env).
 Use --list-elections to print valid election_id values and row counts from the CSV.
 """
@@ -20,6 +20,44 @@ import pandas as pd
 from analysis import long_rows_to_run_analysis, run_analysis
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent
+_DEFAULT_CSV = REPO_ROOT / "all_wahlomat_answers.csv"
+
+
+def _build_csv_hint_block() -> str:
+    return (
+        "From the repository root, run either command (they do the same):\n"
+        "  python wahlomat.py build-csv\n"
+        "  python build_dataframe.py"
+    )
+
+
+def _resolved_csv_from_argv(argv: list[str]) -> pathlib.Path:
+    """Path intended for graphs, from --csv=… / --csv … if present, else default."""
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a.startswith("--csv="):
+            raw = a.split("=", 1)[1]
+            p = pathlib.Path(raw).expanduser()
+            return p.resolve() if p.is_absolute() else (pathlib.Path.cwd() / p).resolve()
+        if a == "--csv" and i + 1 < len(argv):
+            p = pathlib.Path(argv[i + 1]).expanduser()
+            return p.resolve() if p.is_absolute() else (pathlib.Path.cwd() / p).resolve()
+        i += 1
+    return _DEFAULT_CSV.resolve()
+
+
+def _graphs_description(argv: list[str]) -> str:
+    path = _resolved_csv_from_argv(argv)
+    base = "Generate graphs from all_wahlomat_answers.csv."
+    if path.is_file():
+        return f"{base}\n\nCSV file found:\n  {path}"
+    return f"{base}\n\nCSV file not found:\n  {path}\n\n{_build_csv_hint_block()}"
+
+
+def _stderr_csv_missing(path: pathlib.Path) -> None:
+    print(f"CSV not found: {path.resolve()}", file=sys.stderr)
+    print(_build_csv_hint_block(), file=sys.stderr)
 
 
 def _parse_election_ids_from_env() -> list[str]:
@@ -42,15 +80,16 @@ def _parse_election_cli(values: list[str] | None) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = list(sys.argv[1:])
     parser = argparse.ArgumentParser(
-        description=(
-            "Generate graphs from all_wahlomat_answers.csv (run build_dataframe.py first)."
-        )
+        description=_graphs_description(argv),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--csv",
         type=pathlib.Path,
-        default=REPO_ROOT / "all_wahlomat_answers.csv",
+        default=_DEFAULT_CSV,
         help="Path to CSV (default: ./all_wahlomat_answers.csv)",
     )
     parser.add_argument(
@@ -72,7 +111,9 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
-    csv_path = args.csv
+    csv_path = args.csv.expanduser()
+    if not csv_path.is_absolute():
+        csv_path = (pathlib.Path.cwd() / csv_path).resolve()
 
     if args.list_elections:
         if _parse_election_cli(args.elections) or _parse_election_ids_from_env():
@@ -82,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 2
         if not csv_path.is_file():
-            print(f"CSV not found: {csv_path.resolve()}", file=sys.stderr)
+            _stderr_csv_missing(csv_path)
             return 1
         try:
             list_df = pd.read_csv(csv_path, usecols=["election_id"])
@@ -96,7 +137,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if not csv_path.is_file():
-        print(f"CSV not found: {csv_path.resolve()}", file=sys.stderr)
+        _stderr_csv_missing(csv_path)
         return 1
 
     df = pd.read_csv(csv_path)
