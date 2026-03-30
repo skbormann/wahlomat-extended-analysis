@@ -5,6 +5,7 @@ Build correlation / PCA / cluster graphs from all_wahlomat_answers.csv.
 
 Run from the repository root after build_dataframe.py has written the CSV.
 Optionally restrict to one or more election_id values (CLI or ELECTION_IDS env).
+Use --list-elections to print valid election_id values and row counts from the CSV.
 """
 
 from __future__ import annotations
@@ -62,8 +63,38 @@ def main(argv: list[str] | None = None) -> int:
             "If omitted, use ELECTION_IDS when set, otherwise all elections in the CSV."
         ),
     )
+    parser.add_argument(
+        "--list-elections",
+        action="store_true",
+        help=(
+            "Print election_id values and row counts from the CSV, then exit "
+            "(no graphs). Not with --election or ELECTION_IDS."
+        ),
+    )
     args = parser.parse_args(argv)
     csv_path = args.csv
+
+    if args.list_elections:
+        if _parse_election_cli(args.elections) or _parse_election_ids_from_env():
+            print(
+                "--list-elections cannot be combined with --election or ELECTION_IDS.",
+                file=sys.stderr,
+            )
+            return 2
+        if not csv_path.is_file():
+            print(f"CSV not found: {csv_path.resolve()}", file=sys.stderr)
+            return 1
+        try:
+            list_df = pd.read_csv(csv_path, usecols=["election_id"])
+        except ValueError:
+            print("CSV missing election_id column.", file=sys.stderr)
+            return 1
+        counts = list_df["election_id"].astype(str).value_counts().sort_index()
+        print("election_id\trows")
+        for eid, n in counts.items():
+            print(f"{eid}\t{int(n)}")
+        return 0
+
     if not csv_path.is_file():
         print(f"CSV not found: {csv_path.resolve()}", file=sys.stderr)
         return 1
