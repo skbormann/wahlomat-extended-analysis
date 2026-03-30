@@ -29,8 +29,9 @@ def main() -> int:
             "For graphs, run: python wahlomat.py graphs [OPTIONS] "
             "(same as build_graphs_from_csv.py; use graphs -h)."
         ),
+        epilog="Also: python wahlomat.py graphs …  (PNG plots from CSV; use graphs -h).",
     )
-    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
+    sub = parser.add_subparsers(dest="command", metavar="COMMAND", required=False)
 
     dl = sub.add_parser(
         "download",
@@ -116,6 +117,9 @@ def main() -> int:
     )
 
     args = parser.parse_args(argv)
+    if args.command is None:
+        parser.print_help()
+        return 0
 
     if args.command == "download":
         import get_zip_files
