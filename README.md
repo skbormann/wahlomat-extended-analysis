@@ -138,11 +138,12 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 - **`tests/test_analysis_edges.py`**: **`unittest`** checks for **`parse_module_js`** minimal fixture and **`run_analysis`** edge cases (run with `python -m unittest discover -s tests -p 'test*.py'` from the repo root).
 - **`tests/test_discover_bpb_excel.py`**: **`discover_bpb_excel_path`** prefers newer **mtime**, then descending name on ties.
 - **`tests/test_get_zip_files_filter.py`**: **`local_stem_from_election_zip_url`** and **`filter_zip_jobs`** (selective download matching).
+- **`tests/test_get_zip_files_datensaetze_only.py`**: **`pick_datensaetze_bundle_url`** and **`download_and_extract_datensaetze_bundle`** with mocks (no network).
 - **Python 3.10+**, pinned dependencies in [requirements.txt](requirements.txt), and [pyproject.toml](pyproject.toml) (`pip install .` also works; a tiny **`wahlomat_extended_analysis`** package exists only so setuptools can build while **`data/`** / **`graphs/`** live at the repo root).
 
 ## Roadmap (things to add / change)
 
-This continues the intent of the older **“Things to add/change”** list on [skbormann/wahlomat-extended-analysis](https://github.com/skbormann/wahlomat-extended-analysis) **main**, updated for the CSV-first pipeline. Rows below are a **backlog** (features, behaviour changes, tests, polish) you may tackle before merging or keep for later.
+This continues the intent of the older **“Things to add/change”** list on [skbormann/wahlomat-extended-analysis](https://github.com/skbormann/wahlomat-extended-analysis) **main**, updated for the CSV-first pipeline. Rows below are a **backlog** (features, behaviour changes, tests, polish) you may tackle before merging or keep for later. **Open** and **Later** items are **not** release blockers for publishing or using the repository—they are optional follow-ups.
 
 | Idea | Status |
 |------|--------|
@@ -151,7 +152,7 @@ This continues the intent of the older **“Things to add/change”** list on [s
 | **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today the script **rebuilds the full CSV** from all JS modules and Excel sheets. A future mode could append or merge rows for new **`election_id`** values only; until then, a full rebuild is usually fine. |
 | Full **`download`**: extract **only ZIPs from this run** | **Open** — After a full fetch, the extract loop still processes **every** `.zip` under **`data/`**, not only the archives just downloaded. Narrowing that is a **behaviour change** (stray ZIPs in **`data/`** would no longer be auto-extracted); document if implemented. |
 | **`update-csv`**: detect workbook edits when **row count unchanged** | **Open** — Today a sheet counts as unchanged only if row counts match; same count with different cell values is not detected. A future approach could use content hashes or a cell-level diff per **`election_id`** block. |
-| **Tests** for **`get_zip_files --datensaetze-only`** | **Open** — e.g. tiny ZIP fixture in a temp dir and/or mocked HTTP, to regression-test the Datensätze-only path ([`get_zip_files.py`](get_zip_files.py)). |
+| **Tests** for **`get_zip_files --datensaetze-only`** | **Done** — [`tests/test_get_zip_files_datensaetze_only.py`](tests/test_get_zip_files_datensaetze_only.py): mocked fetch/download and ZIP extract layout under **`data/<stem>/`**; HTML parsing for **`pick_datensaetze_bundle_url`**. |
 | **`refresh-excel`**: “unchanged since last run” using **persisted state** | **Later** — Optional: store bundle URL, `ETag` / `Last-Modified`, or ZIP hash (e.g. a small local state file; consider **`.gitignore`**) to report stability across runs. Distinct from the current **this run only** noop message after a successful update. |
 | **`wahlomat.py`**: register **`graphs`** as a normal subcommand | **Later** — **`graphs`** is handled before subparsers today; a **`graphs`** subparser would list it next to **`download`** / **`refresh-excel`** in **`wahlomat.py -h`** (mostly discoverability / consistency). |
 
