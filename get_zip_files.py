@@ -23,31 +23,16 @@ import zipfile
 from urllib.parse import urlparse
 
 from analysis import discover_bpb_excel_path
+from bpb_urls import BPB_HTML_HEADERS, WEITERE_WAHLEN_URL, fetch_bpb_html
 
 INTERNAL_LINK_START = "https://www.bpb.de"
-WEITERE_WAHLEN_URL = (
-    "https://www.bpb.de/politik/wahlen/wahl-o-mat/45817/weitere-wahlen"
-)
 DATENSAETZE_PAGE_URL = (
     "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
 )
 
-# bpb (and similar) often return 403 for Python's default urllib user-agent.
-_BPB_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/131.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "de,en-US;q=0.9,en;q=0.8",
-}
-
 
 def fetch_html(url: str) -> str:
-    req = urllib.request.Request(url, headers=_BPB_HEADERS)
-    with urllib.request.urlopen(req) as resp:
-        return resp.read().decode()
+    return fetch_bpb_html(url)
 
 
 def _download_request_headers(url: str) -> dict:
@@ -70,7 +55,7 @@ def _download_request_headers(url: str) -> dict:
         referer = WEITERE_WAHLEN_URL
 
     headers = {
-        **_BPB_HEADERS,
+        **BPB_HTML_HEADERS,
         "Accept": "*/*",
         "Referer": referer,
     }

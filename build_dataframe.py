@@ -14,8 +14,9 @@ modules and the bpb Wahl-O-Mat-Datensätze Excel bundle under data/.
 """
 
 # %% Setup
-import pathlib
 import os
+import pathlib
+
 import pandas as pd
 
 from analysis import (
@@ -160,6 +161,18 @@ def main() -> int:
             out_path = pathlib.Path("..") / "all_wahlomat_answers.csv"
             out.to_csv(out_path, index=False)
             print(f"Wrote {len(out)} rows to {out_path.resolve()}")
+            import build_metadata
+
+            meta_rc = build_metadata.main(
+                [
+                    "--repo-root",
+                    str(repo_root),
+                    "--answers",
+                    str((repo_root / "all_wahlomat_answers.csv").resolve()),
+                ]
+            )
+            if meta_rc != 0:
+                return meta_rc
             return 0
         print("No data collected; CSV not written.")
         return 1

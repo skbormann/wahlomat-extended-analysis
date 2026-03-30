@@ -15,6 +15,11 @@ import pandas as pd
 
 from analysis import parse_module_js, run_analysis
 from build_dataframe import read_module_definition_js
+from build_metadata import (
+    display_name_de,
+    election_slug_from_zip_href,
+    excel_row_from_election_id,
+)
 
 # Minimal module_definition.js-shaped text (documents regex contract for legacy JS).
 _MINIMAL_JS = """
@@ -92,6 +97,51 @@ class TestAnalysisEdges(unittest.TestCase):
                 )
             finally:
                 os.chdir(old)
+
+
+class TestBuildMetadataSlugs(unittest.TestCase):
+    def test_slug_wahl_o_mat_de_path(self) -> None:
+        h = "https://www.wahl-o-mat.de/bundestagswahl2021/wahlomat.zip"
+        self.assertEqual(election_slug_from_zip_href(h), "bundestagswahl2021")
+
+    def test_slug_bpb_system_hyphen_year(self) -> None:
+        h = "/system/files/datei/wahlomat-nordrheinwestfalen-2012.zip?download=1"
+        self.assertEqual(election_slug_from_zip_href(h), "nordrheinwestfalen2012")
+
+    def test_slug_bpb_wahlomat_prefix(self) -> None:
+        h = "/system/files/datei/wahlomat-bw11.zip?download=1"
+        self.assertEqual(election_slug_from_zip_href(h), "bw11")
+
+    def test_excel_bt_prefix(self) -> None:
+        r = excel_row_from_election_id("BT21_v1.02")
+        self.assertIsNotNone(r)
+        self.assertEqual(r["level"], "federal")
+        self.assertEqual(r["year"], 2021)
+        self.assertEqual(r["display_name_en"], "Federal election 2021")
+        self.assertEqual(r["display_name_de"], "Bundestagswahl 2021")
+
+    def test_excel_by_landtagswahl_bavaria(self) -> None:
+        r = excel_row_from_election_id("BY23_v1.00")
+        self.assertIsNotNone(r)
+        self.assertEqual(r["display_name_de"], "Landtagswahl Bayern 2023")
+
+    def test_excel_st_sachsen_anhalt_hyphen(self) -> None:
+        r = excel_row_from_election_id("ST21_v1.03")
+        self.assertIsNotNone(r)
+        self.assertEqual(r["state"], "Sachsen-Anhalt")
+        self.assertIn("Sachsen-Anhalt", r["display_name_de"])
+        self.assertNotIn("Sachsenanhalt", r["display_name_de"])
+        self.assertEqual(
+            r["display_name_de"],
+            display_name_de(r["level"], r["state"], r["year"]),
+        )
+
+    def test_excel_mv_mecklenburg_hyphen(self) -> None:
+        r = excel_row_from_election_id("MV21_v1.00")
+        self.assertIsNotNone(r)
+        self.assertEqual(r["state"], "Mecklenburg-Vorpommern")
+        self.assertIn("Mecklenburg-Vorpommern", r["display_name_de"])
+        self.assertNotIn("MecklenburgVorpommern", r["display_name_de"])
 
 
 class TestModuleJsDecode(unittest.TestCase):

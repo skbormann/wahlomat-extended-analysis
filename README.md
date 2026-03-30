@@ -15,7 +15,7 @@ Data sources: classic **`module_definition.js`** exports under **`data/`** and t
    After extraction it prints **`Datensätze workbook OK`** with the path to the `.xlsx` if a file matching **`discover_bpb_excel_path`** was found under **`data/`** or the **repository root** (same discovery as **`build_dataframe.py`**); otherwise it prints a **WARNING**.
 
 2. **`build_dataframe.py`** (run from the **repository root**)  
-   Parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py); currently empty), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** at the repo root.  
+   Parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py); currently empty), then reads every qualifying sheet from the bpb Excel workbook if found (**`data/`** or repo root). Writes **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** at the repo root ([build_metadata.py](build_metadata.py); see [CSV structure and known caveats](#csv-structure-and-known-caveats)).  
    **JS vs Excel overlap:** [election_id_policy.py](election_id_policy.py) lists folders whose JS export is **not** ingested when the same election appears in the workbook under the mapped **versioned sheet id** (e.g. skip JS `bundestagswahl2021` when Excel has `BT21_v1.02`). The resolved workbook path is printed when Excel is read — use a current Datensätze bundle if you expect sheets such as **`BW26_v1.01`** / **`RP26_v1.00`** in the CSV.  
    **JS answers:** [analysis.py](analysis.py) `parse_module_js` deduplicates `(thesis, party)` before pivoting and uses **`aggfunc="first"`** so multi-language duplicates are not averaged into fractional codes.
 
@@ -50,6 +50,33 @@ Prefer placing the consolidated workbook under **`data/`** (e.g. from the Datens
 
 Use of bpb data is subject to their [terms on the Datensätze page](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/).
 
+### CSV structure and known caveats
+
+**`all_wahlomat_answers.csv`** (written by **`build_dataframe.py`** / **`python wahlomat.py build-csv`**) is a long table: one row per thesis index, party, and answer.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `election_id` | string | Stable identifier for one Wahl-O-Mat instance (versioned Excel sheet id or legacy JS folder id). |
+| `question` | integer | Zero-based thesis index within that election. |
+| `party` | string | Party label as in the source (abbreviation / short name). |
+| `answer` | integer | Coded agreement (see below). |
+| `title` | string | Short thesis title from the source. |
+| `these_text` | string | Full thesis wording from the source. |
+
+**Answer values:** **`1`** = *stimme zu* (agree), **`0`** = *neutral*, **`-1`** = *stimme nicht zu* (disagree). The same mapping is used for bpb Excel positions and legacy JS modules.
+
+**Companion file:** **`election_metadata.csv`** (same build step) has one row per `election_id`, in this column order: **`display_name_de`** (German election wording), **`display_name_en`** (English label), German **`state`** name (or **`Federal`** / **`European`**), four-digit **`year`**, and **`level`** (`federal` | `state` | `european`). JS rows are taken from the bpb [archive / weitere Wahlen](https://www.bpb.de/themen/wahl-o-mat/45817/wahl-o-mat-archiv-weitere-wahlen/) table; Excel rows use sheet-name prefixes (e.g. `BT` = federal, `EU` = European Parliament). Regenerate with [build_metadata.py](build_metadata.py) if needed.
+
+**Offline metadata build:** If the archive page cannot be fetched (no network, firewall), save that page as HTML and set **`WAHLOMAT_ARCHIVE_HTML=/path/to/saved.html`** before **`build-csv`**, or run **`python build_metadata.py --archive-html PATH`** after building the answers CSV.
+
+**Caveats for analysts**
+
+- **Questions are not comparable across elections.** Each election has its own questionnaire (often on the order of 38 theses; older elections may have fewer).
+- **Some elections have very few parties** (as few as 2–3), which limits or breaks multivariate analyses (correlation, PCA, etc.).
+- **Schleswig-Holstein 2005 and 2017** include multilingual theses (e.g. German, Danish, North Frisian). After deduplication in the JS parser, **`title`** and **`these_text`** keep the **first** language variant encountered per thesis.
+- **Folder names `wahlomat_0` and `wahlomat_1`** in the original ZIPs correspond to **`hamburg2011`** and **`berlin2011`** in the CSV (`election_id`); see [election_id_policy.py](election_id_policy.py).
+- **Party names are not normalised** across elections; the same grouping may appear under different strings (e.g. `GRÜNE`, `BÜNDNIS 90/DIE GRÜNEN`, `GRÜNE/B 90`).
+
 ### When questionnaires fail
 
 **`run_analysis`** (correlation / PCA / clustering plots) can still hit unusual cases; [analysis.py](analysis.py) now handles single-party PCA, NaN correlations from zero-variance columns, and tiny matrices more defensively. If a specific election under **`data/`** keeps breaking the pipeline, add its top-level folder name to **`OMIT_FROM_BUILD_DATAFRAME`** in [skipped_elections.py](skipped_elections.py) until it is fixed.
@@ -70,7 +97,8 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 
 - **`wahlomat.py`**: unified CLI (`download`, `build-csv`, `graphs`, `run-all`); **`graphs`** forwards flags to **`build_graphs_from_csv`**.
 - **`get_zip_files.py`**: download election ZIPs; append **dynamic** download of the **Wahl-O-Mat-Datensätze** bundle from the bpb Datensätze page; workbook discovery via **`discover_bpb_excel_path(data, repo_root)`**.
-- **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`**.
+- **`build_dataframe.py`**: JS + Excel → **`all_wahlomat_answers.csv`** and **`election_metadata.csv`** ([build_metadata.py](build_metadata.py)).
+- **`bpb_urls.py`**: shared bpb **`WEITERE_WAHLEN_URL`** and HTML fetch headers (used by **`get_zip_files.py`** and **`build_metadata.py`**).
 - **`election_id_policy.py`**: JS folders superseded by canonical Excel **`election_id`** when both exist; extend the map when bpb adds overlapping cases.
 - **`build_graphs_from_csv.py`**: CSV-first graphs; optional **`--election`** / **`ELECTION_IDS`**; **`--list-elections`** prints IDs and row counts from the CSV.
 - **`load_modules.py`**: deprecated; set **`WAHLOMAT_LEGACY_LOAD_MODULES=1`** for the old JS-only loop.
