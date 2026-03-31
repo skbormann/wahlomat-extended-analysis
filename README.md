@@ -53,10 +53,10 @@ python wahlomat.py build-csv
 
 ## What you get (outputs)
 
-- `**graphs/**`: PNGs per election (correlation clustermap, PCA party map, PCA question influences). The CLI prints `Saved: <absolute path>` after writing each file.
-- `**all_wahlomat_answers.csv**` (repo root): long table of answers used to generate graphs.
-- `**election_metadata.csv**` (repo root): one row per `election_id` with display names + year + level.
-- `**data/**`: extracted Wahl-O-Mat datasets (JS exports) and/or extracted Datensätze bundle contents.
+- **`graphs/`**: PNGs per election (correlation clustermap, PCA party map, PCA question influences). The CLI prints `Saved: <absolute path>` after writing each file.
+- **`all_wahlomat_answers.csv`** (repo root): long table of answers used to generate graphs.
+- **`election_metadata.csv`** (repo root): one row per `election_id` with display names + year + level.
+- **`data/`**: extracted Wahl-O-Mat datasets (JS exports) and/or extracted Datensätze bundle contents.
 
 ## Using the CSV for your own analysis
 
