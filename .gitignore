@@ -49,6 +49,7 @@ Thumbs.db
 # This project: downloaded ZIPs, extracted elections, generated plots
 data/
 graphs/
+graphs_backup/
 graphs_backup_*/
 
 # Built long table (regenerate with build_dataframe.py)
