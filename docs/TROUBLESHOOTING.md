@@ -2,6 +2,11 @@
 
 Back to landing page: [`../README.md`](../README.md)
 
+## See also
+
+- [`USAGE.md`](USAGE.md) (copy/paste commands)
+- [`PIPELINE_REFERENCE.md`](PIPELINE_REFERENCE.md) (exact behaviors/outputs)
+
 ## Common first-time issues
 
 ### No `.xlsx` found / wrong `.xlsx` picked
@@ -24,7 +29,7 @@ Metadata generation normally fetches the bpb archive page. For offline builds, s
 
 ### “Datensätze workbook OK” is missing after download
 
-The download step prints a workbook discovery status only when the run included the Datensätze bundle. If you downloaded only election ZIPs (selective mode without `--with-datensaetze`), the workbook check is skipped to avoid implying that this run provided the `.xlsx`.
+The download step prints a workbook discovery status only when the run included the Datensätze bundle. If you downloaded only election ZIPs (selective mode without `--with-datensaetze`, or `download --election-zips-only`), the workbook check is skipped to avoid implying that this run provided the `.xlsx`.
 
 ### PCA / correlation failures for tiny elections
 
