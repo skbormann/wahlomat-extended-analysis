@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+<head>	
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <script language="javascript" type="text/javascript">
+    <!--
+       	document.writeln(parent.print_meta());
+
+		WOMT_nParteien 							= parent.WOMT_nParteien;
+		WOMT_aParteien                          = parent.WOMT_aParteien;
+	    WOMT_aParteienLogos						= parent.WOMT_aParteienLogos;
+	    WOMT_aParteienLogos2					= parent.WOMT_aParteienLogos2;
+	    
+	    S_aSort                              = parent.S_aSort;
+	    
+	    
+	    rw = '';
+		rw += '<style type="text/css" media="screen">\n';
+		lCount = 0;
+		for (lh=0;lh<WOMT_nParteien;lh++){
+    	    lNr = S_aSort[lh];
+		    if (parent.S_aParteienAusgewaehlt[lNr]==1){    		    		    
+    			rw += '.part_pics li.b'+(lCount+1)+' a:link, .part_pics li.b'+(lCount+1)+' a:visited{';
+    			rw += 'background:url('+WOMT_aParteienLogos2[lNr][0]+') no-repeat;';
+    			rw += '}';
+    			rw += '.part_pics li.b'+(lCount+1)+' a:hover, .part_pics li.b'+(lCount+1)+' a:focus{';
+    			rw += 'background:url('+WOMT_aParteienLogos2[lNr][0]+') no-repeat;';
+    			rw += '}';
+    			rw += '.part_pics li.b'+(lCount+1)+'s a:link, .part_pics li.b'+(lCount+1)+'s a:visited{';
+    			rw += 'background:url('+WOMT_aParteienLogos[lNr][0]+') no-repeat;';
+    			rw += '}';
+    			rw += '.part_pics li.b'+(lCount+1)+'s a:hover, .part_pics li.b'+(lCount+1)+'s a:focus{';
+    			rw += 'background:url('+WOMT_aParteienLogos[lNr][0]+') no-repeat;';
+    			rw += '}';
+    			lCount++;
+		    }
+		
+		}
+		rw += '<\/style>';
+		document.writeln(rw);
+	//-->
+	</script>
+</head>
+<body id="wahlomat2006">
+<script language="javascript" type="text/javascript">
+        <!--
+            if ((parent.TOPPY != 1)||(parent.S_nTheseMax<parent.WOMT_nThesen)) {
+   	            location.href = "main_app.html";
+            }
+
+	        function BildTausch(strBildHTML, strBildNeuURL) {
+				objHTML = (document.images ? document.images : document.all);
+				objHTML[strBildHTML].src = strBildNeuURL;
+			}
+
+            S_nSprache 								= parent.S_nSprache;
+            S_nTheseMax 							= parent.S_nTheseMax;
+            S_aThesen 								= parent.S_aThesen;
+            S_aThemen 								= parent.S_aThemen;
+            S_nDetailAuswertung 					= parent.S_nDetailAuswertung;
+            S_nPartei								= S_nDetailAuswertung;
+            
+            S_nWeissNicht 							= parent.S_nWeissNicht;
+            S_nNeutral 								= parent.S_nNeutral;
+			S_nSame											= parent.S_nSame;
+            
+
+            CONST_THESEN_BESCHREIBUNG 				= parent.CONST_THESEN_BESCHREIBUNG;
+
+            WOMT_aThesenBilder 						= parent.WOMT_aThesenBilder;
+            WOMT_aThesen 							= parent.WOMT_aThesen;
+            WOMT_nThesen 							= parent.WOMT_nThesen;
+            WOMT_nTexte 							= parent.WOMT_nTexte;
+            WOMT_aParteienLogos						= parent.WOMT_aParteienLogos;
+            WOMT_aParteienLogos2					= parent.WOMT_aParteienLogos2;
+			
+            WOMT_aThesenParteien 					= parent.WOMT_aThesenParteien;
+            WOMT_aThesenParteienText				= parent.WOMT_aThesenParteienText;
+            WOMT_aParteien 							= parent.WOMT_aParteien;
+            WOMT_nParteien 							= parent.WOMT_nParteien;
+            WOMT_aBilder							= parent.WOMT_aBilder;
+            WOMT_aTexte								= parent.WOMT_aTexte;
+            WOMT_aThesen_N2ID						= parent.WOMT_aThesen_N2ID;
+			CONST_WOMT_PATH							= parent.CONST_WOMT_PATH;
+            CONST_THESEN_BESCHREIBUNG_KOMMTNOCH 	= parent.CONST_THESEN_BESCHREIBUNG_KOMMTNOCH;
+
+
+
+			popup_these = -1;
+			popup_du = -1;
+			
+            popup_du 		= 0;
+            popup_partei 	= S_nDetailAuswertung;
+            popup_these 	= 0;
+            popup_sprache 	= S_nSprache;
+					
+			function popup_these_beschreibung(these,du){
+	            popup_these		= these
+                popup_du		= du;
+                url = 'popup_beschreibung.html';
+                f1=window.open(url,'faq','scrollbars=1,toolbar=1,menubar=0,location=0,status=0,resizable=0,width=348,height=430,print=yes,left=2,top=2');
+                if (parseInt(navigator.appVersion)>2) {
+                	f1.focus();
+                }
+			}
+
+            function write_6_detailauswertung() {
+
+                rw =  '';
+                
+                
+ 				rw += '<div id="main">\n';
+
+
+ 				rw += '<!-- Blindennavigation: Anfang -->\n';
+ 				rw += '<div class="unsichtbar">\n';
+     				rw += '<ul>\n';
+     				rw += '<li><a href="#content_center_w" tabindex="10" title="">'+parent.wom_html(WOMT_aTexte["6_bn_zurauswahl_text"][S_nSprache])+'<\/a><\/li>\n';
+     				rw += '<li><a href="#compare_table" tabindex="11" title="">\n';
+    
+    				text = parent.wom_html(WOMT_aTexte["6_bn_vergleichpositionen_text"][S_nSprache]);
+    				text = text.replace(/\[PARTEI\]/,parent.wom_html(WOMT_aParteien[S_nPartei][S_nSprache][0]));
+    				rw += text;
+    
+     				rw += '<\/a><\/li>\n';
+     				
+     				rw += '<li><a href="#leftnav_fixed" tabindex="12" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'<\/a><\/li>\n';
+     				rw += '<\/ul>\n';
+ 				rw += '<\/div>\n';
+ 				rw += '<!-- Blindennavigation: Ende -->\n';
+
+				rw += parent.print_main_head();
+
+ 				rw += '<div id="main_wm">\n';
+
+ 				    rw += '<div id="main_wm_sub">\n';
+
+ 				        rw += '<div id="content">\n';
+
+ 				            rw += '<div id="content_head_w">\n';
+ 				                rw += '<h2>'+parent.wom_html(WOMT_aTexte["wahlomat_content_head"][S_nSprache])+'<\/h2>\n';
+
+ 				                rw += '<div id="content_center_w">\n';
+
+                     				rw += '<h3 class="orange">'+parent.wom_html(WOMT_aTexte["6_title_text"][S_nSprache])+'<\/h3>\n';
+                    
+                     				rw += '<div class="legende">\n';
+                     				rw += '<div class="legend_green">'+parent.wom_html(WOMT_aTexte["2_legende_stimmezu"][S_nSprache])+'<\/div>\n';
+                     				rw += '<div class="legend_red">'+parent.wom_html(WOMT_aTexte["2_legende_stimmenichtzu"][S_nSprache])+'<\/div>\n';
+                     				rw += '<div class="legend_grey">'+parent.wom_html(WOMT_aTexte["2_legende_neutral"][S_nSprache])+'<\/div>\n';
+                     				rw += '<div class="legend_white">'+parent.wom_html(WOMT_aTexte["2_legende_uebersprungen"][S_nSprache])+'<\/div>\n';
+                     				rw += '<\/div>\n';
+                     				rw += '<div class="intro">'+parent.wom_html(WOMT_aTexte["6_text_text"][S_nSprache])+'<\/div>\n';
+                     				rw += '<div class="back_top"><a href="" onclick="parent.replaceIFrame(4);return false;" tabindex="13" title="'+parent.wom_titletag(WOMT_aTexte["6_btn_zurueck_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["6_btn_zurueck_text"][S_nSprache])+'<\/a><\/div>\n';
+                     				rw += '<ul class="part_pics">\n';
+						
+						
+						
+        							/*
+        								Für die Bilder ist wichtig, daß die Reihenfolge stimmt!
+        								die die Bilder im CSS mit b1-b5 drin sind.
+        								Die Bilder können deshalb nicht über das CMS verwaltet werden!
+        							*/
+        							lMargin = 0;
+        							if (parent.GetParteienAusgewaehlt()>6){
+        							    lMargin = 45;
+        							}
+        							lCount = 0;
+                                	for (f=0;f<WOMT_nParteien;f++){
+                                	    lNr = S_aSort[f];
+                                		if (parent.S_aParteienAusgewaehlt[lNr]==1){		
+        								    text = parent.wom_titletag(WOMT_aTexte["4_position_der_partei"][S_nSprache]);
+        								    text = text.replace(/\[PARTEI\]/,parent.wom_titletag(WOMT_aParteien[lNr][S_nSprache][0]));
+        				    			    rw += '<li style="margin-right:'+lMargin+'px;';
+        				    			    if ((parent.GetParteienAusgewaehlt()>6)&&(lCount==4)){
+                                                rw += 'clear:both;';
+                                            }
+        				    			    rw += '" class="b'+(lCount+1);
+        				    			        if (lNr==S_nPartei){
+        				    			            rw += "s";
+        				    			        } else {
+        				    			        }
+        				    			        rw += '">\n';
+        				    			        rw += '<a href="" onclick="parent.change_detailauswertung(' + lNr + ');return false;" tabindex="'
+        				    			                +(18+lNr)+'"title="'+text+'"><span>'
+        				    			                +parent.wom_html(WOMT_aParteien[lNr][S_nSprache][0])+'<\/span><\/a><\/li>\n';
+                                            lCount++;
+                                        }
+        							}
+        							
+                     				rw += '<\/ul>\n';
+            
+             				        rw += '<div id="compare_table">\n';
+                         				rw += '<!-- Blindennavigation: Anfang -->\n';
+                         				rw += '<div class="unsichtbar">\n';
+                        		            rw += parent.wom_html(WOMT_aTexte["6_bn_hinweis_1"][S_nSprache]);
+                         				rw += '<\/div>\n';
+                         				rw += '<!-- Blindennavigation: Ende -->\n';
+                        
+                         				rw += '<div class="tablebg1">\n';
+                             				rw += '<span class="headcol1">'+parent.wom_html(WOMT_aTexte["6_tabelle_head_nr"][S_nSprache])+'<\/span>\n';
+                             				rw += '<span class="headcol2">'+parent.wom_html(WOMT_aTexte["6_tabelle_head_these"][S_nSprache])+'<\/span>\n';
+                             				rw += '<span class="headcol3">'+parent.wom_html(WOMT_aTexte["6_tabelle_head_ihreposition"][S_nSprache])+'<\/span>\n';
+                             				rw += '<span class="headcol4">'+parent.wom_html(WOMT_aTexte["6_tabelle_head_positionpartei"][S_nSprache])+'<\/span>\n';
+                             				rw += '<span class="headcol5">'+parent.wom_html(WOMT_aTexte["6_tabelle_head_begruendung"][S_nSprache])+'<\/span>\n';
+                             				rw += '<span class="headcol6">'+parent.wom_html(WOMT_aTexte["6_tabelle_head_info"][S_nSprache])+'<\/span>\n';
+                             				rw += '<div class="clear">&nbsp;<\/div>\n';
+                         				rw += '<\/div>\n';
+                        							count = WOMT_nThesen;
+                        							for (a = 0; a < count; a++) {
+                        								nr = (a+1);
+                        						    	/*if (nr < 10){
+                        						    		nr = "0nr";
+                        						    	}*/
+                        								text = parent.wom_html(WOMT_aThesen[a][S_nSprache][1]);
+                        								rw += '<div class="tablebg';
+                                		                if ((a%2)==0){
+                                		                	rw += '2';
+                                		                } else {
+                                		                	rw += '1';
+                                		                }
+                                		                rw += '">\n';
+                        		                        rw += '<div class="contcol_num">'+nr+'<\/div>\n';
+                        		                        rw += '<div class="contcol_txt">'+text+'<\/div>\n';
+                        		                        
+                        							    switch(parseInt(S_aThesen[a])){
+                        							       case -2:
+                        							            tt = WOMT_aTexte["256_alt_ich_uebersprungen"][S_nSprache];
+                        							            ti = "white";
+                        							            break;
+                        							        case -1:
+                        							            tt = WOMT_aTexte["256_alt_ich_stimmenichtzu"][S_nSprache];
+                        							            ti = "red";
+                        							            break;
+                        							        case 0:
+                        							            tt = WOMT_aTexte["256_alt_ich_neutral"][S_nSprache];
+                        							            ti = "grey";
+                        							            break;
+                        							        case 1:
+                        							            tt = WOMT_aTexte["256_alt_ich_stimmezu"][S_nSprache];
+                        							            ti = "green";
+                        							            break;
+                        							    }
+                        							    
+                        		                        rw += '<div class="check_'+ti+'" title="'+parent.wom_titletag(tt)+'">\n';
+                        		                        rw += '<span class="unsichtbar">'+parent.wom_html(tt)+'<\/span><\/div>\n';
+                        								p = S_nPartei;
+                        						        abstimmung = parseInt(WOMT_aThesenParteien[a][p]);
+                        						        tt = "";
+                        						        ti = "";
+                        							    switch(abstimmung){
+                                                            case -2:
+                                                                tt = "";
+                                                                ti = "white";
+                                                                break;
+                                                            case -1:
+                                                                tt = WOMT_aTexte["6_alt_partei_stimmtnichtzu"][S_nSprache];
+                                                                ti = "red";
+                                                                break;
+                                                            case 0:
+                                                                tt = WOMT_aTexte["6_alt_partei_neutral"][S_nSprache];
+                                                                ti = "grey";
+                                                                break;
+                                                            case 1:
+                                                                tt = WOMT_aTexte["6_alt_partei_stimmtzu"][S_nSprache];
+                                                                ti = "green";
+                                                                break;
+                                                        }
+                        								tt = tt.replace(/\[PARTEI\]/,WOMT_aParteien[S_nPartei][S_nSprache][0]);
+                        								
+                        								
+                        		                        rw += '<div class="check_'+ti+'" title="'+parent.wom_titletag(tt)+'">\n';
+                        		                        rw += '<span class="unsichtbar">'+parent.wom_html(tt)+'<\/span><\/div>\n';
+                        		                        rw += '<a href="" onclick="popup_these_beschreibung(\''
+                        					    			+a+'\',\''
+                        					    			+S_aThesen[a]+'\');return false;" title="'
+                        					    			+parent.wom_titletag(WOMT_aTexte["6_tabelle_popup_parteithese_title"][S_nSprache])
+                        					    			+'" tabindex="'+((a*2)+30)+'" target="popup1" class="contcol_partlink"><span class="unsichtbar">'
+                        					    			+parent.wom_html(tt)
+                        					    			+'<\/span><\/a>\n';
+                        		                        
+                        		                        rw += '<a href="http://www.wahl-o-mat.de/'+CONST_WOMT_PATH+'/weiterleitung.php?w=mehr&amp;these_nr='+(a+1)+'&amp;these_id='+WOMT_aThesen_N2ID[a]+'" tabindex="'+((a*2)+30+1)+'" title="'+parent.wom_titletag(WOMT_aTexte["6_tabelle_inhalt_mehrzumthema_title"][S_nSprache])+'" target="_blank" class="contcol_info"><span class="unsichtbar">'+parent.wom_html(WOMT_aTexte["6_tabelle_inhalt_mehrzumthema_text"][S_nSprache])+'<\/span><\/a>\n';
+                        		                        
+                            		                        rw += '<div class="clear">&nbsp;</div>\n';
+                        		                        rw += '</div>\n';
+                        							        
+                        
+                        						    }
+                    						
+ 				                                rw += '</div>\n';
+                                            
+			                                        rw += '<div class="clear">&nbsp;</div>\n';
+			                                        rw += '<div class="clear">&nbsp;</div>\n';
+     				                                rw += '<div class="buttons">\n';
+     				                                    rw += '<div class="buttons_links">\n';
+                                             				rw += '<a class="button_zurueck" href="" onclick="parent.replaceIFrame(4);return false;" tabindex="292" title="'
+                                             				        + parent.wom_titletag(WOMT_aTexte["6_btn_zurueck_title"][S_nSprache])+'">\n';
+                                             				rw +=  parent.wom_html(WOMT_aTexte["6_btn_zurueck_text"][S_nSprache])+'</a>\n';
+                                         				rw += '</div>\n';
+                                         				rw += '<div class="buttons_rechts">\n';
+                                         				rw += '<a class="button_weiter" href="" onclick="parent.location.href = \'main_app.html\';return false;" tabindex="293" title="'
+                                         				    + parent.wom_titletag(WOMT_aTexte["a_neustart_title"][S_nSprache])+'">'
+                                         			    rw += parent.wom_html(WOMT_aTexte["a_neustart_text"][S_nSprache])+'</a>\n';
+                                         				rw += '<\/div>\n';
+                                     				rw += '<\/div>\n';
+                                 				rw += '<\/div>\n';
+                             				rw += '<\/div>\n';
+                rw += '<div class="clear">&nbsp;</div>\n';			                        
+                rw += '<div id="content_foot_w_schatten">&nbsp;<\/div>\n';
+ 				rw += '<\/div>\n';
+                rw += '<div id="leftnav_fixed">\n';
+                    rw += '<div id="leftnav_fixed_sub">\n';
+    			    	rw += parent.print_left_nav();
+     			    rw += '<\/div>\n';
+    			rw += '<\/div>\n';
+                rw += '<!-- Blindennavigation: Anfang -->\n';
+ 				rw += '<div class="unsichtbar">\n';
+ 				rw += '<ul>\n';
+ 				rw += '<li><a href="#main" tabindex="330">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'<\/a><\/li>\n';
+ 				rw += '<li><a href="#content_center_w" tabindex="331">'+parent.wom_html(WOMT_aTexte["6_bn_zurauswahl_text"][S_nSprache])+'<\/a><\/li>\n';
+ 				rw += '<li><a href="#compare_table" tabindex="332">\n';
+                text = parent.wom_html(WOMT_aTexte["6_bn_vergleichpositionen_text"][S_nSprache]);
+                text = text.replace(/\[PARTEI\]/,parent.wom_html(WOMT_aParteien[S_nPartei][S_nSprache][0]));
+            	rw += text;
+ 				rw += '<\/a><\/li>\n';
+ 				rw += '<\/ul>\n';
+ 				rw += '<\/div>\n';
+ 				rw += '<!-- Blindennavigation: Ende -->\n';
+
+ 				rw += '<\/div>\n';
+
+				rw += parent.print_main_foot();
+
+ 				rw += '<\/div>\n';
+
+ 				rw += '<\/div>\n';
+
+
+                return rw;
+            }
+
+            document.writeln(write_6_detailauswertung());
+            
+			//-->
+        </script>
+    </body>
+</html>

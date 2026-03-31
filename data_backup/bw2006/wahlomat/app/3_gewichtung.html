@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">			
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+<head>	
+    <script type="text/javascript" type="text/javascript">
+         	//alert (parent.print_meta());
+        	document.writeln(parent.print_meta());
+	</script>
+</head>
+<body id="wahlomat2006">
+<script language="javascript">
+            if ((parent.TOPPY != 1)||(parent.S_nTheseMax<parent.WOMT_nThesen)) {
+   	            location.href = "main_app.html";
+            }
+
+            S_nSprache				= parent.S_nSprache;
+            S_nTheseAktuell			= parent.S_nTheseAktuell;
+            S_nTheseMax				= parent.S_nTheseMax;
+            S_aThesen				= parent.S_aThesen;
+            S_aThemen				= parent.S_aThemen;
+            S_aThemen				= parent.S_aThemen;
+            S_nLand					= parent.S_nLand;
+            CONST_ONLINE			= parent.CONST_ONLINE;
+            CONST_GEWICHTUNG		= parent.CONST_GEWICHTUNG;
+            WOMT_aThesenBilder		= parent.WOMT_aThesenBilder;
+            WOMT_aThesen			= parent.WOMT_aThesen;
+            WOMT_nThesen			= parent.WOMT_nThesen;
+            WOMT_nThemen			= parent.WOMT_nThemen;
+            WOMT_aThemen			= parent.WOMT_aThemen;
+            WOMT_nTableWidth		= parent.WOMT_nTableWidth;
+            WOMT_nTexte				= parent.WOMT_nTexte;
+            WOMT_aParteienLogos		= parent.WOMT_aParteienLogos;
+            WOMT_nParteien			= parent.WOMT_nParteien;
+            WOMT_aBilder			= parent.WOMT_aBilder;
+            WOMT_aTexte				= parent.WOMT_aTexte;
+
+            b=S_nTheseAktuell+1;
+
+/*            function change_thema(nr) {
+                  alert("Change Thema");
+                  val=parent.get_thema(nr);
+                  if (val == 1) {
+                      parent.set_thema(nr, 0);
+                      //document.form_themen.elements['nr'].checked = false;
+                  } else {
+                      parent.set_thema(nr,1);
+                      //document.form_themen.elements[nr].checked=true;
+                  }
+              }*/
+
+            function change_land(nr) {
+                sel = document.forms["themen"].select_land;
+                S_nLand = parent.S_nLand = sel.value;
+            }
+			
+			function change_gewichtung(val){
+				if (document.forms['themen'].elements[val]){
+					if (document.forms['themen'].elements[val].checked == true){
+						document.forms['themen'].elements[val].checked = false;
+					} else {
+						document.forms['themen'].elements[val].checked = true;
+					}
+				}
+			}
+		
+            function ergebnis() {
+                if (CONST_GEWICHTUNG == 1) {
+					ct = WOMT_nThesen;
+				} else {
+					ct = WOMT_nThemen;
+				}
+                for (a = 0; a < ct; a++) {
+                    val = 'cb_themen_' + a;
+                    //alert(val);
+                    if (document.forms['themen'].elements[val].checked == true) {
+                        //alert("Reset"+a);
+                        parent.set_thema(a, 1);
+                    } else {
+                        //alert("Set: "+a);
+                        parent.set_thema(a,0);
+                    }
+                }
+                parent.replaceIFrame('4');
+            }
+
+            function write_3_themen(){
+                rw = '';
+                rw += '<form enctype="multipart/form-data" name="themen" method="get" action="main_app.php">';
+                rw += '<input type="hidden" name="cb_themen" value="change" />';
+                rw += '<div id="main">';
+
+                rw += '<!-- Blindennavigation: Anfang -->';
+				rw += '<div class="unsichtbar">';
+				rw += '<ul>';
+				rw += '<li><a href="#content_center_w" tabindex="10" title="">'+parent.wom_html(WOMT_aTexte["3_bn_thesengewichtung_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#leftnav_normal" tabindex="11" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'</a></li>';
+				rw += '</ul>';
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Ende -->';
+
+				rw += parent.print_main_head();
+
+				rw += '<div id="main_wm">';
+
+				rw += '<div id="main_wm_sub">';
+
+				rw += '<div id="content">';
+
+				rw += '<div id="content_head_w">';
+				rw += '<h2>'+parent.wom_html(WOMT_aTexte["wahlomat_content_head"][S_nSprache])+'</h2>';
+
+				rw += '<div id="content_center_w">';
+
+				rw += '<h3 class="orange">'+parent.wom_html(WOMT_aTexte["3_titel_text"][S_nSprache])+'</h3>';
+
+				rw += '<div class="intro">'+parent.wom_html(WOMT_aTexte["3_text_text"][S_nSprache])+'</div>';
+
+				rw += '<div id="weight_table">';
+
+				rw += '<!-- Blindennavigation: Anfang -->';
+				rw += '<div class="unsichtbar">';
+				rw += parent.wom_html(WOMT_aTexte["3_bn_hinweis"][S_nSprache]);
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Ende -->';
+
+				rw += '<div class="tablebg1">';
+				rw += '<ul>';
+				rw += '<li class="headcol1">'+parent.wom_html(WOMT_aTexte["3_tabelle_nr"][S_nSprache])+'</li>';
+				rw += '<li class="headcol2">'+parent.wom_html(WOMT_aTexte["3_tabelle_these"][S_nSprache])+'</li>';
+				rw += '<li class="headcol3">'+parent.wom_html(WOMT_aTexte["3_tabelle_auswahl"][S_nSprache])+'</li>';
+				rw += '</ul>';
+				rw += '</div>';
+								checked = '';
+								if (CONST_GEWICHTUNG == 1) {
+								    ct = WOMT_nThesen;
+							    } else {
+								    ct = WOMT_nThemen;
+							    }
+							    for (a = 0; a < ct; a++) {
+							    	nr = (a+1);
+							    	if (nr < 10){
+							    		//nr = "0"+nr;
+							    	}
+							    	if (S_aThemen[a] == 1) {
+							    		checked = ' checked="checked" ';
+							    	} else {
+							    		checked = "";
+							    	}
+									rw += '\n<div class="tablebg';
+									if ((a%2)==0){
+										rw += '1';
+									} else {
+										rw += '2';
+									}
+									rw += '">';
+									rw += '<div class="tablebgsub">';
+									rw += '<div class="contcol_num">'+nr+'</div>';
+									rw += '<div class="contcol_txt"><label for="checkbox'+nr+'">';
+								    	if (CONST_GEWICHTUNG==1){
+								    		if (WOMT_aThesen[a][S_nSprache][0]!=""){
+								    			rw += WOMT_aThesen[a][S_nSprache][0];
+								    		} else {
+								    			rw += WOMT_aThesen[a][S_nSprache][1];
+								    		}
+								    	} else {
+								    		rw += WOMT_aThemen[a][S_nSprache];
+								    	}
+													
+										rw += '</label></div>';
+										rw += '<div class="contcol_check"><input type="checkbox" id="checkbox'+nr+'" '+checked+' name="cb_themen_'+a+'" value="1" tabindex="'+(12+a)+'"/></div>';
+										rw += '</div>';
+										rw += '</div>';
+								    } 
+				rw += '</div>';
+				rw += '<div class="restart">';
+				rw += '<a href="javascript:ergebnis();" tabindex="43" title="'
+							+parent.wom_titletag(WOMT_aTexte["3_form_submit_text"][S_nSprache])
+							+'">'
+							+parent.wom_html(WOMT_aTexte["3_form_submit_text"][S_nSprache])
+							+'</a>';
+				rw += '</div>';
+				rw += '<div class="back"><a href="javascript:parent.change_frage('
+							+ (WOMT_nThesen - 1)
+							+ ');'
+							+ '" tabindex="42" title="'
+							+ parent.wom_titletag(WOMT_aTexte["3_btn_zurueck_title"][S_nSprache])
+							+'">'
+							+parent.wom_html(WOMT_aTexte["3_btn_zurueck_text"][S_nSprache])
+							+'</a></div>';
+				rw += '</div>';
+				rw += '</div>';
+
+				rw += '<div id="content_foot_w">&nbsp;</div>';
+
+				rw += '</div>';
+
+				rw += '<div id="leftnav_fixed">';
+				rw += '<div id="leftnav_fixed_sub">';
+				rw += parent.print_left_nav();
+				rw += '</div>';
+				rw += '</div>';
+
+				rw += '<!-- Blindennavigation: Anfang -->';
+				rw += '<div class="unsichtbar">';
+				rw += '<ul>';
+				rw += '<li><a href="#main" tabindex="107" title="">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#content_center_w" tabindex="108" title="">'+parent.wom_html(WOMT_aTexte["3_bn_thesengewichtung_text"][S_nSprache])+'</a></li>';
+				rw += '</ul>';
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Ende -->';
+
+				rw += '</div>';
+
+				rw += parent.print_main_foot();
+
+				rw += '</div>';
+
+				rw += '</div>';
+				rw += '</form>';
+								
+				return rw;
+            }
+
+            document.writeln(write_3_themen());
+        </script>
+    </body>
+</html>

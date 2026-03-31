@@ -1,0 +1,24 @@
+/* Footer immer */
+.foottext1  {clear:all; font:normal 0.6em verdana,   arial,   sans-serif; float:left;}
+
+/* Reihe 1 
+    ZDF
+    SPIEGEL
+    FAZ
+    WELT
+    T-Online
+*/
+#main_foot_sub div.b1 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 0px; width:63px; height:45px;}
+#main_foot_sub div.b2 a {margin-left:43px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -45px; width:136px; height:45px;}
+#main_foot_sub div.b3 a {margin-left:51px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -90px; width:81px; height:45px;}
+#main_foot_sub div.b4 a {margin-left:45px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -405px; width:115px; height:45px;}
+#main_foot_sub div.b5 a {margin-left:37px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -225px; width:149px; height:45px;}
+
+
+#main_foot_sub div.b6 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -180px; width:137px; height:45px;}
+#main_foot_sub div.b7 a {margin-left:48px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -450px; width:182px; height:45px;}
+#main_foot_sub div.b8 a {margin-left:56px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -270px; width:134px; height:45px;}
+#main_foot_sub div.b9 a {margin-left:46px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -360px; width:115px; height:45px;}
+
+#main_foot_sub div.b10 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -315px; width:67px; height:45px;}
+#main_foot_sub div.b11 a {margin-left:39px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -135px; width:138px; height:45px;}

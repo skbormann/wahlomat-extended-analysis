@@ -1,0 +1,331 @@
+<html>
+    <head>
+        <title>Wahlomat</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel=stylesheet type="text/css" href="style.css">
+    </head>
+
+    <body background="images/bg2004ff.gif" bgcolor="#A9BFE1" text="#000000" link="#000000" vlink="#000000" alink="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+        <script language="javascript">
+            if (parent.TOPPY != 1){
+   	            location.href = "main_app.html";
+   	            exit;
+            }
+
+            S_nSprache = parent.S_nSprache;
+            S_nTheseAktuell = parent.S_nTheseAktuell;
+            S_nTheseMax = parent.S_nTheseMax;
+            S_aThesen = parent.S_aThesen;
+            S_aThemen = parent.S_aThemen;
+            S_nDetailAuswertung = parent.S_nDetailAuswertung;
+
+            CONST_THESEN_BESCHREIBUNG = parent.CONST_THESEN_BESCHREIBUNG;
+
+            WOMT_aThesenBilder = parent.WOMT_aThesenBilder;
+            WOMT_aThesen = parent.WOMT_aThesen;
+            WOMT_nThesen = parent.WOMT_nThesen;
+            WOMT_nTableWidth = parent.WOMT_nTableWidth;
+            WOMT_nTexte = parent.WOMT_nTexte;
+            WOMT_aParteienLogos = parent.WOMT_aParteienLogos;
+            WOMT_aThesenParteien = parent.WOMT_aThesenParteien;
+            WOMT_aParteien = parent.WOMT_aParteien;
+            WOMT_nParteien = parent.WOMT_nParteien;
+            WOMT_aBilder = parent.WOMT_aBilder;
+            WOMT_aTexte = parent.WOMT_aTexte;
+
+            CONST_THESEN_BESCHREIBUNG_KOMMTNOCH = parent.CONST_THESEN_BESCHREIBUNG_KOMMTNOCH;
+
+            bgcolor_0065CE = ' bgcolor="#0065CE" ';
+            bgcolor_FFFFFF = ' bgcolor="FFFFFF" ';
+            bgcolor_000000 = ' bgcolor="#000000" ';
+            bgcolor_00CF00 = ' bgcolor="#FFFFFF" ';
+            bgcolor_D6D3D6 = ' bgcolor="#D6D3D6" ';
+            bgcolor_848284 = '';
+
+            b = S_nTheseAktuell + 1;
+
+            function change_detailauswertung() {
+                obj_p = document.form_select_partei.partei;
+                for (a = 0; a < obj_p.length; a++) {
+                    if (obj_p[a].selected == true) {
+  	                    parent.change_detailauswertung(a);
+  	                    return;
+                    }
+                }
+            }
+
+            function write_4_detailauswertung() {
+
+                rw =    '';
+                rw +=   '<center>';
+                // Kopfzeile
+                rw +=   '<table border="0" cellpadding="0" cellspacing="0" width="760">';
+                rw +=       '<tr>';
+                rw +=           '<td width="33%" height="60"><a href="http://www.zdf.de" target="_blank"><img src="images/sponsoren/zdf.gif" width="115" height="45" alt="ZDF" border="0"></a></td>';
+                rw +=           '<td width="33%" align="center"><a href="http://www.bpb.de" target="_blank"><img src="images/sponsoren/bpb.gif" width="112" height="49" alt="Bundeszentrale politische Bildung" border="0"></a></td>';
+                rw +=           '<td width="33%" align="right"><a href="http://www.europarl.de" target="_blank"><img src="images/sponsoren/europaparlament.gif" width="120" height="57" alt="" border="0"></a></td>';
+                rw +=       '</tr>';
+                rw +=       '<tr>';
+                rw +=           '<td valign="top" colspan="3" height="10"><img src="images/fill.gif" width="1" height="10" alt="" border="0"></td>';
+                rw +=       '</tr>';
+                rw +=   '</table>';
+                // /kopfzeile
+
+                rw +=   '<img src="images/fill.gif" width="10" height="20" alt="" border="0"><br>';
+                rw +=   '<table border="0" cellpadding="0" cellspacing="0" width="760">';
+                rw +=       '<tr>';
+                rw +=           '<td valign="top" width="140"><img src="images/fill.gif" width="10" height="1" alt="" border="0">';
+                rw += 		'<!-- sprachversion -->'
+                rw += parent.WOMT_put_sprachumschaltung();
+                rw +=           '</td>';
+                rw +=           '<td valign="top" width="503">';
+                rw +=               '<table border="0" cellpadding="0" cellspacing="0" width="503" background="images/fill.gif" bgcolor="#ffffff" height="500">';
+                rw +=                   '<tr>';
+                rw +=                       '<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+                rw +=                       '<td valign="top" width="480" bgcolor="#ffffff">&nbsp;</td>';
+                rw +=                       '<td valign="top" width="3" bgcolor="#000000"><img src="images/fill.gif" width="3" height="1" alt="" border="0"></td>';
+                rw +=                   '</tr>';
+                rw +=                   '<tr>';
+                rw +=                       '<td valign="top" width="20" bgcolor="#ffffff"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+                rw +=                       '<td valign="top" bgcolor="#ffffff" width="480">';
+                // Infokasten
+                rw +=                           '<!-- beginn infokasten -->';
+                rw +=                           '<table border="0" cellpadding="3" cellspacing="0" align="right">';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" width="12"><img src="images/fill.gif" width="12" height="1" alt="" border="0"></td>';
+                rw +=                                   '<td><a href="faq.html" onClick="f1=window.open(\'\',\'faq\',\'scrollbars=1,toolbar=1,menubar=0,location=0,status=0,resizable=0,width=348,height=430,print=yes,left=2,top=2\');if (parseInt(navigator.appVersion)>2) {f1.focus();}" TARGET="faq"><img src="images/icons/faq.gif" width="26" height="15" alt="" border="0"></a></td>';
+                rw +=                                   '<td><b><a href="faq.html" onClick="f1=window.open(\'\',\'faq\',\'scrollbars=1,toolbar=1,menubar=0,location=0,status=0,resizable=0,width=348,height=430,print=yes,left=2,top=2\');if (parseInt(navigator.appVersion)>2) {f1.focus();}" TARGET="faq"><font class="elf" color="#666666">' + WOMT_aTexte['wahlomat_faq'][S_nSprache] + '</font></a></b></td>';
+                rw +=                                   '<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+                rw +=                               '</tr>';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" colspan="4"><img src="images/fill.gif" width="10" height="2" alt="" border="0"></td>';
+                rw +=                               '</tr>';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" width="12"><img src="images/fill.gif" width="12" height="1" alt="" border="0"></td>';
+                rw +=                                   '<td><a href="mailto:info@wahl-o-mat.de"><img src="images/icons/email.gif" width="26" height="15" alt="" border="0"></a></td>';
+                rw +=                                   '<td><b><a href="mailto:info@wahl-o-mat.de"><font class="elf" color="#666666">' + WOMT_aTexte['wahlomat_email'][S_nSprache] + '</font></a></b></td>';
+                rw +=                                   '<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+                rw +=                               '</tr>';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" colspan="4"><img src="images/fill.gif" width="10" height="2" alt="" border="0"></td>';
+                rw +=                               '</tr>';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" width="12"><img src="images/fill.gif" width="12" height="1" alt="" border="0"></td>';
+                rw +=                                   '<td><a href="http://www.bpb.de/methodik/Z5FFO5,0,0,WahlOMat.html" target="_blank"><img src="images/icons/info.gif" width="26" height="15" alt="" border="0"></a></td>';
+                rw +=                                   '<td><b><a href="http://www.bpb.de/methodik/Z5FFO5,0,0,WahlOMat.html" target="_blank"><font class="elf" color="#666666">' + WOMT_aTexte['wahlomat_info'][S_nSprache] + '</font></a></b></td>';
+                rw +=                                   '<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+                rw +=                               '</tr>';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" colspan="4"><font class="elf">&nbsp;</font></td>';
+                rw +=                               '</tr>';
+                rw +=                           '</table>';
+                rw +=                           '<!-- ende infokasten -->';
+                // /infokasten
+
+                rw +=                           '<font class="standard" size="2"><b>' + WOMT_aParteien[S_nDetailAuswertung][S_nSprache][0] + '</b><p></font>';
+                rw +=                           '<form name="form_select_partei" id="form_select_partei" method=get action="">';
+
+                rw +=                           '<font class="standard" size="1"><b>' + WOMT_aTexte["ausw_detail_thesenvergleich"][S_nSprache] + '</b><br></font>';
+                rw +=                           '<select onChange="javascript:change_detailauswertung();" name="partei" id="partei">';
+
+                for (a = 0; a < WOMT_nParteien; a++) {
+                    if (S_nDetailAuswertung==a) {
+                        rw +=                       '<option value="' + a + '" selected>';
+                    } else {
+                        rw +=                       '<option value="' + a + '">';
+                    }
+                    rw +=                               WOMT_aParteien[a][S_nSprache][0];
+                    rw +=                           '</option>';
+                }
+                rw +=                           '</select> ';
+                rw +=                           '<input type="image" src="images/doppelpfeil_orange.gif"><font class="standard" size="1"><b>' + WOMT_aTexte["ausw_detail_auswaehlen"][S_nSprache] + '</b></font><br>';
+                rw +=                           '</form>';
+                rw +=                           '<p><font class="standard" size="2">';
+
+                if (CONST_THESEN_BESCHREIBUNG == 1) {
+                    rw +=                       WOMT_aTexte["ausw_detail_text_popup"][S_nSprache];
+                } else {
+                    rw +=                       WOMT_aTexte["ausw_detail_text"][S_nSprache];
+                }
+                rw +=                           '</font><br><br>';
+
+                rw +=                           '<!-- beginn ergebnis -->';
+                rw +=                           '<table border="1" cellpadding="0" cellspacing="0" width="460" class="ergebnis">';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" class="abstand" width="30" align="center" bgcolor="#F7E68B"><font class="standard" size="1"><b>Nr.</b></font></td>';
+                rw +=                                   '<td class="abstand" width="180" bgcolor="#F9EDAC"><font class="standard" size="1"><b>' + WOMT_aTexte["ausw_detail_these"][S_nSprache] + '</b></font></td>';
+                rw +=                                   '<td colspan="2" class="abstand" width="180" align="center" bgcolor="#FEAE02"><font class="standard" size="1"><b>' + WOMT_aTexte["ausw_detail_abstand"][S_nSprache] + '</b></font></td>';
+                rw +=                                   '<td class="abstand" width="35" align="center" bgcolor="#F9EDAC"><font class="standard" size="1"><b>' + WOMT_aTexte["ausw_detail_siedu"][S_nSprache] + '</b></font></td>';
+                rw +=                                   '<td class="abstand" width="35" align="center" bgcolor="#F9EDAC"><font class="standard" size="1"><b>' + WOMT_aTexte["ausw_detail_partei"][S_nSprache] + '</b></font></td>';
+                rw +=                               '</tr>';
+                rw +=                               '<tr>';
+                rw +=                                   '<td valign="top" class="abstand" width="30" bgcolor="#FBF1BD">&nbsp;</td>';
+                rw +=                                   '<td class="abstand" width="180">&nbsp;</td>';
+                rw +=                                   '<td width="90" bgcolor="#F4DC59" class="abstand">';
+                rw +=                                       '<table border="0" cellpadding="0" cellspacing="0" width="100%">';
+                rw +=                                           '<tr>';
+                rw +=                                               '<td><font class="zehn" size="1">&nbsp;<b>' + WOMT_aTexte["ausw_detail_gross"][S_nSprache] + '</b></font></td>';
+                rw +=                                               '<td align="right"><img src="images/pfeil_orange_zurueck.gif" width="9" height="10" alt="' + WOMT_aTexte['ausw_detail_klein_pfeil'][S_nSprache] + '" border="0">&nbsp;</td>';
+                rw +=                                           '</tr>';
+                rw +=                                       '</table>';
+                rw +=                                   '</td>';
+                rw +=                                   '<td width="90" bgcolor="#F4DC59" class="abstand">';
+                rw +=                                       '<table border="0" cellpadding="0" cellspacing="0" width="100%">';
+                rw +=                                           '<tr>';
+                rw +=                                               '<td>&nbsp;<img src="images/pfeil_orange.gif" width="9" height="10" alt="' + WOMT_aTexte['ausw_detail_gross_pfeil'][S_nSprache] + '" border="0"></td>';
+                rw +=                                               '<td align="right"><font class="zehn" size="1"><b>' + WOMT_aTexte["ausw_detail_klein"][S_nSprache] + '</b>&nbsp;</font></td>';
+                rw +=                                           '</tr>';
+                rw +=                                       '</table>';
+                rw +=                                   '</td>';
+                rw +=                                   '<td class="abstand" width="35" align="center">&nbsp;</td>';
+                rw +=                                   '<td class="abstand" width="35" align="center">&nbsp;</td>';
+                rw +=                               '</tr>';
+                for (a = 0; a < WOMT_aThesen.length; a++) {
+                    if (S_aThesen[a] <= -2) {
+                        dist = 1;
+                    } else {
+                        dist = Math.abs(WOMT_aThesenParteien[a][S_nDetailAuswertung] - S_aThesen[a]);
+                    }
+
+                    rw +=                           '<tr>';
+                    if (a & 1) rw +=                    '<td valign="top" class="abstand" width="30" align="center" bgcolor="#FBF1BD">';
+                    else rw +=                          '<td valign="top" class="abstand" width="30" align="center" bgcolor="#F8EA9F">';
+                    rw +=                                   '<font class="standard" size="1"><b>' + (a + 1) + '</b></font>';
+                    rw +=                               '</td>';
+
+                    if (a & 1) rw +=                    '<td class="abstand" width="180" bgcolor="#FFFFFF">';
+                    else rw +=                          '<td class="abstand" width="180" bgcolor="#FBF4CD">';
+
+                    popup_du = S_aThesen[a];
+                    popup_partei = S_nDetailAuswertung;
+                    popup_these = a;
+                    popup_sprache = S_nSprache;
+                    popup_kommtnoch = CONST_THESEN_BESCHREIBUNG_KOMMTNOCH;
+
+                    if (CONST_THESEN_BESCHREIBUNG == 1) {
+                        rw +=                               '<a href="parteien_these_beschreibung.html" onClick="popup_these=' + a + ';popup_du=' + S_aThesen[a] + ';f1=window.open(\'\',\'faq\',\'scrollbars=1,toolbar=1,menubar=0,location=0,status=0,resizable=0,width=348,height=430,print=yes,left=2,top=2\');if (parseInt(navigator.appVersion)>2) {f1.focus();}" TARGET="faq"><font class="standard" size="1">';
+                        rw +=                               WOMT_aThesen[a][S_nSprache][0] + ' <img src="images/pfeil_orange.gif" width="9" height="10" alt="" border="0"></font></a>';
+                    } else {
+                        rw +=                               WOMT_aThesen[a][S_nSprache][0];
+                    }
+                    rw +=                               '</td>';
+
+                    if (a & 1) bgcolor = '#FBF4CD';
+                    else bgcolor = '#F8EA9F';
+                    switch(dist) {
+                        default:
+                        case 1:
+                            if (S_aThesen[a] <= -2) { // Keine Antwort!
+                                rw +=                   '<td width="90" align="right" bgcolor="' + bgcolor + '"><img src="images/wahlomat/ergebnis/skala_grau.gif" width="11" height="15" alt="" border="0"></td>';
+                                rw +=                   '<td width="90" bgcolor="' + bgcolor + '"><img src="images/wahlomat/ergebnis/skala_grau.gif" width="11" height="15" alt="" border="0"></td>';
+                            } else {
+                                rw +=                   '<td width="90" align="right" bgcolor="' + bgcolor + '"><img src="images/wahlomat/ergebnis/skala_gelb.gif" width="11" height="15" alt="" border="0"></td>';
+                                rw +=                   '<td width="90" bgcolor="' + bgcolor + '"><img src="images/wahlomat/ergebnis/skala_gelb.gif" width="11" height="15" alt="" border="0"></td>';
+                            }
+                        break;
+                        case 2:
+                            rw +=                       '<td width="90" align="right" bgcolor="' + bgcolor + '"><img src="images/wahlomat/ergebnis/skala_rot.gif" width="32" height="15" alt="" border="0"></td>';
+                            rw +=                       '<td width="90" bgcolor="' + bgcolor + '">&nbsp;</td>';
+                        break;
+                        case 0:
+                            rw +=                       '<td width="90" align="right" bgcolor="' + bgcolor + '">&nbsp;</td>';
+                            rw +=                       '<td width="90" bgcolor="' + bgcolor + '"><img src="images/wahlomat/ergebnis/skala_gruen.gif" width="32" height="15" alt="" border="0"></td>';
+                        break;
+                    }
+
+                    if (a & 1) rw +=                    '<td class="abstand" width="35" align="center" bgcolor="#FFFFFF">';
+                    else rw +=                          '<td class="abstand" width="35" align="center" bgcolor="#FBF4CD">';
+
+                    if (S_aThesen[a] == 1) rw +=            '<img src="images/wahlomat/buttons/plus.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_benutzer_zustimmung'][S_nSprache] + '" border="0">';
+                    else if (S_aThesen[a] ==0 ) rw +=       '<img src="images/wahlomat/buttons/leer.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_benutzer_neutral'][S_nSprache] + '" border="0">';
+                    else if (S_aThesen[a] == -1) rw +=      '<img src="images/wahlomat/buttons/minus.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_benutzer_ablehnung'][S_nSprache] + '" border="0">';
+                    else rw +=                              '<img src="images/wahlomat/buttons/fragezeichen.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_benutzer_keine_meinung'][S_nSprache] + '" border="0">';
+
+                    rw +=                               '</td>';
+
+                    if (a & 1) rw +=                    '<td class="abstand" width="35" align="center" bgcolor="#FFFFFF">';
+                    else rw +=                          '<td class="abstand" width="35" align="center" bgcolor="#FBF4CD">';
+
+                    if (WOMT_aThesenParteien[a][S_nDetailAuswertung] == 1) {
+                        rw +=                               '<img src="images/wahlomat/buttons/plus.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_partei_zustimmung'][S_nSprache] + '" border="0">';
+                    } else if (WOMT_aThesenParteien[a][S_nDetailAuswertung] == 0) {
+                        rw +=                               '<img src="images/wahlomat/buttons/leer.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_partei_neutral'][S_nSprache] + '" border="0">';
+                    } else if (WOMT_aThesenParteien[a][S_nDetailAuswertung] == -1) {
+                        rw +=                               '<img src="images/wahlomat/buttons/minus.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_partei_ablehnung'][S_nSprache] + '" border="0">';
+                    } else if (WOMT_aThesenParteien[a][S_nDetailAuswertung] == -2) {
+                        rw +=                               '<img src="images/wahlomat/buttons/fragezeichen.gif" width="14" height="14" alt="' + WOMT_aTexte['ausw_details_partei_keine_meinung'][S_nSprache] + '" border="0">';
+                    }
+                    rw +=                               '</td>';
+                    rw +=                           '</tr>';
+                }
+
+                rw +=                           '</table>';
+
+                rw +=                           '<p><img src="images/doppelpfeil_orange_zurueck.gif" width="13" height="9" alt="" border="0"> ';
+                rw +=                           '<a href="javascript:parent.replaceIFrame(3);"><font class="standard" size="2" color="#000000"><b>' + WOMT_aTexte['wahlomat_zurueck'][S_nSprache] + '</b></p></a></font>';
+                rw +=                       '</td>';
+                rw +=                       '<!-- ende ergebnis -->';
+
+                rw +=                       '<td valign="top" width="3" bgcolor="#001636"><img src="images/fill.gif" width="3" height="1" alt="" border="0"></td>';
+                rw +=                   '</tr>';
+                rw +=                   '<tr>';
+                rw +=                       '<td valign="top" colspan="3" bgcolor="#001636"><img src="images/dblau.gif" width="3" height="3" alt="" border="0"></td>';
+                rw +=                   '</tr>';
+                rw +=               '</table>';
+                rw +=           '</td>';
+                rw +=           '<td valign="top" width="17"><img src="images/fill.gif" width="17" height="1" alt="" border="0"></td>';
+                rw +=           '<td valign="top" width="230">';
+                rw +=               '<img src="images/wahlomat/ergebnis/automat_o.gif" width="225" height="81" alt="" border="0"><img src="images/wahlomat/ergebnis/parteien/leer.gif" width="225" height="72" alt="" border="0"><img src="images/wahlomat/ergebnis/automat_u.gif" width="225" height="72" alt="" border="0">';
+                rw +=               '<br><br>';
+                rw +=               '<p><img src="images/pfeil_orange.gif" width="9" height="10" alt="" border="0"> <a href="../index.html"><font class="standard" size="1" color="#ffffff">' + WOMT_aTexte['wahlomat_neu_starten'][S_nSprache] + '</a><br></p>';
+                rw +=               '<font class="standard" size="1" color="#ffffff">';
+
+                if (S_nSprache == 1000) {
+                } else {
+                    rw +=           WOMT_aTexte['weitere_informationen_ueber_eu'][S_nSprache];
+                }
+
+                rw +=               '<br><br></font>';
+                rw +=               '<img src="images/aufzaehlung.gif" width="8" height="4" alt="" border="0"><a href="http://www.bpb.de/themen/AEEN2Y,,0,Die_Zukunft_der_Europ%E4ischen_Union.html" target="_blank"><font class="standard" size="1" color="#FFD800">www.bpb.de<br></font></a>';
+                rw +=               '<img src="images/aufzaehlung.gif" width="8" height="4" alt="" border="0"><a href="http://www.zdf.de" target="_blank"><font class="standard" size="1" color="#FFD800">www.zdf.de<br></font></a>';
+                rw +=               '<img src="images/aufzaehlung.gif" width="8" height="4" alt="" border="0"><a href="http://www.europa-waehlt.de" target="_blank"><font class="standard" size="1" color="#FFD800">www.europa-waehlt.de<br></font></a>';
+                rw +=           '</td>';
+                rw +=       '</tr>';
+                rw +=   '</table>';
+                rw +=   '<br>';
+
+                // Fuss-Bereich
+                rw +=   '<map name="fuss">';
+                rw +=       '<area alt="" shape="CIRCLE" coords="21,24,17" href="http://www.stemwijzer.nl/" target="_blank">';
+                rw +=       '<area alt="" coords="51,10,169,67" href="http://www.sensjs.berlin.de/" target="_blank">';
+                rw +=       '<area alt="" coords="182,7,288,38" href="http://www.lpb.bwue.de/" target="_blank">';
+                rw +=       '<area alt="" shape="poly" coords="362,51,364,62,305,77,268,60,335,32,339,2" href="http://fhh.hamburg.de/stadt/Aktuell/weitere-einrichtungen/landeszentrale-fuer-politische-bildung/start.html" target="_blank">';
+                rw +=       '<area alt="" coords="379,8,432,56" href="http://www.bjr.de/" target="_blank">';
+               rw +=       '<area alt="" coords="440,8,530,80" href="http://www.eurowahlgang.de/" target="_blank">';
+                 rw +=   '</map>';
+                rw +=   '<table border="0" cellpadding="0" cellspacing="0" width="730">';
+                rw +=       '<tr>';
+                rw +=           '<td valign="top"><img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"><a href="impressum.html" onClick="f1=window.open(\'\',\'faq\',\'scrollbars=1,toolbar=1,menubar=0,location=0,status=0,resizable=0,width=348,height=430,print=yes,left=2,top=2\');if (parseInt(navigator.appVersion)>2) {f1.focus();}" TARGET="faq"><font class="standard" size="1" color="#000000">' + WOMT_aTexte['wahlomat_impressum'][S_nSprache] + '</a></font><br></td>';
+                rw +=       '</tr>';
+                rw +=   '</table>';
+                rw +=   '<img src="images/fill.gif" width="1" height="10" alt="" border="0"><br>';
+                rw +=   '<table border="0" cellpadding="0" cellspacing="0" width="730">';
+                rw +=       '<tr>';
+                rw +=           '<td valign="top" width="120"><font class="standard" size="1" color="#000000">' + WOMT_aTexte['wahlomat_auszeichnung'][S_nSprache] + '</font><br><a href="http://www.politicsonline.com/pol2000/specialreports/25Changing_2003/" target="_blank"><img src="images/wahlomat/fuss1.gif" width="90" height="46" alt="" border="0"></a><br>';
+                rw +=               '<img src="images/fill.gif" width="120" height="1" alt="" border="0">';
+                rw +=           '</td>';
+                rw +=           '<td valign="top" width="80" align="right"><font class="standard" size="1" color="#000000">' + WOMT_aTexte['wahlomat_partner'][S_nSprache] + '</font></td>';
+                rw +=           '<td valign="top" width="240"><img src="images/wahlomat/fuss2.gif" width="530" height="89" alt="" border="0" usemap="#fuss"></td>';
+                rw +=       '</tr>';
+                rw +=   '</table>';
+                // /fuss-bereich
+
+                rw +=   '</center>';
+
+                return rw;
+            }
+
+            document.writeln(write_4_detailauswertung());
+        </script>
+    </body>
+</html>

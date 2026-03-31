@@ -12,8 +12,8 @@ This is the detailed reference for the end-to-end pipeline (download → build/u
 
 - **Datensätze only**: `python get_zip_files.py --datensaetze-only` (or `python wahlomat.py download --datensaetze-only`) downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.
 - **Selective election ZIPs**:
-  - `--list-election-zips` prints **`local_stem`**, metadata **slug** (from `build_metadata.py` `election_slug_from_zip_href`), and **URL** for each ZIP on the weitere-Wahlen page (no download).
-  - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL, **`local_stem`**, or that slug; only those ZIPs are extracted (other `.zip` files already in `data/` are left alone).
+  - `--list-election-zips` prints **`election_id`** and **URL** for each ZIP on the weitere-Wahlen page (no download). (For bpb `/system/files/…` ZIPs with opaque names like `wahlomat_0`, the `election_id` is canonicalized via `election_id_policy.JS_FOLDER_CANONICAL_ELECTION_ID`.)
+  - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL, the derived **`election_id`**, or other internal identifiers.
   - Add `--with-datensaetze` to include the Datensätze bundle in the same run.
   - `--datensaetze-only` cannot be combined with these flags.
 

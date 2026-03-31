@@ -1,0 +1,249 @@
+/* Lange These NR (Tabbar) */
+
+#wom .wom_langethese_tab {
+    float:left;width:34px;
+    /*border:1px #000 solid;*/
+    margin-right:2px;
+    color: #000;
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    min-height: 32px;
+    padding: 4px 7px 1px;
+    background-color:#D1DEE8;
+    text-align: center;
+    /*background: #D1DEE8 url(../pix/icon/tab_open.png) no-repeat scroll 23px 14px;*/
+}
+
+#wom .wom_langethese_tab:hover,
+#wom .wom_langethese_tab:focus {
+    background-color:#a3bcd1;
+}
+
+.wom_these_hide,
+.wom_langethese_tab_active .wom_these_show {
+	display: none;
+}
+
+.wom_langethese_tab_active .wom_these_hide {
+	display: block;
+}
+
+#wom .wom_langethese_tab.wom_langethese_tab_active:hover,
+#wom .wom_langethese_tab.wom_langethese_tab_active:focus {
+    background-color:#ea9511;    
+    background-color:#D1DEE8;
+}
+
+.wom_langethese_tab:focus,
+.wom_langethese_tab:hover {
+    outline: 1px solid #000 !important;
+    background-color: #a3bcd1;    
+}
+
+/**
+ * Label und Auswahl
+ */
+.wom_auswertung label {
+    color: #000;
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    min-height: 32px;
+    padding: 5px 10px 1px;
+    width: 440px;
+    overflow:hidden;
+}
+
+.wom_auswertung input[type="checkbox"] {
+    position: absolute;
+    display: block !important;
+    right: 43px;
+    top: 10px;
+    /*opacity: 0 !important;*/
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger.wom_trigger_active:before,
+#wom .wom_auswertung .wom_trigger.wom_trigger_active:before {
+    border-left: 16px solid #fdab2a;
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger.wom_trigger_active,
+#wom .wom_auswertung .wom_trigger.wom_trigger_active {
+	background-color: #fdab2a;
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger:hover {
+    outline: 1px solid #000 !important;
+    background-color: #a3bcd1 !important;
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger:focus-within {
+    outline: 1px solid #000 !important;
+    background-color: #a3bcd1 !important;
+}
+
+
+#wom.desktophover .wom_auswertung .wom_trigger.wom_trigger_active:hover {
+    background-color: #ea9511 !important;
+    outline: 1px solid #000 !important;
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger.wom_trigger_active:focus-within {
+    background-color: #ea9511 !important;
+    outline: 1px solid #000 !important;
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger:hover:before {
+	border-left: 16px solid #a3bcd1 !important;
+
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger:focus-within:before {
+	border-left: 16px solid #a3bcd1 !important;
+
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger.wom_trigger_active:hover:before {
+	border-left: 16px solid #ea9511 !important;
+}
+
+#wom.desktophover .wom_auswertung .wom_trigger.wom_trigger_active:focus-within:before {
+	border-left: 16px solid #ea9511 !important;
+}
+
+#wom .wom_auswertung li p {
+    padding: 10px 0 10px 5px;
+}
+
+@media screen and (max-width: 910px) and (min-width: 630px) {
+    .wom_auswertung .wom_trigger {
+        margin-right:15px;
+    }
+}
+
+@media screen and (max-width: 630px) {
+    .wom_auswertung .wom_trigger {
+        margin-right:15px;
+    }
+}
+
+.wom_parteien_list li .wom_partei_openclose_outer {
+    padding:2%;
+    border:0;
+    margin:0px;
+    min-height: 20px;
+    display:block !important;
+    height:20px;
+    background: transparent; 
+    width:96%;
+    margin-top:0;
+    padding-top:0;
+    cursor:pointer;
+}
+
+.wom_parteien_list li .wom_partei_openclose {
+	display: block;
+	width: 32px;
+	min-height: 0;
+	height: 32px;
+	padding: 0;
+	margin: 0 auto;
+	border: none;
+}
+
+.wom_partei_openclose img {
+	display: block;
+	margin: 0 auto;
+}
+
+.wom_partei_open {
+	display: block;
+	padding-top: 12px;
+}
+
+.wom_partei_close,
+.wom_partei_openclose[aria-expanded='true'] .wom_partei_open {
+	display: none;
+}
+
+.wom_partei_openclose[aria-expanded='true'] .wom_partei_close {
+	display: block;
+	padding-top: 7px;
+}
+
+.wom_parteien_list li .wom_partei_openclose img {
+	/*background-color:#ffffff;*/
+	background: transparent; 
+}
+
+.wom_hidecheckbox2 {
+    padding:2px;
+    right:4px;
+    margin-top:-20px;
+    float:right;
+    top:3px;
+}
+
+.wom_parteien_list input {
+    right:6px;
+}
+
+.wom_hidecheckbox2 {
+    margin-top:4px;
+}
+
+.wom_pop_up p {
+    margin-bottom:20px !important; 
+}
+
+@media screen and (min-width: 631px) {
+    /**
+     * Uberschreibt bei Tablet / Desktop den per Javascript gesetzte Min-Height die nur fuer die 
+     * Phone-Version relevant sein sollte
+     */
+    .wom_wahlomat_startseite {
+        min-height:0 !important;
+    }
+    .wom_wahlomat {
+        min-height:0 !important;
+    }
+}
+
+#wom legend {
+    font-size:18px;
+    margin-bottom:3px;
+    width:100%;
+}
+
+@supports (-ms-ime-align: auto) {
+    /*Wegen Redernbug in Edge das Grayfiltern der Parteien deaktivieren*/
+    .wom_grayfilter_edge {
+    	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale") !important;
+    	filter: none !important;
+    	-webkit-filter: none !important;
+    	-moz-filter: none !important;
+    	-ms-filter: none !important;
+    	-o-filter: none !important;
+    }
+}
+
+#wom p.wom_mt {
+    margin-top:10px;
+}
+
+@media screen and (max-width: 630px) {
+    .wom_auswertung label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 1px;
+        min-width: 100%;
+    }
+    #wom .wom_antworten_box h4 {
+        width: 1px;
+        min-width: 100%;
+    }    
+}

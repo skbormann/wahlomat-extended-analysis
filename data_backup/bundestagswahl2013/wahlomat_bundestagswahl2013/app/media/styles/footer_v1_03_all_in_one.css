@@ -1,0 +1,189 @@
+/* Footer immer */
+.footertext  {clear:all; font-size:14px; float:left;margin-top:56px;}
+
+/* Reihe 1 im Footer
+    ZDF
+    Tageschau
+    NDR
+    WDR
+    SWR
+    
+    BR
+    HR
+    RBB
+    RADIO BREMEN
+    mdr
+    
+    SR
+    DW
+    Pro7
+    RTL    
+    Spiegel
+    
+    Bild
+    Stern
+    Focus
+    Taz
+    Welt
+    
+    Zeit
+    Faz
+    Handelsblatt
+    MSN
+    1&1
+    T-Online
+    
+    Freenet
+    Yahoo
+    Ntv
+    n24
+    WiWo
+    Hamburg.de
+
+    Koeln
+    Geh Waehlen
+    HAZ
+    antenne
+    GA
+    
+    TA    
+    Rhein-Zeitung
+    Merkur
+    AMS/Radio Bielefeld
+    Mindener Tageblatt    
+    
+    OZ    
+    LVZ
+    NTZ
+    Volksfreund
+    Gaeubote
+
+Im Jpg:
+    ZDF
+    Tagesschau
+    NDR
+    WDR
+    SWR
+    
+    BR
+    HR
+    RBB
+    Radiobremen
+    mdr
+    
+    SR
+    DW
+    Pro7
+    RTl
+    Spiegel
+    
+    Bild
+    Stern
+    Focus
+    Taz
+    Welt
+    
+    Zeit
+    Faz
+    Handelsblatt
+    MSN
+    1&1
+    T-Online
+    
+    Freenet
+    Yahoo
+    Ntv
+    n24
+    WIWO
+    
+    Hamburg   
+    Koeln
+    Ge Waehlen
+    HAZ
+    Antenne
+    
+    GA    
+    TA
+    RZ
+    AMS
+    Mindener Ta
+    
+    Oz
+    LVZ
+    Muechner
+    Volksfreund
+    Gaeubote
+    Abendzeitung
+    Rp-Online
+    NGZ
+
+*/
+div.footer {
+   
+}
+
+div.footer div.fh {height:60px !important;display:block; float:left;}
+div.footer div a {height:45px; display:block; float:left;}
+div.footer div a span  {display:none;}
+div.footer div a {z-index:-1;  filter:url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); -webkit-filter:grayscale(100%); -ms-filter:grayscale(100%);}
+div.footer div a:hover {filter:url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale"); -webkit-filter:grayscale(0%); -ms-filter:grayscale(0%);}
+
+
+div.footer div.b1 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0 0px; width:78px; height:45px;}
+div.footer div.b2 a {margin-left:30px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -45px; width:125px; height:45px;}
+div.footer div.b3 a {margin-left:25px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -90px; width:57px; height:45px;}
+div.footer div.b4 a {margin-left:35px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -135px; width:77px; height:45px;}
+div.footer div.b5 a {margin-left:26px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -180px; width:74px; height:45px;}
+div.footer div.b6 a {margin-left:33px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -225px; width:33px; height:45px;}
+div.footer div.b7 a {margin-left:32px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -270px; width:102px; height:45px;}
+div.footer div.b8 a {margin-left:14px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -315px; width:59px; height:45px;}
+
+div.footer div.b9 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -360px; width:146px; height:45px;}
+div.footer div.b10 a {margin-left:30px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -405px; width:84px; height:45px;}
+div.footer div.b11 a {margin-left:20px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -450px; width:36px; height:45px;}
+div.footer div.b12 a {margin-left:22px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -495px; width:111px; height:45px;}
+div.footer div.b13 a {margin-left:23px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -540px; width:27px; height:45px;}
+div.footer div.b14 a {margin-left:23px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -585px; width:100px; height:45px;}
+div.footer div.b15 a {margin-left:19px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -630px; width:159px; height:45px;}
+
+div.footer div.b16 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -675px; width:50px; height:45px;}
+div.footer div.b17 a {margin-left:25px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -720px; width:114px; height:45px;}
+div.footer div.b18 a {margin-left:25px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -765px; width:71px; height:45px;}
+div.footer div.b19 a {margin-left:29px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -810px; width:166px; height:45px;}
+div.footer div.b20 a {margin-left:23px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -855px; width:117px; height:45px;}
+div.footer div.b21 a {margin-left:21px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -900px; width:158px; height:45px;}
+
+div.footer div.b22 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -945px; width:88px; height:45px;}
+div.footer div.b23 a {margin-left:22px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -990px; width:104px; height:45px;}
+div.footer div.b24 a {margin-left:25px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1035px; width:67px; height:45px;}
+div.footer div.b25 a {margin-left:31px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1080px; width:27px; height:45px;}
+div.footer div.b26 a {margin-left:21px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1125px; width:134px; height:45px;}
+div.footer div.b27 a {margin-left:18px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1170px; width:91px; height:45px;}
+div.footer div.b28 a {margin-left:13px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1215px; width:93px; height:45px;}
+div.footer div.b29 a {margin-left:12px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1260px; width:54px; height:45px;}
+
+div.footer div.b30 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1305px; width:70px; height:45px;}
+div.footer div.b31 a {margin-left:36px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1350px; width:71px; height:45px;}
+div.footer div.b32 a {margin-left:25px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1395px; width:129px; height:45px;}
+div.footer div.b33 a {margin-left:24px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1440px; width:60px; height:45px;}
+div.footer div.b34 a {margin-left:37px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1485px; width:55px; height:45px;}
+div.footer div.b35 a {margin-left:26px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1530px; width:165px; height:45px;}
+div.footer div.b36 a {margin-left:31px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1575px; width:68px; height:45px;}
+
+div.footer div.b37 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1620px; width:140px; height:45px;}
+div.footer div.b38 a {margin-left:28px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1665px; width:50px; height:45px;}
+div.footer div.b39 a {margin-left:29px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1710px; width:116px; height:45px;}
+div.footer div.b40 a {margin-left:35px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1755px; width:123px; height:45px;}
+
+div.footer div.b41 a {margin-left:42px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1800px; width:62px; height:45px;}
+div.footer div.b42 a {margin-left:27px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1845px; width:147px; height:45px;}
+
+div.footer div.b43 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1890px; width:157px; height:45px;}
+div.footer div.b44 a {margin-left:36px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1935px; width:46px; height:45px;}
+div.footer div.b45 a {margin-left:33px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -1980px; width:122px; height:45px;}
+
+div.footer div.b46 a {margin-left:31px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -2025px; width:112px; height:45px;}
+div.footer div.b47 a {margin-left:31px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -2070px; width:98px; height:45px;}
+div.footer div.b48 a {margin-left:31px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -2115px; width:100px; height:45px;}
+div.footer div.b49 a {margin-left:0px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -2160px; width:92px; height:45px;}
+div.footer div.b50 a {margin-left:36px; background:url(../pix_change/logos_v1_03.png) no-repeat 0px -2205px; width:145px; height:45px;}

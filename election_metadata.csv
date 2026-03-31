@@ -1,0 +1,75 @@
+election_id,display_name_de,display_name_en,state,year,level
+BB24_v1.1,Landtagswahl Brandenburg 2024,Brandenburg state election 2024,Brandenburg,2024,state
+BE21_v1.01,Abgeordnetenhauswahl Berlin 2021,Berlin state election 2021,Berlin,2021,state
+BE23_v1.00,Abgeordnetenhauswahl Berlin 2023,Berlin state election 2023,Berlin,2023,state
+BT21_v1.02,Bundestagswahl 2021,Federal election 2021,Federal,2021,federal
+BT25_v1.02,Bundestagswahl 2025,Federal election 2025,Federal,2025,federal
+BW21_v1.01,Landtagswahl Baden-Württemberg 2021,Baden-Württemberg state election 2021,Baden-Württemberg,2021,state
+BW26_v1.02,Landtagswahl Baden-Württemberg 2026,Baden-Württemberg state election 2026,Baden-Württemberg,2026,state
+BY23_v1.00,Landtagswahl Bayern 2023,Bavaria state election 2023,Bayern,2023,state
+EU24_v1.01,Europawahl 2024,European Parliament election 2024,European,2024,european
+HB23_v1.01,Bürgerschaftswahl Bremen 2023,Bremen state election 2023,Bremen,2023,state
+HE23_v1.01,Landtagswahl Hessen 2023,Hesse state election 2023,Hessen,2023,state
+HH25_v1.00,Bürgerschaftswahl Hamburg 2025,Hamburg state election 2025,Hamburg,2025,state
+MV21_v1.00,Landtagswahl Mecklenburg-Vorpommern 2021,Mecklenburg-Western Pomerania state election 2021,Mecklenburg-Vorpommern,2021,state
+NI22_v1.01,Landtagswahl Niedersachsen 2022,Lower Saxony state election 2022,Niedersachsen,2022,state
+NW22_v1.02,Landtagswahl Nordrhein-Westfalen 2022,North Rhine-Westphalia state election 2022,Nordrhein-Westfalen,2022,state
+RP21_v1.01,Landtagswahl Rheinland-Pfalz 2021,Rhineland-Palatinate state election 2021,Rheinland-Pfalz,2021,state
+RP26_v1.01,Landtagswahl Rheinland-Pfalz 2026,Rhineland-Palatinate state election 2026,Rheinland-Pfalz,2026,state
+SH22_v1.02,Landtagswahl Schleswig-Holstein 2022,Schleswig-Holstein state election 2022,Schleswig-Holstein,2022,state
+SL22_v.1.01,Landtagswahl Saarland 2022,Saarland state election 2022,Saarland,2022,state
+SN24_v1.00,Landtagswahl Sachsen 2024,Saxony state election 2024,Sachsen,2024,state
+ST21_v1.03,Landtagswahl Sachsen-Anhalt 2021,Saxony-Anhalt state election 2021,Sachsen-Anhalt,2021,state
+TH24_v1.00,Landtagswahl Thüringen 2024,Thuringia state election 2024,Thüringen,2024,state
+bayern2003,Landtagswahl Bayern 2003,Bavaria state election 2003,Bayern,2003,state
+bayern2013,Landtagswahl Bayern 2013,Bavaria state election 2013,Bayern,2013,state
+bayern2018,Landtagswahl Bayern 2018,Bavaria state election 2018,Bayern,2018,state
+berlin2006,Abgeordnetenhauswahl Berlin 2006,Berlin state election 2006,Berlin,2006,state
+berlin2011,Abgeordnetenhauswahl Berlin 2011,Berlin state election 2011,Berlin,2011,state
+berlin2016,Abgeordnetenhauswahl Berlin 2016,Berlin state election 2016,Berlin,2016,state
+brandenburg2014,Landtagswahl Brandenburg 2014,Brandenburg state election 2014,Brandenburg,2014,state
+brandenburg2019,Landtagswahl Brandenburg 2019,Brandenburg state election 2019,Brandenburg,2019,state
+bremen2007,Bürgerschaftswahl Bremen 2007,Bremen state election 2007,Bremen,2007,state
+bremen2011,Bürgerschaftswahl Bremen 2011,Bremen state election 2011,Bremen,2011,state
+bremen2015,Bürgerschaftswahl Bremen 2015,Bremen state election 2015,Bremen,2015,state
+bremen2019,Bürgerschaftswahl Bremen 2019,Bremen state election 2019,Bremen,2019,state
+bundestagswahl2005,Bundestagswahl 2005,Federal election 2005,Federal,2005,federal
+bundestagswahl2009,Bundestagswahl 2009,Federal election 2009,Federal,2009,federal
+bundestagswahl2013,Bundestagswahl 2013,Federal election 2013,Federal,2013,federal
+bundestagswahl2017,Bundestagswahl 2017,Federal election 2017,Federal,2017,federal
+bw11,Landtagswahl Baden-Württemberg 2011,Baden-Württemberg state election 2011,Baden-Württemberg,2011,state
+bw2006,Landtagswahl Baden-Württemberg 2006,Baden-Württemberg state election 2006,Baden-Württemberg,2006,state
+bw2016,Landtagswahl Baden-Württemberg 2016,Baden-Württemberg state election 2016,Baden-Württemberg,2016,state
+bw2021,Landtagswahl Baden-Württemberg 2021,Baden-Württemberg state election 2021,Baden-Württemberg,2021,state
+eu2009,Europawahl 2009,European Parliament election 2009,European,2009,european
+europa2004,Europawahl 2004,European Parliament election 2004,European,2004,european
+europawahl2014,Europawahl 2014,European Parliament election 2014,European,2014,european
+europawahl2019,Europawahl 2019,European Parliament election 2019,European,2019,european
+hamburg2008,Bürgerschaftswahl Hamburg 2008,Hamburg state election 2008,Hamburg,2008,state
+hamburg2011,Bürgerschaftswahl Hamburg 2011,Hamburg state election 2011,Hamburg,2011,state
+hamburg2015,Bürgerschaftswahl Hamburg 2015,Hamburg state election 2015,Hamburg,2015,state
+hamburg2020,Bürgerschaftswahl Hamburg 2020,Hamburg state election 2020,Hamburg,2020,state
+hessen2018,Landtagswahl Hessen 2018,Hesse state election 2018,Hessen,2018,state
+niedersachsen2008,Landtagswahl Niedersachsen 2008,Lower Saxony state election 2008,Niedersachsen,2008,state
+niedersachsen2013,Landtagswahl Niedersachsen 2013,Lower Saxony state election 2013,Niedersachsen,2013,state
+nordrheinwestfalen2012,Landtagswahl Nordrhein-Westfalen 2012,North Rhine-Westphalia state election 2012,Nordrhein-Westfalen,2012,state
+nrw2005,Landtagswahl Nordrhein-Westfalen 2005,North Rhine-Westphalia state election 2005,Nordrhein-Westfalen,2005,state
+nrw2010,Landtagswahl Nordrhein-Westfalen 2010,North Rhine-Westphalia state election 2010,Nordrhein-Westfalen,2010,state
+nrw2017,Landtagswahl Nordrhein-Westfalen 2017,North Rhine-Westphalia state election 2017,Nordrhein-Westfalen,2017,state
+rlp11,Landtagswahl Rheinland-Pfalz 2011,Rhineland-Palatinate state election 2011,Rheinland-Pfalz,2011,state
+rlp2006,Landtagswahl Rheinland-Pfalz 2006,Rhineland-Palatinate state election 2006,Rheinland-Pfalz,2006,state
+rlp2016,Landtagswahl Rheinland-Pfalz 2016,Rhineland-Palatinate state election 2016,Rheinland-Pfalz,2016,state
+rlp2021,Landtagswahl Rheinland-Pfalz 2021,Rhineland-Palatinate state election 2021,Rheinland-Pfalz,2021,state
+saarland2004,Landtagswahl Saarland 2004,Saarland state election 2004,Saarland,2004,state
+saarland2012,Landtagswahl Saarland 2012,Saarland state election 2012,Saarland,2012,state
+saarland2017,Landtagswahl Saarland 2017,Saarland state election 2017,Saarland,2017,state
+sachsen2004,Landtagswahl Sachsen 2004,Saxony state election 2004,Sachsen,2004,state
+sachsen2014,Landtagswahl Sachsen 2014,Saxony state election 2014,Sachsen,2014,state
+sachsen2019,Landtagswahl Sachsen 2019,Saxony state election 2019,Sachsen,2019,state
+sachsenanhalt2006,Landtagswahl Sachsen-Anhalt 2006,Saxony-Anhalt state election 2006,Sachsen-Anhalt,2006,state
+sachsenanhalt2016,Landtagswahl Sachsen-Anhalt 2016,Saxony-Anhalt state election 2016,Sachsen-Anhalt,2016,state
+schleswigholstein2005,Landtagswahl Schleswig-Holstein 2005,Schleswig-Holstein state election 2005,Schleswig-Holstein,2005,state
+schleswigholstein2012,Landtagswahl Schleswig-Holstein 2012,Schleswig-Holstein state election 2012,Schleswig-Holstein,2012,state
+schleswigholstein2017,Landtagswahl Schleswig-Holstein 2017,Schleswig-Holstein state election 2017,Schleswig-Holstein,2017,state
+thueringen2014,Landtagswahl Thüringen 2014,Thuringia state election 2014,Thüringen,2014,state
+thueringen2019,Landtagswahl Thüringen 2019,Thuringia state election 2019,Thüringen,2019,state

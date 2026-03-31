@@ -1,0 +1,24 @@
+
+/* desktop */
+body {
+	min-height:101%;
+}
+
+/* tablet */
+@media screen and (max-width: 910px) and (min-width: 630px){
+	.wom_main_wrapper{
+		min-height: 94vh; 
+	}
+}
+
+@media screen and (max-width: 630px){
+	
+	html{min-height: 100%;}
+	body {
+		min-height: 100vh;
+	}
+	
+	.wom_main_wrapper{
+		min-height: 100vh;
+	}
+}

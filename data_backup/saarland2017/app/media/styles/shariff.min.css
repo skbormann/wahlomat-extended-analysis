@@ -1,0 +1,184 @@
+/*!
+ * shariff - v1.17.1 - 11.09.2015
+ * https://github.com/heiseonline/shariff
+ * Copyright (c) 2015 Ines Pauer, Philipp Busse, Sebastian Hilbig, Erich Kramer, Deniz Sesli
+ * Licensed under the MIT license
+ */.shariff::after,.shariff::before{content:" ";display:table}
+.shariff::after{clear:both}
+.shariff ul{padding:0;margin:0;list-style:none}
+.shariff li{height:35px;box-sizing:border-box;overflow:hidden}
+.shariff li a{color:#fff;position:relative;display:block;height:35px;text-decoration:none;box-sizing:border-box}
+.shariff li .share_count,.shariff li .share_text{font-family:Arial,Helvetica,sans-serif;font-size:12px;vertical-align:middle;line-height:35px}
+.shariff li .fa{width:35px;line-height:35px;text-align:center;vertical-align:middle}
+.shariff li .share_count{padding:0 8px;height:33px;position:absolute;top:1px;right:1px}
+.shariff .orientation-horizontal{display:-webkit-box}
+.shariff .orientation-horizontal li{-webkit-box-flex:1}
+.shariff .orientation-horizontal .info{-webkit-box-flex:0}
+.shariff .orientation-horizontal{display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}
+.shariff .orientation-horizontal li{float:left;-webkit-flex:none;-ms-flex:none;flex:none;width:35px;margin-right:3%;margin-bottom:10px}
+.shariff .orientation-horizontal li:last-child{margin-right:0}
+.shariff .orientation-horizontal li .share_text{display:block;text-indent:-9999px;padding-left:3px}
+.shariff .orientation-horizontal li .share_count{display:none}
+.shariff .theme-grey .shariff-button a{background-color:#b0b0b0}
+.shariff .theme-grey .shariff-button .share_count{background-color:#ccc;color:#333}
+.shariff .theme-white .shariff-button{border:1px solid #ddd}
+.shariff .theme-white .shariff-button a{background-color:#fff}
+.shariff .theme-white .shariff-button a:hover{background-color:#eee}
+.shariff .theme-white .shariff-button .share_count{background-color:#fff;color:#999}
+.shariff .orientation-vertical{min-width:110px}
+.shariff .orientation-vertical li{display:block;width:100%;margin:5px 0}
+.shariff .orientation-vertical li .share_count{width:24px;text-align:right}
+@media only screen and (min-width:360px){.shariff .orientation-horizontal li{margin-right:1.8%;min-width:80px;width:auto;-webkit-flex:1;-ms-flex:1;flex:1}
+.shariff .orientation-horizontal li .share_count{display:block}
+.shariff .orientation-horizontal.col-1 li,.shariff .orientation-horizontal.col-2 li{min-width:110px;max-width:160px}
+.shariff .orientation-horizontal.col-1 li .share_text,.shariff .orientation-horizontal.col-2 li .share_text{text-indent:0;display:inline}
+.shariff .orientation-horizontal.col-5 li,.shariff .orientation-horizontal.col-6 li{-webkit-flex:none;-ms-flex:none;flex:none}
+}
+@media only screen and (min-width:640px){.shariff .orientation-horizontal.col-3 li{min-width:110px;max-width:160px}
+.shariff .orientation-horizontal.col-3 li .share_text{text-indent:0;display:inline}
+}
+@media only screen and (min-width:768px){.shariff .orientation-horizontal li{min-width:110px;max-width:160px}
+.shariff .orientation-horizontal li .share_text{text-indent:0;display:inline}
+.shariff .orientation-horizontal.col-5 li,.shariff .orientation-horizontal.col-6 li{-webkit-flex:1;-ms-flex:1;flex:1}
+}
+@media only screen and (min-width:1024px){.shariff li{height:30px}
+.shariff li a{height:30px}
+.shariff li .fa{width:30px;line-height:30px}
+.shariff li .share_count,.shariff li .share_text{line-height:30px}
+.shariff li .share_count{height:28px}
+}
+.shariff .facebook a{background-color:#3b5998}
+.shariff .facebook a:hover{background-color:#4273c8}
+.shariff .facebook .fa-facebook{font-size:22px}
+.shariff .facebook .share_count{color:#183a75;background-color:#99adcf}
+.shariff .theme-white .facebook a{color:#3b5998}
+@media only screen and (min-width:600px){.shariff .facebook .fa-facebook{font-size:19px}
+}
+.shariff .googleplus a{background-color:#d34836}
+.shariff .googleplus a:hover{background-color:#f75b44}
+.shariff .googleplus .fa-google-plus{font-size:22px}
+.shariff .googleplus .share_count{color:#a31601;background-color:#eda79d}
+.shariff .theme-white .googleplus a{color:#d34836}
+@media only screen and (min-width:600px){.shariff .googleplus .fa-google-plus{font-size:19px;position:relative;top:1px}
+}
+.shariff .info{border:1px solid #ccc}
+.shariff .info a{color:#666;background-color:#fff}
+.shariff .info a:hover{background-color:#efefef}
+.shariff .info .fa-info{font-size:20px;width:33px}
+.shariff .info .share_text{display:block!important;text-indent:-9999px!important}
+.shariff .theme-grey .info a{background-color:#fff}
+.shariff .theme-grey .info a:hover{background-color:#efefef}
+.shariff .orientation-vertical .info{width:35px;float:right}
+@media only screen and (min-width:360px){.shariff .orientation-horizontal .info{-webkit-flex:none!important;-ms-flex:none!important;flex:none!important;width:35px;min-width:35px!important}
+}
+@media only screen and (min-width:1024px){.shariff .info .fa-info{font-size:16px;width:23px}
+.shariff .orientation-horizontal .info{width:25px;min-width:25px!important}
+.shariff .orientation-vertical .info{width:25px}
+}
+
+.shariff .twitter a{background-color:#55acee}
+.shariff .twitter a:hover{background-color:#32bbf5}
+.shariff .twitter .fa-twitter{font-size:28px}
+.shariff .twitter .share_count{color:#0174a4;background-color:#96D4EE}
+.shariff .theme-white .twitter a{color:#55acee}
+@media only screen and (min-width:600px){.shariff .twitter .fa-twitter{font-size:24px}
+}
+
+ul.theme-white.orientation-vertical.col-4 {
+    width:170px;
+}
+
+li.shariff-button.info {
+    display:none;
+}
+
+div.shariff li.shariff-button.facebook,
+div.shariff li.shariff-button.googleplus,
+div.shariff li.shariff-button.twitter {
+    display: inline-block;
+    font-size: 0;
+    height: 30px;
+    margin-right: 20px;
+    width: 30px;
+    border:none;
+}
+
+div.shariff li.shariff-button.facebook a,
+div.shariff li.shariff-button.googleplus a,
+div.shariff li.shariff-button.twitter a{
+    display: inline-block !important;
+    font-size: 0;
+    height: 30px;
+    width: 30px;
+    border:none;
+    padding:0;
+    padding-right:10px;   
+}
+
+div.shariff li.shariff-button.facebook a:hover,
+div.shariff li.shariff-button.googleplus a:hover,
+div.shariff li.shariff-button.twitter a:hover{
+    background-color:transparent;
+}
+
+div.shariff li.shariff-button.facebook a .share_text,
+div.shariff li.shariff-button.googleplus a .share_text,
+div.shariff li.shariff-button.twitter a .share_text{
+    display:none;
+}
+
+div.shariff li.shariff-button.facebook a{
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("../pix/icon/facebook.png");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 75% auto;
+}
+
+
+
+
+div.shariff li.shariff-button.facebook a{
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("../pix/icon/facebook.png");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 75% auto;
+}
+
+div.shariff li.shariff-button.twitter a{
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("../pix/icon/twitter.png");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 75% auto;
+}
+
+div.shariff li.shariff-button.googleplus a{
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("../pix/icon/google.png");
+    background-origin: padding-box;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 75% auto;
+}
+
+div.shariff li.shariff-button.facebook a:hover,
+div.shariff li.shariff-button.googleplus a:hover,
+div.shariff li.shariff-button.twitter a:hover,
+div.shariff li.shariff-button.facebook a.touch,
+div.shariff li.shariff-button.googleplus a.touch,
+div.shariff li.shariff-button.twitter a.touch {
+    background-size: 85%;
+}

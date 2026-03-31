@@ -1,0 +1,193 @@
+<html>
+    <head>
+        <title>Wahl-O-Mat - Bundestagswahl 2005</title>
+        <link rel=stylesheet type="text/css" href="css/style.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    </head>
+
+    <body background="images/bg2004.gif" bgcolor="#FBF3CC" text="#645F45" link="#000000" vlink="#000000" alink="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+        <script type="text/javascript">
+            if (parent.TOPPY!=1){
+   	            location.href = "main_app.html";
+            }
+            S_nSprache=parent.S_nSprache;
+            WOMT_aThesenBilder=parent.WOMT_aThesenBilder;
+            WOMT_aThesen=parent.WOMT_aThesen;
+            WOMT_nTableWidth=parent.WOMT_nTableWidth;
+            WOMT_nTexte=parent.WOMT_nTexte;
+            WOMT_aParteienLogos=parent.WOMT_aParteienLogos;
+            WOMT_nParteien=parent.WOMT_nParteien;
+            WOMT_aBilder=parent.WOMT_aBilder;
+            WOMT_aTexte=parent.WOMT_aTexte;
+            WOMT_aSprachen_ID2N=parent.WOMT_aSprachen_ID2N;
+
+            bgcolor_0065CE=' bgcolor="#0065CE" ';
+            bgcolor_FFFFFF=' bgcolor="#FFFFFF" ';
+            bgcolor_000000=' bgcolor="#000000" ';
+
+		
+            function write_0_intro(){
+                rw  =   '';
+                rw +=   '<center>';
+                // Kopfzeile
+                
+                
+                rw += '<table border="0" cellpadding="0" cellspacing="0" width="760">';
+				rw += '	<tr>';
+				rw += '		<td width="25%" height="60"><a href="http://www.bpb.de" target="_blank"><img src="images/sponsoren/bpb.gif" width="150" height="58" border="0" alt="'+parent.make_alt_tag(WOMT_aTexte['wahlomat_bpb_logo_alttag'][S_nSprache])+'"></a></td>';
+				rw += '	</tr>';
+				rw += '	<tr>';
+				rw += '		<td valign="top" colspan="4" height="10"><img src="images/fill.gif" width="1" height="10" alt="" border="0"></td>';
+				rw += '	</tr>';
+				rw += '</table>';
+                // /Kopfzeile
+
+
+
+				rw += '	<table border="0" cellpadding="0" cellspacing="0" width="760">';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="35" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="500"><img src="images/wahlomat/dach.gif" width="500" height="40" alt="'+parent.make_alt_tag(WOMT_aTexte["allg_logo_bundestagswahl_alttag"][S_nSprache])+'" border="0"><br><img src="images/wahlomat/dach2.gif" width="500" height="109" alt="'+parent.make_alt_tag(WOMT_aTexte["allg_logo_bundestagswahl_alttag"][S_nSprache])+'" border="0"><br>';
+				rw += 				'<table border="0" cellpadding="0" cellspacing="0" width="500">';
+				rw += '					<tr onclick="document.location='+"'1_fragen.html'"+'">';
+				rw += '						<td valign="top" width="20" bgcolor="#FEAE02"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '						<td valign="top" width="430"><table border="0" cellpadding="0" cellspacing="0" width="430" bgcolor="#F4DC59" height="30">';
+				rw += '								<tr>';
+				rw += '									<td width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '									<td>&nbsp;</td>';
+				rw += '								</tr>';
+				rw += '							</table>';
+				rw += 							'<table style="cursor:pointer;" id="Absatz" border="0" cellpadding="0" cellspacing="0" width="430" bgcolor="#ffffff" height="160">';
+				rw += '								<tr>';
+				rw += '									<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '										<td valign="top" width="390" colspan="2"><br><h1 class="schwarz">'+WOMT_aTexte["start_titel"][S_nSprache]
+				rw += 										'</h1><div class="fliesstext_schwarz">'+WOMT_aTexte["start_text"][S_nSprache]+'</div></td>';
+				rw += '								</tr>';
+				rw += '								<tr>';
+				rw += '									<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '									<td width="390" height="60" background="images/start_bg.gif">';
+				rw += 										'<table border="0" cellpadding="0" cellspacing="0">';
+				rw += '											<tr>';
+				rw += '												<td valign="top" width="290"><img src="images/fill.gif" width="290" height="1" alt="" border="0"></td>';
+				rw += '												<td valign="middle" width="100"><a href="1_fragen.html"><img src="images/start.gif" width="85" height="19" border="0" alt="'+parent.make_alt_tag(WOMT_aTexte["start_start_alttag"][S_nSprache])+'"></a><br></td>';
+				rw += '											</tr>';
+				rw += '										</table>';
+				rw += '									</td>';
+				rw += '								</tr>';
+				rw += '							</table>';
+				rw += '							<table border="0" cellpadding="0" cellspacing="0" width="430" bgcolor="#F4DC59" height="30">';
+				rw += '								<tr>';
+				rw += '									<td width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '									<td><div class="klein">'+WOMT_aTexte["allg_copyright"][S_nSprache]+'</div></td>';
+				rw += '								</tr>';
+				rw += '							</table></td>';
+				rw += 						'<td valign="top" width="20" bgcolor="#FEAE02"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '						<td valign="top" width="30" bgcolor="#B17901"><img src="images/fill.gif" width="30" height="1" alt="" border="0"></td>';
+				rw += '					</tr>';
+				rw += '				</table></td>';
+				rw += '			<td valign="top" width="140"><img src="images/fill.gif" width="140" height="1" alt="" border="0"></td>';
+				rw += '		</tr>';
+				rw += '	</table>';
+
+				rw += '	<table border="0" cellpadding="0" cellspacing="0" width="760">';
+				rw += '		<!-- vert. abstand 20px -->';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="470" bgcolor="#FEAE02" colspan="2"><img src="images/fill.gif" width="470" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="30" bgcolor="#B17901"><img src="images/fill.gif" width="30" height="20" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="140"><img src="images/fill.gif" width="140" height="1" alt="" border="0"></td>';
+				rw += '		</tr>';
+				rw += '		<!-- vert. abstand 20px -->';
+				rw += '		<!-- beginn abstimmung -->';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="470" bgcolor="#FEAE02"><img src="images/fill.gif" width="20" height="1" alt="" border="0"><img src="'+WOMT_aBilder["fragen_0_0"][S_nSprache][0]+'" width="80" height="50" alt="" border="0"><img src="images/fill.gif" width="10" height="1" alt="" border="0"><img src="'+WOMT_aBilder["fragen_1_0"][S_nSprache][0]+'" width="80" height="50" alt="" border="0"><img src="images/fill.gif" width="10" height="1" alt="" border="0"><img src="'+WOMT_aBilder["fragen_2_0"][S_nSprache][0]+'" width="80" height="50" alt="" border="0"><img src="images/fill.gif" width="10" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="120" bgcolor="#FEAE02"><img src="'+WOMT_aBilder["fragen_3_0"][S_nSprache][0]+'" width="80" height="50" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="30" bgcolor="#B17901"><img src="images/fill.gif" width="30" height="20" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="140"><img src="images/fill.gif" width="140" height="1" alt="" border="0"></td>';
+				rw += '		</tr>';
+				rw += '		<!-- ende abstimmung -->';
+				rw += '		<!-- vert. abstand 15px -->';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="470" bgcolor="#FEAE02" colspan="2"><img src="images/fill.gif" width="470" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="30" bgcolor="#B17901"><img src="images/fill.gif" width="30" height="15" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="140"><img src="images/fill.gif" width="140" height="1" alt="" border="0"></td>';
+				rw += '		</tr>';
+				rw += '		<!-- vert. abstand 15px -->';
+				rw += '		<!-- beginn luke/infos -->';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="350" bgcolor="#FEAE02"><img src="images/wahlomat/luke.gif" width="150" height="76" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="120" bgcolor="#FEAE02"><a href="" onClick="parent.popup_faq();return false;" TARGET="popup_faq"><img src="images/icons/faq.gif" width="26" height="15" alt="'
+									+parent.make_alt_tag(WOMT_aTexte["allg_link_faq"][S_nSprache])+'" border="0"> <b>'+WOMT_aTexte["allg_link_faq"][S_nSprache]
+									+'</b></a><br><img src="images/fill.gif" width="10" height="5" alt="" border="0"><br><a href="'
+									+WOMT_aTexte["allg_link_email_url"][S_nSprache]+'"><img src="images/icons/email.gif" width="26" height="15" alt="'
+									+parent.make_alt_tag(WOMT_aTexte["allg_link_email"][S_nSprache])+'" border="0"> <b>'
+									+WOMT_aTexte["allg_link_email"][S_nSprache]+'</b></a><br><img src="images/fill.gif" width="10" height="5" alt="" border="0"><br><a href="'
+									+WOMT_aTexte["allg_link_info_url"][S_nSprache]+'" target="_blank"><img src="images/icons/info.gif" width="26" height="15" alt="'+parent.make_alt_tag(WOMT_aTexte["allg_link_info"][S_nSprache])+'" border="0"> <b>'
+									+WOMT_aTexte["allg_link_info"][S_nSprache]+'</b></a></td>';
+				rw += '			<td valign="bottom" width="30" bgcolor="#b17901"><img src="images/wahlomat/rechts_unten.gif" width="30" height="50" alt="" border="0"></td>';
+				rw += '			<td valign="bottom" width="140"><img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"><a href="" onClick="parent.popup_impressum();return false;" TARGET="popup_impressum" class="klein">'+WOMT_aTexte["allg_link_impressum"][S_nSprache]+'</a></td>';
+				rw += '		</tr>';
+				rw += '		<!-- ende luke/infos -->';
+				if (parent.CONST_SHOW_DOWNLOAD==1){
+					rw += '		<tr>';
+					rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+					rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+					rw += '			<td valign="top" width="470" colspan="2"><img src="images/fill.gif" width="470" height="1" alt="" border="0"></td>';
+					rw += '			<td valign="top" width="30"><img src="images/fill.gif" width="30" height="15" alt="" border="0"></td>';
+					rw += '			<td valign="top" width="140"><img src="images/fill.gif" width="1" height="1" alt="" border="0"><br><img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"><a href="'+WOMT_aTexte["allg_link_download_url"][S_nSprache]+'" class="klein" target="_extern">'+WOMT_aTexte["allg_link_download"][S_nSprache]+'</a></td>';
+					rw += '		</tr>';
+				}
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="470" colspan="2"><img src="images/fill.gif" width="470" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="30"><img src="images/fill.gif" width="30" height="15" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="140">';
+				if (parent.CONST_SHOW_DOWNLOAD!=1){
+					rw += '<img src="images/fill.gif" width="1" height="1" alt="" border="0"><br>';
+				}
+				rw += 				'<img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"><a href="'+WOMT_aTexte["allg_link_parteiendetail_url"][S_nSprache]+'" class="klein" target="_extern">'+WOMT_aTexte["allg_link_parteiendetail"][S_nSprache]+'</a></td>';
+				rw += '		</tr>';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="100"><img src="images/fill.gif" width="100" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="470" colspan="2"><img src="images/fill.gif" width="470" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="30"><img src="images/fill.gif" width="30" height="15" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="140"><img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"><a href="'+WOMT_aTexte["allg_link_themawahl_url"][S_nSprache]+'" class="klein" target="_extern">'+WOMT_aTexte["allg_link_themawahl"][S_nSprache]+'</a></td>';
+				rw += '		</tr>';
+				rw += '	</table>';
+				rw += '	<img src="images/fill.gif" width="10" height="3" alt="" border="0"><br>';
+				rw += '	<!-- beginn zaehler wahlomat -->';
+				rw += '	<table border="0" cellpadding="5" cellspacing="0" width="730" height="30" bgcolor="#F4DC59">';
+				rw += '		<tr>';
+				rw += '			<td valign="top">&nbsp;</td>';
+				rw += '		</tr>';
+				rw += '	</table>';
+				if (parent.CONST_WOM_VERSION_ZDF==1){
+					rw += '	<table border="0" cellpadding="5" cellspacing="0" width="730" height="30">';
+					rw += '		<tr>';
+					rw += '			<td valign="top">';
+					rw += 				'<a href="'+WOMT_aTexte["allg_zdf_tv_url"][S_nSprache]+'" target="_blank"><img src="images/sponsoren/zdf_tv.gif" border="0" height="40" width="195" alt="'+WOMT_aTexte["allg_zdf_tv_alttag"][S_nSprache]+'">';
+					rw += 			'</td>';
+					rw += '		</tr>';
+					rw += '	</table>';
+				}
+						
+						
+	            rw +=   '</center>';
+
+                return rw;
+            }
+
+            document.writeln(write_0_intro());
+        </script>
+    </body>
+</html>

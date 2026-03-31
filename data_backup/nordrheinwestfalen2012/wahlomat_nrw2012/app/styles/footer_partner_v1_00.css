@@ -1,0 +1,40 @@
+/* Footer immer */
+.foottext1  {
+    clear:all; 
+    font:normal 0.6em verdana, arial, sans-serif; 
+    text-align:left; 
+    width:600px; 
+    height:13px;
+    padding:0px;
+    margin-bottom:3px;
+}
+.foottext2  {   
+    font:normal 0.6em verdana,arial,sans-serif; 
+    text-align:left; 
+    padding:0px;
+    width:120px;
+    height:13px;
+    margin-bottom:3px;
+}
+
+#main_foot_sub div.bpartner { 
+    width:600px; 
+    height:93px; 
+    float:left;
+}
+
+
+#main_foot_sub div.bpartner a{ 
+    height:80px; 
+    width:600px;
+    background:url(../pix_change/logo_partner.gif) no-repeat 0px; width:600px;
+}
+
+#main_foot_sub div.bldi { width:120px; height:93px; float:right;}
+#main_foot_sub div.bldi a { 
+    height:80px; 
+    width:125px; margin:0;
+    background: url(../pix_change/logo_land_der_ideen.gif) no-repeat 0px; 
+}
+
+

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Wahl-O-Mat</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="msapplication-tap-highlight" content="no"/>
+    <script src="definitionen/module_definition.js"></script>
+    <script src="definitionen/module_definition_texte.js"></script>
+    <script src="definitionen/module_definition_pinfo.js"></script>
+    <script src="definitionen/module_definition_statements.js"></script>
+    <script src="version/version.js"></script>
+    <script src="version/nutzungen.js"></script>
+    <script src="modulejs/module_common_head.min.js"></script>
+    <script src="templates/templates.min.js"></script>
+    <script src="partner/partner.js"></script>
+    
+    <link rel="stylesheet" href="media/styles/bundle.css" />
+    <link rel="stylesheet" href="media/styles/bundle_overload.css" />
+<!--    
+    <script id="ie11Polyfill">
+        window.MSInputMethodContext && document.documentMode && document.write('<script src="./media/js/ie11-custom-properties.js"><\x2fscript>');
+    </script>
+//-->
+</head>
+<body onload="wom_on_load();">
+    <div id="chromecontent">
+        <noscript>
+    		  Der Wahl-O-Mat ben&ouml;tigt Javascript!
+        </noscript>
+    </div>
+    <div id="chromecontent_overlay"></div>
+    <script>
+      if (CONST_PARTNER_VERSION == 0) {
+        document.write('<audio id="wom-readspeaker-audio" src="vorlesen/0_start.mp3" class="is-hidden" onended="WOM.readspeaker.skip(false); return false;"><\/audio>');
+      }
+    </script> 
+    <div style="clear:both"></div>
+    <!-- wegen ie11 nach unten verschoben //-->
+    <script>
+      // Save bundle-events on window/document for deletion
+       globalBundleEvents=1;
+    </script>
+    <script src="media/js/bundle.js"></script>
+    <script>
+      // Save aus fuer window/document
+      globalBundleEvents=0;
+    </script>
+    <script src="modulejs/module_common_main.min.js"></script>
+    <script>partner_script_loadinfooter();</script>
+</body>
+</html>

@@ -30,9 +30,26 @@ Alternatively, use GitHub’s “Download ZIP”, unzip it, then `cd` into the e
 python -m pip install -r requirements.txt
 ```
 
-### Step 3 — Download the current bpb “Datensätze” bundle and update the CSV
+### Step 3 — Download the current bpb “Datensätze” bundle (Excel workbook)
 
-(Fast path for “new sheets/parties”.)
+```bash
+python wahlomat.py download --datensaetze-only
+```
+
+This downloads and extracts the consolidated bpb workbook under `data/…` and prints the discovered `.xlsx` path.
+It **does not** build any CSV yet (download/extract only).
+
+If you only want the raw Excel file (e.g. for manual inspection), you can stop here.
+
+### Step 4 — Build the analysis CSV from `data/`
+
+```bash
+python wahlomat.py build-csv
+```
+
+`build-csv` converts the extracted sources in `data/` (Excel sheets and any legacy JS exports you downloaded) into the analysis-ready CSV files at the repo root: **`all_wahlomat_answers.csv`** and **`election_metadata.csv`**. The built-in graphs are generated from the CSV, so you need this step before `graphs`.
+
+If you later download a newer Datensätze bundle and want to merge workbook-only updates into an existing CSV, use:
 
 ```bash
 python wahlomat.py refresh-excel
@@ -40,29 +57,34 @@ python wahlomat.py refresh-excel
 
 ### Optional — Download older elections (archived ZIPs / JS exports)
 
-This fetches and extracts the “Weitere Wahlen” ZIP archives into `data/` (used on a full rebuild via `build-csv`).
+This fetches and extracts the “Weitere Wahlen” ZIP archives into `data/` (used on a full rebuild via `build-csv`). It does **not** build the CSV by itself.
 
 ```bash
 # Download and extract all archived election ZIPs (plus the Datensätze bundle)
 python wahlomat.py download
 
-# Or: download/extract only specific elections (substring match on URL/stem/slug)
+# If you already ran --datensaetze-only above, avoid downloading the bundle again:
+python wahlomat.py download --election-zips-only
+
+# Or: download/extract only specific elections
 python wahlomat.py download --list-election-zips
 python wahlomat.py download --election-zip berlin2021 --election-zip bundestagswahl2021
 ```
 
-### Step 4 — List elections (`election_id`) and build graphs
+Then rebuild the analysis CSV from what is now under `data/`:
+
+```bash
+python wahlomat.py build-csv
+```
+
+### Step 5 — List elections (`election_id`) and build graphs
 
 ```bash
 python wahlomat.py graphs --list-elections
 python wahlomat.py graphs --election BT21_v1.02 --graph pca_map
 ```
 
-If you want to (re)build the full CSV from **all extracted JS modules + Excel sheets**, run:
-
-```bash
-python wahlomat.py build-csv
-```
+If you also downloaded older elections (archived JS ZIPs), `build-csv` will include them in the rebuild.
 
 ## What you get (outputs)
 
@@ -105,7 +127,8 @@ Detailed usage and options:
 ### “I just want graphs for one election”
 
 ```bash
-python wahlomat.py refresh-excel
+python wahlomat.py download --datensaetze-only
+python wahlomat.py build-csv
 python wahlomat.py graphs --list-elections
 python wahlomat.py graphs --election <ID_FROM_LIST>
 ```

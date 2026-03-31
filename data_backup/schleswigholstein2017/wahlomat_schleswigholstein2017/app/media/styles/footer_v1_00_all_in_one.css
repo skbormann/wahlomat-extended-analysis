@@ -1,0 +1,127 @@
+/* Footer immer */
+.wom_footertext  {clear:all; font-size:14px; float:left;margin-top:36px;}
+
+/* Reihe folge im Footer    
+    Spiegel
+    Zeit
+    Zdf
+    Welt
+    Handelsblatt
+    
+    wiwo
+    Faz
+    focus
+    Sueddeutsche
+    Merkur
+    
+    Madsack
+    T-Online
+    MSN
+*/
+
+/* Reihe folge im Bild
+    T-Online
+    Welt
+    -
+    Focus
+    -
+    
+    FAZ
+    Handelsbatt
+    WiWo
+    Spiegel
+    SZ
+    
+    ZEIT
+    ZDF
+    Merkur
+    -
+    -
+    
+    Madsack
+    MSN
+*/
+
+
+div.wom_footer div.wom_fh {height:60px !important;display:block; float:left;}
+div.wom_footer div a {height:45px; display:block; float:left;}
+div.wom_footer div a span  {display:none;}
+div.wom_footer div a {z-index:1;  filter:url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); -webkit-filter:grayscale(100%); -ms-filter:grayscale(100%);}
+div.wom_footer div a:hover {filter:url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale"); -webkit-filter:grayscale(0%); -ms-filter:grayscale(0%);}
+
+div.wom_footer div.wom_b1 a {margin-left:0px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -360px; width:158px; height:45px;}
+div.wom_footer div.wom_b2 a {margin-left:51px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -450px; width:157px; height:45px;}
+div.wom_footer div.wom_b3 a {margin-left:51px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -495px; width:49px; height:45px;}
+div.wom_footer div.wom_b4 a {margin-left:51px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -45px; width:93px; height:45px;}
+div.wom_footer div.wom_b5 a {margin-left:51px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -270px; width:137px; height:45px;}
+
+div.wom_footer div.wom_b6 a {margin-left:0px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -315px; width:76px; height:45px;}
+div.wom_footer div.wom_b7 a {margin-left:48px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -225px; width:84px; height:45px;}
+div.wom_footer div.wom_b8 a {margin-left:48px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -135px; width:71px; height:45px;}
+div.wom_footer div.wom_b9 a {margin-left:48px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -405px; width:204px; height:45px;}
+div.wom_footer div.wom_b10 a {margin-left:48px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -585px; width:171px; height:45px;}
+
+div.wom_footer div.wom_b11 a {margin-left:0px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -540px; width:153px; height:45px;}
+div.wom_footer div.wom_b12 a {margin-left:50px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -675px; width:60px; height:45px;}
+div.wom_footer div.wom_b13 a {margin-left:54px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -0px; width:198px; height:45px;}
+div.wom_footer div.wom_b14 a {margin-left:51px; background:url(../pix_change/logos_v1_00.png) no-repeat 0px -720px; width:84px; height:45px;}
+
+    Sueddeutsche
+    Merkur
+    
+    Madsack
+    T-Online
+    MSN
+    
+
+
+@media screen and (max-width: 910px) {
+    div.wom_footer div.wom_b1 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b2 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b3 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b4 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b5 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b6 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b7 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b8 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b9 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b10 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b11 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b12 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b13 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b14 a {margin-left:0px; margin-right:15px;}
+    div.wom_footer div.wom_b15 a {margin-left:0px; margin-right:15px;}
+}
+
+#wom.static_tablet div.wom_footer div.wom_b1 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b2 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b3 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b4 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b5 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b6 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b7 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b8 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b9 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b10 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b11 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b12 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b13 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b14 a {margin-left:0px; margin-right:15px;}
+#wom.static_tablet div.wom_footer div.wom_b15 a {margin-left:0px; margin-right:15px;}
+
+
+#wom.static_phone div.wom_footer div.wom_b1 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b2 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b3 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b4 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b5 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b6 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b7 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b8 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b9 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b10 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b12 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b13 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b14 a {margin-left:0px; margin-right:15px;}
+#wom.static_phone div.wom_footer div.wom_b15 a {margin-left:0px; margin-right:15px;}
+

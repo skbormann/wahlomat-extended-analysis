@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Wahl-O-Mat - Landtagswahl 2018 in Hessen</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="msapplication-tap-highlight" content="no"/>
+    <script charset="UTF-8" src="module_definition.js" type="text/javascript">
+    </script>
+    <script charset="UTF-8" src="module_common.js" type="text/javascript">
+    </script>
+    <script charset="UTF-8" src="module_common_partner.js" type="text/javascript">
+    </script>
+    <script charset="UTF-8" src="media/js/jQuery_1_10_2_min.js" type="text/javascript">
+    </script>
+    <script charset="UTF-8" src="media/js/wommain.js" type="text/javascript">
+    </script>
+    <script charset="UTF-8" src="media/js/womaudio.js" type="text/javascript">
+    </script>
+    
+    <script type="text/javascript">
+        // <![CDATA[
+            S_nSprache = 0;
+           	document.writeln(print_meta());
+        //]]>
+    </script>
+        <link rel="stylesheet" href="./media/styles/style_all.css" type="text/css" />
+        <link rel="stylesheet" href="./media/styles/style_all_tablet.css" type="text/css" />
+        <link rel="stylesheet" href="./media/styles/style_all_phone.css" type="text/css" />
+        <link rel="stylesheet" href="./media/styles/style_bitv.css" type="text/css" />        
+        <link rel="stylesheet" href="./media/styles/style_minheight.css" type="text/css" />
+        <link rel="stylesheet" href="./media/styles/style_audio.css" type="text/css" />
+
+<!--[if lte IE 9 ]>
+<style type="text/css">
+@media screen and (max-width:630px) {
+    .wom_thesen {
+        background-color: transparent;
+    }
+}
+    </style>
+<![endif]-->
+
+
+<script type="text/javascript">
+    isMSIE8 = 0;
+</script>        
+<!--[if lte IE 8 ]>
+    <script type="text/javascript">
+        isMSIE8 = 1;
+    </script>        
+<![endif]-->
+</head>
+<body style="overflow-y:visible">
+       
+<script type="text/javascript">
+// <![CDATA[
+    acceptClicks = true;
+    function getFaq() {
+        rw = '';    
+        rw += '<div class="wom_main_wrapper" id="wom">';
+    	  	rw += '<div class="wom_wrapper wom_pop_up">';
+            if (isMSIE8 == 1) {
+                rw += '<div class="oldbrowser2" style="display:block !important; top:0; left:0; z-index:1000 !important; width:100% !important; height:100% !important;                min-height:1200px;                font-size:36px !important;                background-color:#FFB910 !important; color:#000; position:fixed !important;">' 
+                    + '<div style="width:80% !important;padding:10%;display:block !important;">'
+                        + wom_html(WOMT_aTexte["0_alter_browser"][S_nSprache]) 
+                    + '<\/div><\/div>';
+            } 
+    
+                rw += '<div class="wom_content_box faq">';
+                    rw += '<div id="vorlesenreplace">';
+                    rw += snippet_vorlesen_toogle('faq');
+                    rw += snippet_vorlesen_popup('faq');
+                    rw += '</div>';
+    
+    				rw += '<h1 class="wom_bigblack">' +wom_html(WOMT_aTexte["popup_faq_titel"][S_nSprache]) + '</h1>';
+    				rw += '<p class="wom_text_big">' +wom_html(WOMT_aTexte["popup_faq_text"][S_nSprache]) + '</p>';
+    				rw += '<ul class="wom_faq_list" role="tablist">';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe1" aria-expanded="false" aria-controls="wom-faqpanel-1">' +wom_html(WOMT_aTexte["popup_faq_1_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-1"><p id="qe1">' +wom_html(WOMT_aTexte["popup_faq_1_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe2" aria-expanded="false" aria-controls="wom-faqpanel-2">' +wom_html(WOMT_aTexte["popup_faq_2_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-2"><p id="qe2">' +wom_html(WOMT_aTexte["popup_faq_2_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe3" aria-expanded="false" aria-controls="wom-faqpanel-3">' +wom_html(WOMT_aTexte["popup_faq_3_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-3"><p id="qe3">' +wom_html(WOMT_aTexte["popup_faq_3_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe4" aria-expanded="false" aria-controls="wom-faqpanel-4">' +wom_html(WOMT_aTexte["popup_faq_4_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-4"><p id="qe4">' +wom_html(WOMT_aTexte["popup_faq_4_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe5" aria-expanded="false" aria-controls="wom-faqpanel-5">' +wom_html(WOMT_aTexte["popup_faq_5_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-5"><p id="qe5">' +wom_html(WOMT_aTexte["popup_faq_5_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe6" aria-expanded="false" aria-controls="wom-faqpanel-6">' +wom_html(WOMT_aTexte["popup_faq_6_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-6"><p id="qe6">' +wom_html(WOMT_aTexte["popup_faq_6_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe7" aria-expanded="false" aria-controls="wom-faqpanel-7">' +wom_html(WOMT_aTexte["popup_faq_7_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-7"><p id="qe7">' +wom_html(WOMT_aTexte["popup_faq_7_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe8" aria-expanded="false" aria-controls="wom-faqpanel-8">' +wom_html(WOMT_aTexte["popup_faq_8_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-8"><p id="qe8">' +wom_html(WOMT_aTexte["popup_faq_8_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe10" aria-expanded="false" aria-controls="wom-faqpanel-9">' +wom_html(WOMT_aTexte["popup_faq_9_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-9">';
+    				        rw += '<p id="qe9">' +wom_html(WOMT_aTexte["popup_faq_9_text"][S_nSprache])+'</p>' +wom_html(WOMT_aTexte["popup_faq_9_text_liste"][S_nSprache])+'</div></li>';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe10" aria-expanded="false" aria-controls="wom-faqpanel-10">' +wom_html(WOMT_aTexte["popup_faq_10_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-10"><p id="qe10">' +wom_html(WOMT_aTexte["popup_faq_10_text"][S_nSprache])+'</p></div></li>\n';
+    					rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe11" aria-expanded="false" aria-controls="wom-faqpanel-11">' +wom_html(WOMT_aTexte["popup_faq_11_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-11"><p id="qe8">' +wom_html(WOMT_aTexte["popup_faq_11_text"][S_nSprache])+'</p></div></li>\n';
+    					if (CONST_PARTNER_VERSION == 0) {
+                            rw += '<li><span class="wom_trigger"><a class="wom_link_list" href="#qe12" aria-expanded="false" aria-controls="wom-faqpanel-12">' +wom_html(WOMT_aTexte["popup_faq_12_frage"][S_nSprache])+'</a></span><div aria-hidden="true" role="tabpanel" id="wom-faqpanel-12"><p id="qe11">' +wom_html(WOMT_aTexte["popup_faq_12_text"][S_nSprache])+'</p></div></li>';
+                        }
+    				rw += '</ul>';
+    			    rw += '<div class="wom_clear"></div>';
+                rw += '</div>';
+    		rw += '</div>';
+    	rw += '</div>';
+        rw += print_ivw_footer();
+        return rw;
+    }    
+    
+    function replaceVorlesen() {
+        if (document.getElementById) { 
+            o = document.getElementById('vorlesenreplace'); 
+        } else if (document.all) { 
+            o = document.all['vorlesenreplace']; 
+        }
+        htmlCode = snippet_vorlesen_toogle('faq');
+        htmlCode += snippet_vorlesen_popup('faq');
+        
+        o.innerHTML = htmlCode; 
+        if(CONST_WOMT_VORLESEN == 1) {
+            bindAudioTriggers();
+        }
+        
+    }
+    
+    htmlCode = getFaq();
+    
+    document.writeln(htmlCode);
+		
+	$(document).ready( function() {
+	    bindTriggers();
+        $('#vorlesenreplace').unbind('mouseenter touchstart MSPointerDown mouseleave touchend touchcancel MSPointerUp');
+        if(CONST_WOMT_VORLESEN == 1) {
+            bindAudioTriggers();
+        }
+	});
+		
+//]]>	    
+</script>
+
+</body>
+</html>

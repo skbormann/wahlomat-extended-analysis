@@ -55,7 +55,15 @@ def local_stem_from_election_zip_url(url: str) -> str:
     else:
         tail = urlparse(url).path.split("/")[-1]
         name = tail[:-4] if tail.lower().endswith(".zip") else tail
-    return name.replace("wahlomat-", "").replace("-", "")
+    stem = name.replace("wahlomat-", "").replace("-", "")
+    # Some bpb /system/files/ ZIPs use opaque names (wahlomat_0 / wahlomat_1).
+    # Canonicalize them to election-style ids (used across CSV + metadata).
+    try:
+        from election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
+
+        return JS_FOLDER_CANONICAL_ELECTION_ID.get(stem, stem)
+    except Exception:
+        return stem
 
 
 def build_weitere_wahlen_zip_jobs(election_html: str) -> list[ZipJob]:
@@ -116,20 +124,20 @@ def build_datensaetze_zip_job() -> ZipJob:
 def print_list_election_zips() -> None:
     election_html = fetch_html(WEITERE_WAHLEN_URL)
     jobs = build_weitere_wahlen_zip_jobs(election_html)
-    rows: list[tuple[str, str, str]] = []
+    rows: list[tuple[str, str]] = []
     for j in jobs:
-        slug = _election_slug_for_href(j.href_raw)
-        rows.append((j.local_stem, slug, j.url))
-    col1_h, col2_h = "local_stem", "slug"
+        # local_stem is already canonicalized (e.g. wahlomat_0 → hamburg2011).
+        rows.append((j.local_stem, j.url))
+
+    col1_h = "election_id"
     w1 = len(col1_h)
-    w2 = len(col2_h)
-    for stem, slug, _ in rows:
-        w1 = max(w1, len(stem))
-        w2 = max(w2, len(slug))
+    for eid, _ in rows:
+        w1 = max(w1, len(eid))
+
     gap = "  "
-    print(f"{col1_h:<{w1}}{gap}{col2_h:<{w2}}{gap}url")
-    for stem, slug, url in rows:
-        print(f"{stem:<{w1}}{gap}{slug:<{w2}}{gap}{url}")
+    print(f"{col1_h:<{w1}}{gap}url")
+    for eid, url in rows:
+        print(f"{eid:<{w1}}{gap}{url}")
 
 
 def download_and_extract_zip_jobs(
@@ -184,12 +192,7 @@ def _print_workbook_discovery_status(data_dir: pathlib.Path, repo_root: pathlib.
     try:
         os.chdir(data_dir)
         _xlsx = discover_bpb_excel_path(pathlib.Path("."), pathlib.Path(".."))
-        if _xlsx is not None and _xlsx.is_file() and _xlsx.stat().st_size > 0:
-            print(
-                "Datensätze workbook OK (matches build_dataframe discovery): "
-                f"{_xlsx.resolve()}"
-            )
-        else:
+        if _xlsx is None or (not _xlsx.is_file()) or _xlsx.stat().st_size <= 0:
             print(
                 "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
                 "with 'wahl' in the name) was found after extraction. "
@@ -533,6 +536,66 @@ def download_all_election_zips_plus_datensaetze(repo_root: pathlib.Path) -> int:
     return 0
 
 
+def download_all_election_zips_only(repo_root: pathlib.Path) -> int:
+    """Download and extract all election ZIPs (no Datensätze bundle) into data/."""
+    repo_root = repo_root.resolve()
+    os.chdir(repo_root)
+    try:
+        election_html = fetch_html(WEITERE_WAHLEN_URL)
+        zip_files = extract_zip_hrefs(election_html)
+
+        zip_files_links: list[str] = []
+        for f in zip_files:
+            zip_files_links.append(
+                upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(f))
+            )
+
+        zip_files_names: list[str] = []
+        for f in zip_files_links:
+            if re.search(r"wahl-o-mat.de", f):
+                zip_files_names.append(f.split(sep="/")[3])
+            elif f.split(sep="/")[2] == "www.bpb.de":
+                zip_files_names.append(f.split(sep="/")[6].split(sep=".")[0])
+        zip_files_names = [
+            x.replace("wahlomat-", "").replace("-", "") for x in zip_files_names
+        ]
+
+        try:
+            os.mkdir(os.path.join(os.getcwd(), "data"))
+        except FileExistsError:
+            print("Folder 'data' already exists.")
+
+        try:
+            os.mkdir(os.path.join(os.getcwd(), "graphs"))
+        except FileExistsError:
+            print("Folder 'graphs' already exists.")
+
+        os.chdir(repo_root / "data")
+        data_dir = pathlib.Path(os.getcwd())
+        downloaded_zip_paths: list[pathlib.Path] = []
+
+        for i, f in enumerate(zip_files_links):
+            dest = data_dir / f"{zip_files_names[i]}.zip"
+            print(f"Downloading {zip_files_names[i]}.zip …")
+            download_to_file(f, str(dest))
+            time.sleep(0.8)
+            downloaded_zip_paths.append(dest)
+
+        # Extract only archives downloaded in this run; do not scan data/ for stray ZIPs.
+        for zpath in downloaded_zip_paths:
+            if not zpath.is_file() or not zipfile.is_zipfile(str(zpath)):
+                continue
+            extract_dir = data_dir / zpath.stem
+            extract_dir.mkdir(parents=True, exist_ok=True)
+            with _zipfile_for_extract(str(zpath)) as zf:
+                zf.extractall(path=str(extract_dir))
+            zpath.unlink(missing_ok=True)
+            print(f"Extracted to: {extract_dir.resolve()}")
+    finally:
+        os.chdir(repo_root)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -544,6 +607,11 @@ def main(argv: list[str] | None = None) -> int:
         "--datensaetze-only",
         action="store_true",
         help="Download and extract only the Wahl-O-Mat-Datensätze bundle (no election ZIPs).",
+    )
+    parser.add_argument(
+        "--election-zips-only",
+        action="store_true",
+        help="Download and extract only election ZIPs (no Datensätze bundle).",
     )
     parser.add_argument(
         "--list-election-zips",
@@ -573,9 +641,18 @@ def main(argv: list[str] | None = None) -> int:
 
     election_tokens = args.election_zip or []
     if args.datensaetze_only and (
-        args.list_election_zips or election_tokens or args.with_datensaetze
+        args.election_zips_only
+        or args.list_election_zips
+        or election_tokens
+        or args.with_datensaetze
     ):
         parser.error("--datensaetze-only cannot be combined with other download modes.")
+    if args.election_zips_only and (
+        args.list_election_zips or election_tokens or args.with_datensaetze
+    ):
+        parser.error(
+            "--election-zips-only cannot be combined with --list-election-zips, --election-zip, or --with-datensaetze."
+        )
     if args.list_election_zips and (election_tokens or args.with_datensaetze):
         parser.error("--list-election-zips cannot be combined with --election-zip or --with-datensaetze.")
     if args.with_datensaetze and not election_tokens:
@@ -592,6 +669,8 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.datensaetze_only:
         return download_and_extract_datensaetze_bundle(repo_root)
+    if args.election_zips_only:
+        return download_all_election_zips_only(repo_root)
     return download_all_election_zips_plus_datensaetze(repo_root)
 
 

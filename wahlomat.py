@@ -87,10 +87,15 @@ def main() -> int:
         help="Only download and extract the bpb Wahl-O-Mat-Datensätze bundle ZIP.",
     )
     dl.add_argument(
+        "--election-zips-only",
+        action="store_true",
+        help="Only download and extract archived election ZIPs (no Datensätze bundle).",
+    )
+    dl.add_argument(
         "--list-election-zips",
         action="store_true",
         help=(
-            "List ZIPs from the weitere-Wahlen page (local_stem, slug, URL); no download. "
+            "List ZIPs from the weitere-Wahlen page (election_id, URL); no download. "
             "Same as get_zip_files.py --list-election-zips."
         ),
     )
@@ -100,14 +105,16 @@ def main() -> int:
         default=None,
         metavar="TOKEN",
         help=(
-            "Download only election ZIPs whose URL, folder stem, or metadata slug contains "
+            "Download only election ZIPs whose URL, derived election_id, or internal folder name contains "
             "TOKEN (case-insensitive); repeat for multiple tokens. See --list-election-zips."
         ),
     )
     dl.add_argument(
         "--with-datensaetze",
         action="store_true",
-        help="With --election-zip, also download the Datensätze bundle.",
+        help=(
+            "Only with one or more --election-zip: also download and extract the Datensätze bundle in the same run."
+        ),
     )
 
     sub.add_parser(
@@ -202,6 +209,8 @@ def main() -> int:
         gargv: list[str] = []
         if args.datensaetze_only:
             gargv.append("--datensaetze-only")
+        if args.election_zips_only:
+            gargv.append("--election-zips-only")
         if args.list_election_zips:
             gargv.append("--list-election-zips")
         if args.election_zip:
@@ -243,6 +252,17 @@ def main() -> int:
         for line in _summarize_bundle_change(prev, cur):
             print(line)
         _write_refresh_state(cur)
+
+        # On a fresh clone there may be no answers CSV yet; refresh-excel's update step
+        # requires an existing all_wahlomat_answers.csv to merge workbook changes into.
+        repo_root = (args.repo_root or REPO_ROOT).resolve()
+        answers_path = (args.answers or (repo_root / "all_wahlomat_answers.csv")).resolve()
+        if not answers_path.is_file():
+            print(
+                "refresh-excel: answers CSV not found; run `python wahlomat.py build-csv` first "
+                "(or pass --answers PATH to update an existing CSV)."
+            )
+            return 0
 
         uc_args = argparse.Namespace(
             dry_run=False,

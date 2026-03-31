@@ -1,0 +1,473 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">			
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+<head>	
+    <title>Wahl-O-Mat</title>
+    <script language="javascript" type="text/javascript">
+     <!--
+         	//alert (parent.print_meta());
+        	document.writeln(parent.print_meta());
+
+ 	function BildTausch(strBildHTML, strBildNeuURL) {
+		objHTML = (document.images ? document.images : document.all);
+		objHTML[strBildHTML].src = strBildNeuURL;
+	}
+	
+	//alert(parent.WOMT_nThesen);
+	if ((parent.TOPPY != 1)||(parent.S_nTheseMax<parent.WOMT_nThesen)) {
+	    location.href = "main_app.html";
+	}
+	
+	
+	if (parent.S_nRecalculate==1){
+	    //alert(parent.S_nRecalculate);
+	    parent.calculate();
+	    parent.S_nRecalculate=0;
+	}
+		
+	
+	WOMT_aParteienLogos								= parent.WOMT_aParteienLogos;
+	WOMT_aParteienLogos2							= parent.WOMT_aParteienLogos2;
+	WOMT_aParteienLogos3							= parent.WOMT_aParteienLogos3;
+	WOMT_aParteienLogos4							= parent.WOMT_aParteienLogos4;
+	WOMT_aParteienLogos5							= parent.WOMT_aParteienLogos5;
+	WOMT_aParteienLogos6							= parent.WOMT_aParteienLogos6;
+	
+	WOMT_nParteien									= parent.WOMT_nParteien;
+
+	S_nParteiSelected								= parent.S_nParteiSelected;
+	S_aParteienDistances							= parent.S_aParteienDistances;
+	S_aSort											= parent.S_aSort;
+	
+	S_nDistanceMax									= parent.S_nDistanceMax;
+	S_aParteienAbs									= parent.S_aParteienAbs;
+	S_nGleichstand									= parent.S_nGleichstand;
+	
+	
+	st = '';
+	st += '<style type="text\/css" media="screen">';
+	
+	fwidth = 200;
+	for (f=0;f<S_aParteienDistances.length;f++){
+		a=S_aSort[f];
+		width = Math.round(S_aParteienDistances[a] * fwidth);
+			st += '#result_table div div.contcol_bar'+(f+1)+'{';
+			st += 'width:'+width+'px;';
+			st += '}';
+	}
+	st += '<\/style>';
+	document.writeln(st);
+	//-->
+</script>
+</head>
+<body id="wahlomat2006">
+        <script language="javascript" type="text/javascript">
+            <!--
+            //der Aufruf dieser Funktion ermittelt die absoluten Koordinaten des Objekts element
+            function getPosition(element){
+            	var elem=element,tagname="",x=0,y=0;
+            	//solange elem ein Objekt ist und die Eigenschaft offsetTop enthaelt 
+            	//wird diese Schleife fuer das Element und all seine Offset-Eltern ausgefuehrt
+            	while ((typeof(elem)=="object")&&(typeof(elem.tagName)!="undefined")){
+            		y+=elem.offsetTop;     /* Offset des jeweiligen Elements addieren */
+            		x+=elem.offsetLeft;    /* Offset des jeweiligen Elements addieren */
+            		tagname=elem.tagName.toUpperCase(); /* tag-Name ermitteln, Grossbuchstaben */
+            		//wenn beim Body-tag angekommen elem fuer Abbruch auf 0 setzen
+               		if (tagname=="BODY" || tagname=="HTML"){
+            	     elem=0;
+            		}
+            		//wenn elem ein Objekt ist und offsetParent enthaelt Offset-Elternelement ermitteln
+            		if (typeof(elem)=="object"){
+            			if (typeof(elem.offsetParent)=="object"){
+            				elem=elem.offsetParent;
+            			}
+            		}
+            	}
+            	//Objekt mit x und y zurueckgeben
+            	position=new Object();
+            	position.x=x;
+            	position.y=y;
+            	return position;
+            }
+            
+            function show(elementId){
+            	element=document.getElementById(elementId);
+            	offsetElement=document.getElementById('main_wm_sub');
+            	a=getPosition(element);
+            	b=getPosition(offsetElement);
+            	elementToShow = elementId+"_overlay";
+            	element_x = a.x-b.x-39;
+            	element_y = a.y-b.y+19;
+            	document.getElementById(elementToShow).style.visibility = "visible";
+            	document.getElementById(elementToShow).style.left = element_x+"px";
+            	document.getElementById(elementToShow).style.top = element_y+"px";
+            }
+            
+            function hide(elementId){
+            	elementToHide = elementId+"_overlay";
+            	document.getElementById(elementToHide).style.visibility = "hidden";
+            }        
+			S_nSprache										= parent.S_nSprache;
+			S_nTheseAktuell									= parent.S_nTheseAktuell;
+			S_nTheseMax										= parent.S_nTheseMax;
+			S_aThesen										= parent.S_aThesen;
+			S_aThemen										= parent.S_aThemen;
+			S_aThemen										= parent.S_aThemen;
+						
+			CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN		= parent.CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN;
+			CONST_WOMT_NOERGEBNIS_NEUTRAL					= parent.CONST_WOMT_NOERGEBNIS_NEUTRAL;
+			CONST_WOMT_NOERGEBNIS_SAME						= parent.CONST_WOMT_NOERGEBNIS_SAME;
+			S_nWeissNicht									= parent.S_nWeissNicht;
+			S_nNeutral										= parent.S_nNeutral;
+			S_nSame											= parent.S_nSame;
+			
+			CONST_ONLINE_STATISTIK							= parent.CONST_ONLINE_STATISTIK;
+			WOMT_aThesenBilder								= parent.WOMT_aThesenBilder;
+			WOMT_aThesen									= parent.WOMT_aThesen;
+			WOMT_nThesen									= parent.WOMT_nThesen;
+			WOMT_nTableWidth								= parent.WOMT_nTableWidth;
+			WOMT_nTexte										= parent.WOMT_nTexte;
+			WOMT_aParteienLogos								= parent.WOMT_aParteienLogos;
+			WOMT_aParteienLogos2							= parent.WOMT_aParteienLogos2;
+			WOMT_aParteienLogos3							= parent.WOMT_aParteienLogos3;
+			WOMT_aParteienLogos4							= parent.WOMT_aParteienLogos4;
+			WOMT_aParteienLogos5							= parent.WOMT_aParteienLogos5;
+			WOMT_aParteienLogos6							= parent.WOMT_aParteienLogos6;
+			WOMT_aParteien									= parent.WOMT_aParteien;
+			WOMT_nParteien									= parent.WOMT_nParteien;
+			WOMT_aBilder									= parent.WOMT_aBilder;
+			WOMT_aTexte										= parent.WOMT_aTexte;
+			
+			S_nParteiSelected								= parent.S_nParteiSelected;
+			S_aParteienDistances							= parent.S_aParteienDistances;
+			S_aSort											= parent.S_aSort;
+			S_nDistanceMax									= parent.S_nDistanceMax;
+			S_aParteienAbs									= parent.S_aParteienAbs;
+			S_nGleichstand									= parent.S_nGleichstand;
+			
+            WOMT_aThesenParteien 					= parent.WOMT_aThesenParteien;
+            WOMT_aThesenParteienText				= parent.WOMT_aThesenParteienText;
+            WOMT_aThesen_N2ID						= parent.WOMT_aThesen_N2ID;			
+
+			CONST_WOMT_PATH							= parent.CONST_WOMT_PATH;
+            CONST_THESEN_BESCHREIBUNG_KOMMTNOCH 	= parent.CONST_THESEN_BESCHREIBUNG_KOMMTNOCH;
+
+			popup_these = -1;
+			popup_du = -1;
+			
+            popup_du 		= 0;
+            popup_partei 	= -1;
+            popup_these 	= 0;
+            popup_sprache 	= S_nSprache;
+			
+			b = S_nTheseAktuell + 1;	       
+
+            function popup_these_beschreibung(these,du,partei){
+	            popup_these		= these
+                popup_du		= du;
+                popup_partei 	= partei;
+                //alert(popup_du);
+                url = 'popup_beschreibung.html';
+                //alert(url);
+                f1=window.open(url,'faq','scrollbars=1,toolbar=1,menubar=0,location=0,status=1,resizable=0,width=348,height=430,print=yes,left=2,top=2');
+                if (parseInt(navigator.appVersion)>2) {
+                	f1.focus();
+                }
+			}        
+
+            function write_4_auswertung() {
+				p_highlight=-1;
+
+                rw  =   '';
+                
+
+
+                rw += '<div id="main">';
+
+                rw += '<!-- Blindennavigation: Anfang -->';
+                rw += '<div class="unsichtbar">';
+                rw += '<ul>';
+                rw += '<li><a href="#content_center_w" tabindex="10" title="">'+parent.wom_html(WOMT_aTexte["4_bn_zumergebnis"][S_nSprache])+'<\/a><\/li>';
+                rw += '<li><a href="#resultcompare_table" tabindex="11" title="">'+parent.wom_html(WOMT_aTexte["4_bn_zurtabelle"][S_nSprache])+'<\/a><\/li>';
+                rw += '<li><a href="#leftnav_fixed" tabindex="12" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'<\/a><\/li>';
+                rw += '<\/ul>';
+                rw += '<\/div>';
+                rw += '<!-- Blindennavigation: Ende -->';
+
+				rw += parent.print_main_head();
+
+                rw += '<div id="main_wm">';
+
+                rw += '<div id="main_wm_sub">';
+
+                rw += '<div id="content">';
+
+                rw += '<div id="content_head_w">';
+                rw += '<h2>'+parent.wom_html(WOMT_aTexte["wahlomat_content_head"][S_nSprache])+'<\/h2>';
+
+                rw += '<div id="content_center_w">';
+
+                rw += '<h3 class="orange">'+parent.wom_html(WOMT_aTexte["4_ergebnis"][S_nSprache])+'<\/h3>';
+
+							p_highlight=-1;
+							
+            				if((S_nWeissNicht	 	>= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN)
+            			     ||(S_nNeutral	    	>= CONST_WOMT_NOERGEBNIS_NEUTRAL)
+            			     ||(S_nSame		    	>= CONST_WOMT_NOERGEBNIS_SAME)
+            			    	) {
+            			     	if (S_nWeissNicht >= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN){
+            			     		text = parent.wom_html(WOMT_aTexte["4_erg_noergebnis_theseueberspringen"][S_nSprache]);
+            			     	} else {
+            			     		text = parent.wom_html(WOMT_aTexte["4_erg_noergebnis_neutral"][S_nSprache]);
+            			     	}			     								
+                                rw += '<div class="intro">'+text+'<\/div>';
+						    } else {
+								if (S_nGleichstand!=1){
+								    // Empty
+								} else {
+                                    rw += '<div class="intro">';
+                                    rw += parent.wom_html(WOMT_aTexte["4_erg_parteien_gleichstand"][S_nSprache]);
+                                    rw += '<\/div>';
+								}
+							    
+
+                                rw += '<div class="result_table_border">';
+                                rw += '<div id="result_table">';
+                                rw += '<!-- Blindennavigation: Anfang -->';
+                                rw += '<div class="unsichtbar">';
+                                rw += parent.wom_html(WOMT_aTexte["4_bn_hinweis_tabelle"][S_nSprache])				
+                                rw += '<\/div>';
+                                rw += '<!-- Blindennavigation: Ende -->';
+                		
+                                rw += '<div class="tablebg1">';
+                                rw += '<div class="headcol1">'+parent.wom_html(WOMT_aTexte["4_tabelle1_uebereinstimmung"][S_nSprache])+'<\/div>';
+                                rw += '<div class="headcol2">'+parent.wom_html(WOMT_aTexte["4_tabelle1_partei"][S_nSprache])+'<\/div>';
+                                rw += '<div class="clear">&nbsp;<\/div>';
+                                rw += '<\/div>';
+										for (f=0;f<S_aParteienDistances.length;f++){
+											a = S_aSort[f];
+
+                    	  	    			//prozent = (Math.round(S_aParteienDistances[a]*1000)/10)+" %";
+                    	  	    			//prozent = prozent.replace(/\./,",");
+                    	  	    			//prozent = parent.wom_html(prozent);
+                    	  	    			
+
+						  	    			prozent = WOMT_aParteien[a][S_nSprache][0];
+
+                    	  	    			text = parent.wom_titletag(WOMT_aTexte["4_position_der_partei"][S_nSprache]);
+                    						text = text.replace(/\[PARTEI\]/,parent.wom_titletag(WOMT_aParteien[a][S_nSprache][0]));
+
+                                                rw += '<div class="tablebg';
+                        		                if ((f%2)==0){
+                        		                	rw += '2';
+                        		                } else {
+                        		                	rw += '1';
+                        		                }
+                        		                rw += '">';
+                        		                
+                                        rw += '<div class="contcol_bar'+(f+1)+'" title="'+parent.wom_titletag(prozent)+'"><span>'+parent.wom_html(prozent)+'<\/span><\/div>';
+                                        rw += '<div class="contcol_part"><a href="javascript:parent.change_detailauswertung(' + a + ')" tabindex="'+(f+13)+'" title="'+text+'">'+parent.wom_html(WOMT_aParteien[a][S_nSprache][1])+'<\/a><\/div>';
+                                        rw += '<\/div>';
+									}
+                rw += '<div class="tablebg1">';
+                rw += '<div class="tablefoot">&nbsp;<\/div>';
+                rw += '<\/div>';
+                rw += '<\/div>';
+								
+                rw += '<div class="parteiuebereinstimmung">';
+                                    if (S_nGleichstand!=1){
+                                        pa=S_aSort[0];
+                	  	    			text = parent.wom_titletag(WOMT_aTexte["4_position_der_partei"][S_nSprache]);
+                						text = text.replace(/\[PARTEI\]/,parent.wom_titletag(WOMT_aParteien[pa][S_nSprache][0]));
+    								    
+        						        rw += parent.wom_html(WOMT_aTexte["4_erg_text"][S_nSprache]);
+        						        rw += '<br\/><br\/>';
+        						        rw += '<a href="javascript:parent.change_detailauswertung(' + pa + ');" tabindex="18" title="'+text+'"><img src="'+WOMT_aParteienLogos6[pa][0]+'" alt="'+text+'" border="0" /><\/a>';
+        						}
+                                rw += '<\/div>';
+                                rw += '<div class="clear">&nbsp;<\/div>';
+                                rw += '<\/div>';
+                        						
+                        						
+                                rw += '<div class="legende">';
+                                rw += '<div class="legend_green">'+parent.wom_html(WOMT_aTexte["3_legende_stimmezu"][S_nSprache])+'<\/div>';
+                                rw += '<div class="legend_red">'+parent.wom_html(WOMT_aTexte["3_legende_stimmenichtzu"][S_nSprache])+'<\/div>';
+                                rw += '<div class="legend_grey">'+parent.wom_html(WOMT_aTexte["3_legende_neutral"][S_nSprache])+'<\/div>';
+                                rw += '<div class="legend_white">'+parent.wom_html(WOMT_aTexte["3_legende_uebersprungen"][S_nSprache])+'<\/div>';
+                                rw += '<\/div>';
+                                rw += '<div class="intro">';
+                                rw += '<h4 class="result">'+parent.wom_html(WOMT_aTexte["4_vergleich_titel"][S_nSprache])+'<\/h4>';
+                                rw += parent.wom_html(WOMT_aTexte["4_vergleich_text"][S_nSprache]);
+                                rw += '<\/div>';
+					}
+
+                rw += '<div id="resultcompare_table">';
+                rw += '<!-- Blindennavigation: Anfang -->';
+                rw += '<div class="unsichtbar">';
+                rw += parent.wom_html(WOMT_aTexte["4_bn_hinweis_tabelle2"][S_nSprache]);
+                rw += '<\/div>';
+                rw += '<!-- Blindennavigation: Ende -->';
+
+                rw += '<div class="tablehead">';
+                rw += '<span class="headcol1">'+parent.wom_html(WOMT_aTexte["4_tabelle2_nr"][S_nSprache])+'<\/span>';
+                rw += '<span class="headcol2">'+parent.wom_html(WOMT_aTexte["4_tabelle2_these"][S_nSprache])+'<\/span>';
+                rw += '<span class="headcol3">'+parent.wom_html(WOMT_aTexte["4_tabelle2_position"][S_nSprache])+'<\/span>';
+					for (f=0;f<S_aParteienDistances.length;f++){
+
+        				if((S_nWeissNicht	 	>= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN)
+        			     ||(S_nNeutral	    	>= CONST_WOMT_NOERGEBNIS_NEUTRAL)
+        			     ||(S_nSame		    	>= CONST_WOMT_NOERGEBNIS_SAME)){
+        			        a = f;
+        			    } else {
+        			        a= S_aSort[f];
+        			    }
+
+	  	    			text = parent.wom_titletag(WOMT_aTexte["4_position_der_partei"][S_nSprache]);
+						text = text.replace(/\[PARTEI\]/,parent.wom_titletag(WOMT_aParteien[a][S_nSprache][0]));
+
+                        rw += '<span class="headcol_partei"><a href="javascript:parent.change_detailauswertung(' + a + ')" tabindex="'+(19+f)+'" title="'+text+'"><img src="'+WOMT_aParteienLogos3[a][0]+'" border="0" alt="'+text+'"/><\/a><\/span>';
+					}
+                rw += '<span class="headcol4">'+parent.wom_html(WOMT_aTexte["4_tabelle2_info"][S_nSprache])+'<\/span>';
+                rw += '<div class="clear">&nbsp;<\/div>';
+                rw += '<\/div>';
+
+						    count = WOMT_nThesen;
+						    for (a = 0; a < count; a++) {
+								nr = (a+1);
+						    	/*if (nr < 10){
+						    		nr = "0"+nr;
+						    	}*/
+								these_kurz = WOMT_aThesen[a][S_nSprache][0];
+								these_lang = WOMT_aThesen[a][S_nSprache][1];
+								
+								tw = '';
+								tw += '<div class="tablebg';
+        		                if ((a%2)==0){
+        		                	tw += '2';
+        		                } else {
+        		                	tw += '1';
+        		                }
+        		                tw += '">';
+                                
+								tw += '<div class="contcol_num">'+nr+'<\/div>';
+								tw += '<a href="#" class="contcol_txt" id="txt'+nr+'" onmouseover="show(\'txt'+nr+'\');" onmouseout="hide(\'txt'+nr+'\')">'+parent.wom_html(these_kurz)+'<\/a>';
+								tw += '<div class="overlay" id="txt'+nr+'_overlay">';
+								tw += '<div class="contcol_num">'+nr+'<\/div>';
+								tw += '<div class="contcol_txt">'+parent.wom_html(these_lang)+'<\/div>';
+								tw += '<div class="clear">&nbsp;<\/div>';
+								tw += '<\/div>';
+                                        ti = '';
+                                        tt = '';
+									    switch(S_aThesen[a]){
+									        case -2:
+									            tt = WOMT_aTexte["345_alt_ich_uebersprungen"][S_nSprache];
+									            ti = "white";
+									            break;
+									        case -1:
+									            tt = WOMT_aTexte["345_alt_ich_stimmenichtzu"][S_nSprache];
+									            ti = "red";
+									            break;
+									        case 0:
+									            tt = WOMT_aTexte["345_alt_ich_neutral"][S_nSprache];
+									            ti = "grey";
+									            break;
+									        case 1:
+									            tt = WOMT_aTexte["345_alt_ich_stimmezu"][S_nSprache];
+									            ti = "green";
+									            break;
+                                        }
+                                    
+								    tw += '<div class="check_'+ti+'_65" title="'+parent.wom_titletag(tt)+'"><span class="unsichtbar">'+parent.wom_html(tt)+'<\/span><\/div>\n';
+
+    								for (f=0;f<S_aParteienDistances.length;f++){
+    								        tw2 = '';
+    								        if((S_nWeissNicht	 	>= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN)
+                            			     ||(S_nNeutral	    	>= CONST_WOMT_NOERGEBNIS_NEUTRAL)
+                            			     ||(S_nSame		    	>= CONST_WOMT_NOERGEBNIS_SAME)){
+                            			        p = f;
+                            			    } else {
+                                                p = S_aSort[f];
+                            			    }
+
+                                            abstimmung = parseInt(WOMT_aThesenParteien[a][p]);
+    								        tt = "";
+    								        ti = "";
+    									    switch(abstimmung){
+                                                case -2:
+                                                    tt = "";
+                                                    ti = "white";
+                                                    break;
+                                                case -1:
+                                                    tt = WOMT_aTexte["4_alt_partei_stimmtnichtzu"][S_nSprache];
+                                                    ti = "red";
+                                                    break;
+                                                case 0:
+                                                    tt = WOMT_aTexte["4_alt_partei_neutral"][S_nSprache];
+                                                    ti = "grey";
+                                                    break;
+                                                case 1:
+                                                    tt = WOMT_aTexte["4_alt_partei_stimmtzu"][S_nSprache];
+                                                    ti = "green";
+                                                    break;
+                                            }
+
+                    						tt = tt.replace(/\[PARTEI\]/,WOMT_aParteien[p][S_nSprache][0]);
+
+								            tw2 += '<a href="" onclick="popup_these_beschreibung('
+					    			            +a+','
+					    			            +S_aThesen[a]+','+p+');return false;" target="popup_thesen_beschreibung" ';
+    								        tw2 += ' tabindex="'+((a*6)+30+f)+'" title="'+parent.wom_titletag(tt)+'" class="check_'+ti+'_65">';
+    								        tw2 += '<span class="unsichtbar">'+parent.wom_html(tt)+'<\/span><\/a>\n';
+    								        tw  += tw2;
+    								        tw2 = '';
+    								    }
+                            
+                            tw += '<a href="http://www.wahl-o-mat.de/'+CONST_WOMT_PATH+'/weiterleitung.php?w=mehr&amp;these_nr='+(a+1)+'&amp;these_id='+WOMT_aThesen_N2ID[a]+'" tabindex="'+((a*6)+30+5)+'" title="'+parent.wom_titletag(WOMT_aTexte["5_tabelle_inhalt_mehrzumthema_title"][S_nSprache])+'" class="contcol_info_65" target="_blank"><span class="unsichtbar">'+parent.wom_html(WOMT_aTexte["5_tabelle_inhalt_mehrzumthema_text"][S_nSprache])+'<\/span><\/a>';
+                            tw += '<div class="clear">&nbsp;<\/div>';
+                            tw += '<\/div>';
+    						rw += tw;
+    						tw = '';
+						}
+                rw += '<\/div>';
+
+
+                rw += '<div class="back"><a href="javascript:parent.replaceIFrame(3)" tabindex="290" title="'+parent.wom_titletag(WOMT_aTexte["4_btn_zurueck_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["4_btn_zurueck_text"][S_nSprache])+'<\/a><\/div>';
+                rw += '<div class="restart"><a href="javascript:parent.location.href = \'main_app.html\';" tabindex="291" title="'+parent.wom_titletag(WOMT_aTexte["a_neustart_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["a_neustart_text"][S_nSprache])+'<\/a><\/div>';
+                rw += '<\/div>';
+
+                rw += '<\/div>';
+                rw += '<div id="content_foot_w">&nbsp;<\/div>';
+
+                rw += '<\/div>';
+
+                rw += '<div id="leftnav_fixed">';
+                rw += '<div id="leftnav_fixed_sub">';
+				rw += parent.print_left_nav();
+                rw += '<\/div>';
+                rw += '<\/div>';
+
+                rw += '<!-- Blindennavigation: Anfang -->';
+                rw += '<div class="unsichtbar">';
+                rw += '<ul>';
+                rw += '<li><a href="#main" title="" tabindex="330">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'<\/a><\/li>';
+                rw += '<li><a href="#content_center_w" title="" tabindex="331">'+parent.wom_html(WOMT_aTexte["4_bn_zumergebnis"][S_nSprache])+'<\/a><\/li>';
+                rw += '<\/ul>';
+                rw += '<\/div>';
+                rw += '<!-- Blindennavigation: Ende -->';
+
+                rw += '<\/div>';
+		
+				rw += parent.print_main_foot();
+
+                rw += '<\/div>';
+
+                rw += '<\/div>';
+
+                
+                return rw;
+            }
+
+            document.writeln(write_4_auswertung());
+            //-->
+        </script>
+    </body>
+</html>

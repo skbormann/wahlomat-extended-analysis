@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">			
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+<head>	
+    <title>Wahl-O-Mat</title>
+    <script language="javascript" type="text/javascript">
+        <!--
+         	//alert (parent.print_meta());
+        	document.writeln(parent.print_meta());
+        //-->
+	</script>
+</head>
+<body id="wahlomat2006">
+        <script type="text/javascript">
+            if ((parent.TOPPY != 1)||(parent.S_nTheseMax<parent.WOMT_nThesen)) {
+   	            location.href = "main_app.html";
+            }
+
+            S_nSprache=parent.S_nSprache;
+            S_nTheseAktuell=parent.S_nTheseAktuell;
+            S_nTheseMax=parent.S_nTheseMax;
+            S_aThesen=parent.S_aThesen;
+            S_aThemen=parent.S_aThemen;
+            S_aThemen=parent.S_aThemen;
+            S_nLand=parent.S_nLand;
+            CONST_ONLINE=parent.CONST_ONLINE;
+            CONST_GEWICHTUNG=parent.CONST_GEWICHTUNG;
+            WOMT_aLaender=parent.WOMT_aLaender;
+            WOMT_aThesenBilder=parent.WOMT_aThesenBilder;
+            WOMT_aThesen=parent.WOMT_aThesen;
+            WOMT_nThesen=parent.WOMT_nThesen;
+            WOMT_nThemen=parent.WOMT_nThemen;
+            WOMT_aThemen=parent.WOMT_aThemen;
+            WOMT_nTableWidth=parent.WOMT_nTableWidth;
+            WOMT_nTexte=parent.WOMT_nTexte;
+            WOMT_aParteienLogos=parent.WOMT_aParteienLogos;
+            WOMT_nParteien=parent.WOMT_nParteien;
+            WOMT_aBilder=parent.WOMT_aBilder;
+            WOMT_aTexte=parent.WOMT_aTexte;
+
+            bgcolor_0065CE=' bgcolor="#0065CE" ';
+            bgcolor_FFFFFF=' bgcolor="#FFFFFF" ';
+            bgcolor_000000=' bgcolor="#000000" ';
+            bgcolor_table_bg=' bgcolor="#FFFFFF" ';
+            b=S_nTheseAktuell+1;
+
+/*            function change_thema(nr) {
+                  alert("Change Thema");
+                  val=parent.get_thema(nr);
+                  if (val == 1) {
+                      parent.set_thema(nr, 0);
+                      //document.form_themen.elements['nr'].checked = false;
+                  } else {
+                      parent.set_thema(nr,1);
+                      //document.form_themen.elements[nr].checked=true;
+                  }
+              }*/
+
+            function change_land(nr) {
+                sel = document.forms["themen"].select_land;
+                S_nLand = parent.S_nLand = sel.value;
+            }
+
+            function ergebnis() {
+                if (CONST_GEWICHTUNG == 1) {
+					count = WOMT_nThesen;
+				} else {
+					count = WOMT_nThemen;
+				}
+                for (a = 0; a < count; a++) {
+                    parent.set_thema(a,0);
+                }
+                parent.replaceIFrame('4');
+            }
+
+
+            function write_2_ergebniszwischen(){
+                rw  =   '';
+
+                rw  += '<div id="main">';
+
+                rw  += '<!-- Blindennavigation: Anfang -->';
+                rw  += '<div class="unsichtbar">';
+                rw  += '<ul>';
+                rw  += '<li><a href="#content_center_e" tabindex="10" title="">'+parent.wom_html(WOMT_aTexte["2_bn_thesengewichtung_text"][S_nSprache])+'<\/a><\/li>';
+                rw  += '<li><a href="#leftnav_fixed_sub" tabindex="11" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'<\/a><\/li>';
+                rw  += '<\/ul>';
+                rw  += '<\/div>';
+                rw  += '<!-- Blindennavigation: Ende -->';
+
+				rw += parent.print_main_head();
+
+                rw  += '<div id="main_wm">';
+
+                rw  += '<div id="main_wm_sub">';
+
+                rw  += '<div id="content">';
+
+                rw  += '<div id="content_head_e">';
+                rw  += '<h2>'+parent.wom_html(WOMT_aTexte["wahlomat_content_head"][S_nSprache])+'<\/h2>';
+
+                rw  += '<div id="content_center_e">';
+
+                rw  += '<h3 class="orange">'+parent.wom_html(WOMT_aTexte["2_title_text"][S_nSprache])+'<\/h3>';
+
+                rw  += '<div class="intro">'+parent.wom_html(WOMT_aTexte["2_text_text"][S_nSprache])+'<\/div>';
+
+                rw  += '<div class="goto1"><a href="javascript:parent.replaceIFrame(3);" tabindex="12" title=""><span class="uppercasetext">'+parent.wom_html(WOMT_aTexte["2_thesen_text"][S_nSprache])+'<\/span> '+parent.wom_html(WOMT_aTexte["2_thesen2_text"][S_nSprache])+'<\/a><\/div>';
+                rw  += '<div class="goto2"><a href="javascript:ergebnis();" tabindex="13" title=""><span class="uppercasetext">'+parent.wom_html(WOMT_aTexte["2_ergebnis_text"][S_nSprache])+'<\/span> '+parent.wom_html(WOMT_aTexte["2_ergebnis2_text"][S_nSprache])+'<\/a><\/div>';
+                rw  += '<div class="back"><a href="javascript:parent.change_frage(' + (WOMT_nThesen - 1) + ');" tabindex="14" title="'+parent.wom_titletag(WOMT_aTexte["2_btn_zurueck_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["2_btn_zurueck_text"][S_nSprache])+'<\/a><\/div>';
+                rw  += '<\/div>';
+                rw  += '<\/div>';
+
+                rw  += '<div id="content_foot_e">&nbsp;<\/div>';
+
+                rw  += '<\/div>';
+
+                rw  += '<div id="leftnav_fixed">';
+                rw  += '<div id="leftnav_fixed_sub">';
+				rw += parent.print_left_nav();
+                rw  += '<\/div>';
+                rw  += '<\/div>';
+
+                rw  += '<!-- Blindennavigation: Anfang -->';
+                rw  += '<div class="unsichtbar">';
+                rw  += '<ul>';
+                rw  += '<li><a href="#main" tabindex="330" title="">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'<\/a><\/li>';
+                rw  += '<li><a href="#content_center_e" tabindex="331" title="">'+parent.wom_html(WOMT_aTexte["2_bn_thesengewichtung_text"][S_nSprache])+'<\/a><\/li>';
+                rw  += '<\/ul>';
+                rw  += '<\/div>';
+                rw  += '<!-- Blindennavigation: Ende -->';
+
+                rw  += '<\/div>';
+
+				rw += parent.print_main_foot();
+
+                rw  += '<\/div>';
+
+                rw  += '<\/div>';
+
+                return rw;
+            }
+
+            document.writeln(write_2_ergebniszwischen());
+        </script>
+    </body>
+</html>

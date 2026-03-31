@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.1 (78136) - https://sketchapp.com -->
+    <title>Linkpfeil_schwarz</title>
+    <desc>Created with Sketch.</desc>
+    <g id="05_Ergebnis" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="051_Ergebnis_Desktop_B2_expanded" transform="translate(-352.000000, -417.000000)">
+            <g id="Linkpfeil_schwarz" transform="translate(352.000000, 417.000000)">
+                <path d="M9.5,0.655101078 C14.3771034,0.655101078 18.3448276,4.62239321 18.3448276,9.49929318 C18.3448276,14.3755381 14.3771034,18.3431577 9.5,18.3431577 C4.62289655,18.3431577 0.655172414,14.3755381 0.655172414,9.49929318 C0.655172414,4.62239321 4.62289655,0.655101078 9.5,0.655101078 M9.5,6.03961325e-14 C4.25337931,6.03961325e-14 0,4.25258865 0,9.49929318 C0,14.7450151 4.25337931,18.9982588 9.5,18.9982588 C14.7466207,18.9982588 19,14.7450151 19,9.49929318 C19,4.25258865 14.7466207,6.03961325e-14 9.5,6.03961325e-14" id="Fill-1" fill="#000000" transform="translate(9.500000, 9.499129) rotate(-180.000000) translate(-9.500000, -9.499129) "></path>
+                <polyline id="Stroke-2" stroke="#000000" transform="translate(10.014915, 9.659115) rotate(-180.000000) translate(-10.014915, -9.659115) " points="12.7420339 4.47775034 7.28779661 9.65927576 12.7420339 14.8404791"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

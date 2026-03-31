@@ -1,0 +1,30 @@
+/* Footer immer */
+.foottext1  {clear:all; font:normal 0.6em verdana,   arial,   sans-serif; float:left;}
+
+/* Reihe 1 im Jpg
+    ZDF
+    SPIEGEL
+    FAZ
+    TAZ
+    ZEIT
+    
+    SZ
+
+Im Footer:
+    ZDF
+    SPIEGEL
+    FAZ
+    -
+    ZEIT
+    SZ
+    TAZ
+    
+*/
+#main_foot_sub div.b1 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 0px; width:64px; height:45px;}
+#main_foot_sub div.b2 a {margin-left:42px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -45px; width:136px; height:45px;}
+#main_foot_sub div.b3 a {margin-left:51px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -90px; width:81px; height:45px;}
+#main_foot_sub div.b4 a {margin-left:44px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -270px; width:116px; height:45px;}
+#main_foot_sub div.b5 a {margin-left:38px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -180px; width:150px; height:45px;}
+#main_foot_sub div.b6 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -225px; width:134px; height:45px;}
+
+

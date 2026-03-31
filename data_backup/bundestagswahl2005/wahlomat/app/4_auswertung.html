@@ -1,0 +1,324 @@
+<!--
+
+/*
+   -------------------------------------------------------
+   Calculation / Berechnung
+     Die Berechnung wird nur nochmals ausgef�
+     wenn entweder eine Gewichtung  oder eine These
+     neu beantwortet worden ist. Ansonsten wird die
+     alte Kalkulation genommen.
+       S_nRecalculate = 0 -> neu berechnen
+       S_nRecalculate = 1 -> Berechnung ist noch g�
+   -------------------------------------------------------
+*/
+//-->
+<html>
+    <head>
+        <title>Wahl-O-Mat - Bundestagswahl 2005</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel=stylesheet type="text/css" href="css/style.css">
+    </head>
+
+    <body background="images/bg2004ff.gif" bgcolor=#FBF3CC" text="#000000" link="#000000" vlink="#000000" alink="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+        <script language="javascript">
+	        function BildTausch(strBildHTML, strBildNeuURL) {
+				objHTML = (document.images ? document.images : document.all);
+				objHTML[strBildHTML].src = strBildNeuURL;
+			}
+
+			//alert(parent.WOMT_nThesen);
+            if ((parent.TOPPY != 1)||(parent.S_nTheseMax<parent.WOMT_nThesen)) {
+   	            location.href = "main_app.html";
+            }
+            
+
+            if (parent.S_nRecalculate==1){
+                //alert(parent.S_nRecalculate);
+                parent.calculate();
+                parent.S_nRecalculate=0;
+            }
+            
+
+            S_nSprache										= parent.S_nSprache;
+            S_nTheseAktuell									= parent.S_nTheseAktuell;
+            S_nTheseMax										= parent.S_nTheseMax;
+            S_aThesen										= parent.S_aThesen;
+            S_aThemen										= parent.S_aThemen;
+            S_aThemen										= parent.S_aThemen;
+            S_nWeissNicht									= parent.S_nWeissNicht;
+            S_nNeutral										= parent.S_nNeutral;
+            
+			CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN		= parent.CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN;
+			CONST_WOMT_NOERGEBNIS_NEUTRAL					= parent.CONST_WOMT_NOERGEBNIS_NEUTRAL;
+			
+            CONST_ONLINE_STATISTIK							= parent.CONST_ONLINE_STATISTIK;
+            WOMT_aThesenBilder								= parent.WOMT_aThesenBilder;
+            WOMT_aThesen									= parent.WOMT_aThesen;
+            WOMT_nThesen									= parent.WOMT_nThesen;
+            WOMT_nTableWidth								= parent.WOMT_nTableWidth;
+            WOMT_nTexte										= parent.WOMT_nTexte;
+            WOMT_aParteienLogos								= parent.WOMT_aParteienLogos;
+            WOMT_aParteienLogos2							= parent.WOMT_aParteienLogos2;
+            WOMT_aParteienLogos3							= parent.WOMT_aParteienLogos3;
+            WOMT_aParteienLogos4							= parent.WOMT_aParteienLogos4;
+            WOMT_aParteien									= parent.WOMT_aParteien;
+            WOMT_nParteien									= parent.WOMT_nParteien;
+            WOMT_aBilder									= parent.WOMT_aBilder;
+            WOMT_aTexte										= parent.WOMT_aTexte;
+            S_nParteiSelected								= parent.S_nParteiSelected;
+            S_aParteienDistances							= parent.S_aParteienDistances;
+            S_aSort											= parent.S_aSort;
+            S_nDistanceMax									= parent.S_nDistanceMax;
+            S_aParteienAbs									= parent.S_aParteienAbs;
+            S_nGleichstand									= parent.S_nGleichstand;
+
+            b = S_nTheseAktuell + 1;
+
+            function write_4_auswertung() {
+
+                rw  =   '';
+                rw +=   '<center>';
+                // Kopfzeile
+                
+                
+                rw += '<table border="0" cellpadding="0" cellspacing="0" width="760">';
+				rw += '	<tr>';
+				rw += '		<td width="25%" height="60"><a href="http://www.bpb.de" target="_blank"><img src="images/sponsoren/bpb.gif" width="150" height="58"  border="0" alt="'+parent.make_alt_tag(WOMT_aTexte['wahlomat_bpb_logo_alttag'][S_nSprache])+'"></a></td>';
+				rw += '	</tr>';
+				rw += '	<tr>';
+				rw += '		<td valign="top" colspan="4" height="10"><img src="images/fill.gif" width="1" height="10" alt="" border="0"></td>';
+				rw += '	</tr>';
+				rw += '</table>';
+                // /Kopfzeile
+                
+                
+                
+				rw += '	<table border="0" cellpadding="0" cellspacing="0" width="760">';
+				rw += '		<tr>';
+				rw += '			<td valign="top" width="10"><img src="images/fill.gif" width="10" height="1" alt="" border="0"></td>';
+				rw += '			<td valign="top" width="503"><table border="0" cellpadding="0" cellspacing="0" width="503" height="500" id="weiss">';
+				rw += '				<tr>';
+				rw += '					<td valign="top" width="20"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '					<td valign="top" width="480" bgcolor="#ffffff">&nbsp;</td>';
+				rw += '				</tr>';
+				rw += '				<tr>';
+				rw += '					<td valign="top" width="20" bgcolor="#ffffff"><img src="images/fill.gif" width="20" height="1" alt="" border="0"></td>';
+				rw += '					<td valign="top" bgcolor="#ffffff" width="480"><h1 class="schwarz">'+WOMT_aTexte["erg_titel"][S_nSprache]+'</h1><p>';
+						if((S_nWeissNicht >= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN)
+					     ||(S_nNeutral    >= CONST_WOMT_NOERGEBNIS_NEUTRAL)) {
+					     	
+					     	if (S_nWeissNicht >= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN){
+					     		text = WOMT_aTexte["erg_noergebnis_theseueberspringen"][S_nSprache];
+					     	} else {
+					     		text = WOMT_aTexte["erg_noergebnis_neutral"][S_nSprache];
+					     	}
+				rw += '<p>';
+				rw += '	<!-- beginn ergebnis -->';
+				rw += '			<table border="0" cellpadding="0" cellspacing="0">';
+				rw += '				<tr>';
+				rw += '   			<td width="452"><div class="fliesstext_schwarz">'+text+'</div>';
+				rw += '        		</td>';
+				rw += '	        	</tr>';
+				rw += '	        </table>';
+				rw += '	        <br><br>';
+				rw += '	        <table border="0" cellspacing="0" cellpadding="0">';
+				rw += '				<tr>';
+									for (a=0;a<WOMT_nParteien;a++){
+										if((WOMT_aParteienLogos[a][0]!="")
+						    				&&(WOMT_aParteienLogos[a][1]>0)
+						    				&&(WOMT_aParteienLogos[a][2]>0)){
+						    				alt = parent.make_alt_tag(WOMT_aTexte["erg_alttag_thesenvergleich"][S_nSprache]+WOMT_aParteien[a][S_nSprache][0]);
+					    					rw += '<td><a href="javascript:parent.change_detailauswertung(' + a + ')" '
+					    							+' onmouseover="BildTausch(\'img_partei_'+a+'\',\''+WOMT_aParteienLogos2[a][0]+'\');"'
+					    							+' onmouseout="BildTausch(\'img_partei_'+a+'\',\''+WOMT_aParteienLogos3[a][0]+'\');">'
+					    							+' <img name="img_partei_'+a
+					    							+'" alt="'
+					    							+alt+'"  src="'
+					    							+WOMT_aParteienLogos3[a][0]
+					    							+'" width="'
+					    							+WOMT_aParteienLogos2[a][1]
+					    							+'" height="'
+					    							+WOMT_aParteienLogos2[a][2]
+					    							+'" border="0"';
+					    							if ((a>0)&&(a<S_aParteienDistances.length-1)&&(a%2!=0)){
+					    								rw +='hspace="17"';
+					    							}
+					    							rw +='></a></td>';
+							    		}
+									}
+				rw += '			</tr>';
+				rw += '		</table>';
+					    } else { 
+					    	rw += '<div class="fliesstext_schwarz">';
+							if (S_nGleichstand!=1){							
+								rw += WOMT_aTexte["erg_text"][S_nSprache]+'</div>';
+								rw += '<p>';
+								    if((WOMT_aParteienLogos[S_nParteiSelected][0]!="")
+							    		&&(WOMT_aParteienLogos[S_nParteiSelected][1]>0)
+							    		&&(WOMT_aParteienLogos[S_nParteiSelected][2]>0)){
+							    		rw += '<a href="javascript:parent.change_detailauswertung(\''+S_nParteiSelected+'\')"><img alt="'
+							    		+parent.make_alt_tag(WOMT_aTexte["erg_alttag_thesenvergleich"][S_nSprache])+WOMT_aParteien[S_nParteiSelected][S_nSprache][0]+'"  src="'+WOMT_aParteienLogos[S_nParteiSelected][0]+'" width="'+WOMT_aParteienLogos[S_nParteiSelected][1]+'" height="'+WOMT_aParteienLogos[S_nParteiSelected][2]+'" border="0"></a>';
+								    }
+							} else {
+								rw += WOMT_aTexte["erg_parteien_gleichstand"][S_nSprache]+'</div>';
+							}
+							rw += '<p>';
+							rw += '<!-- beginn ergebnis -->';
+							rw += '<div class="fliesstext_schwarz"><b>'+WOMT_aTexte["erg_uebereinstimmung_text"][S_nSprache]+'</b></div><br>';
+							
+							rw += '<table border="0" cellpadding="0" cellspacing="0" id="gelb">';
+								rw += '<tr>';
+								rw += '<td valign="top" class="kopf_dunkel_center" width="165"><img src="images/fill.gif" width="165" height="1" alt="" border="0"></td>';
+								rw += '<td valign="top" class="kopf_hell" width="292">'+WOMT_aTexte["erg_tabelle_uebereinstimmung"][S_nSprache]+'</td>';
+								rw += '</tr>';
+									lFullWidth=287;
+									for (f=0;f<S_aParteienDistances.length;f++){
+										a = S_aSort[f];
+										rw +='<tr>';
+											rw +='<td class="';
+											if (f%2==0){
+												rw += 'hell_nr_links';
+											} else {
+												rw += 'weiss_nr_links';
+											}
+											rw += '"><a class="';
+											if (f%2==0){
+												rw +='hell_nr_links';
+											} else {
+												rw += 'weiss_nr_links';
+											}
+											rw += '" href="javascript:parent.change_detailauswertung(\''+a+'\')">'+WOMT_aParteien[a][S_nSprache][1]+'</a></td>';
+											
+											//rw += '<td>'+S_nDistanceMax+'/'+S_aParteienDistances[a]+'/'+S_aParteienAbs[a]+'</td>';
+											
+					   	    				prozent = Math.round(S_aParteienDistances[a] * 100);
+					   	    				//rw+= S_aParteienDistances[a]*100;
+						  	    			alt2= Math.round(S_aParteienDistances[a]*1000)/10+" %";
+						  	    			var altt = alt2.replace(/\./,",");
+						    				if (S_aParteienDistances[a] >= -1.0) {		
+												width = Math.round(S_aParteienDistances[a]*lFullWidth)+1;
+												rw +='<td valign="top" class="';
+												if (f%2==0){
+													rw += 'dunkel';
+												} else {
+													rw += 'hell';
+												}
+												rw +='"><img alt="'+parent.make_alt_tag(altt)+'" title="'+parent.make_alt_tag(altt)+'" src="images/wahlomat/ergebnis/ergebnis_status.gif" width="'+width+'" height="17" border="0">';
+												
+											}
+											rw += '</td>';
+										rw += '</tr>';
+									}
+							rw += '</table>';
+							rw += '<p>';
+			rw += '				<table border="0" cellspacing="0" cellpadding="0">';
+			rw += '					<tr>';
+			rw += '						<td width="430">';
+			rw += '							<div class="fliesstext_schwarz"><b>'+WOMT_aTexte["erg_vergleich_titel"][S_nSprache]+'</b><br><br>';
+			rw += 								WOMT_aTexte["erg_vergleich_text"][S_nSprache]+'<br><br>';
+			rw += '							</div>';
+			rw += '						</td>';
+			rw += '					</tr>';
+			rw += '				</table>';
+			rw += '				<table border="0" cellspacing="0" cellpadding="0">';
+			rw += '					<tr>';
+									for (f=0;f<S_aParteienDistances.length;f++){
+										a = f;
+										if((WOMT_aParteienLogos[a][0]!="")
+						    				&&(WOMT_aParteienLogos[a][1]>0)
+						    				&&(WOMT_aParteienLogos[a][2]>0)){
+						    				alt = parent.make_alt_tag(WOMT_aTexte["erg_alttag_thesenvergleich"][S_nSprache]+WOMT_aParteien[a][S_nSprache][0]);
+						    				if ((a != S_nParteiSelected)||(S_nGleichstand==1)){
+						    					rw +='<td><a href="javascript:parent.change_detailauswertung(' + a + ')" onmouseover="BildTausch(\'img_partei_'+a+'\', \''
+						    					+WOMT_aParteienLogos2[a][0]+'\');" onmouseout="BildTausch(\'img_partei_'
+						    					+a+'\', \''
+						    					+WOMT_aParteienLogos3[a][0]+'\');"><img name="img_partei_'+a+'" alt="'+alt+'"  src="'
+						    					+WOMT_aParteienLogos3[a][0]+'" width="'+WOMT_aParteienLogos2[a][1]+'" height="'
+						    					+WOMT_aParteienLogos2[a][2]+'" border="0" ';
+						    					if ((f>0)&&(f<S_aParteienDistances.length-1)&&(f%2!=0)){
+						    						rw += 'hspace="17"';
+						    					}
+						    					rw += '></a></td>';
+						    				} else {
+						    					rw +='<td><a href="javascript:parent.change_detailauswertung(' + a + ')" onmouseover="BildTausch(\'img_partei_'+a+'\',\''
+							    					+WOMT_aParteienLogos3[a][0]+'\');" onmouseout="BildTausch(\'img_partei_'
+							    					+a+'\', \''+WOMT_aParteienLogos2[a][0]+'\');"><img name="img_partei_'
+							    					+a+'" alt="'+alt+'"  src="'
+							    					+WOMT_aParteienLogos2[a][0]
+							    					+'" width="'
+							    					+WOMT_aParteienLogos3[a][1]
+							    					+'" height="'
+							    					+WOMT_aParteienLogos3[a][2]
+							    					+'" border="0" ';
+						    					if ((f>0)&&(f<S_aParteienDistances.length-1)&&(f%2!=0)){
+						    						rw += 'hspace="17"';
+						    					}
+						    					rw += '></a></td>';
+						    				}
+							    		}
+									}
+									rw += '</tr>';
+							rw += '</table>';
+						}
+			rw += '<p align="right"><img src="images/doppelpfeil_orange_zurueck.gif" width="13" height="9" alt="" border="0"> <a href="javascript:parent.replaceIFrame(3)"><b>'+WOMT_aTexte['allg_zurueck'][S_nSprache]+'</b></a>&nbsp;&nbsp;&nbsp;&nbsp;';
+						if((S_nWeissNicht >= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN)
+						 ||(S_nNeutral    >= CONST_WOMT_NOERGEBNIS_NEUTRAL)) {
+							rw += '<a href="main_app.html"><b>'+WOMT_aTexte['detail_link_neu_starten'][S_nSprache]+'</b></a> <img src="images/pfeil_orange.gif" width="9" height="10" border="0" alt="">&nbsp;&nbsp;&nbsp;&nbsp;<br><br>';
+						}
+					rw += '<br><br>';
+					rw += '</td>';
+					rw += '<!-- ende ergebnis -->';
+					rw += '</tr>';
+					rw += '</table></td>';
+					rw += '<td valign="top" width="17"><img src="images/fill.gif" width="17" height="1" alt="" border="0"></td>';
+					rw += '<td valign="top" width="230">';
+					 	if((S_nWeissNicht >= CONST_WOMT_NOERGEBNIS_THESEUEBERSPRINGEN)
+					 	 ||(S_nNeutral    >= CONST_WOMT_NOERGEBNIS_NEUTRAL)
+					 	 ||(S_nGleichstand==1)) {
+							rw +='<img src="images/wahlomat/ergebnis/automat_o.gif" width="228" height="82" alt="" border="0"><img src="images/wahlomat/ergebnis/leer.gif" width="228" height="78" alt="" border="0"><img src="images/wahlomat/ergebnis/automat_u.gif" width="228" height="85" alt="" border="0">';
+					    } else { 
+							alt = parent.make_alt_tag(WOMT_aTexte["erg_alttag_thesenvergleich"][S_nSprache]+WOMT_aParteien[S_nParteiSelected][S_nSprache][0]);
+							rw +='<img src="images/wahlomat/ergebnis/automat_o.gif" width="228" height="82" alt="" border="0"><a href="javascript:parent.change_detailauswertung(' + S_nParteiSelected + ')"><img alt="'+alt+'" src="'+WOMT_aParteienLogos4[S_nParteiSelected][0]+'" width="'+WOMT_aParteienLogos4[S_nParteiSelected][1]+'" height="'+WOMT_aParteienLogos4[S_nParteiSelected][2]+'" border="0"></a><img src="images/wahlomat/ergebnis/automat_u.gif" width="228" height="85" alt="" border="0">';
+						}
+						
+			rw += '<p>';
+			rw += '<img src="images/pfeil_orange.gif" width="9" height="10" alt="" border="0"> <a href="" onClick="parent.popup_faq();return false;" TARGET="popup_faq" class="klein">'+WOMT_aTexte["allg_link_faq"][S_nSprache]+'</a><br>';
+			rw += '<img src="images/pfeil_orange.gif" width="9" height="10" alt="" border="0"> <a href="'+WOMT_aTexte["allg_link_email_url"][S_nSprache]+'" class="klein">'+WOMT_aTexte["allg_link_email"][S_nSprache]+'</a><br>';
+			rw += '<img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"> <a href="'+WOMT_aTexte["allg_link_info_url"][S_nSprache]+'" class="klein" target="extern">'+WOMT_aTexte["allg_link_info"][S_nSprache]+'</a>';
+			rw += '<p>';
+			rw += '<img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"> <a href="'+WOMT_aTexte["allg_link_parteiendetail_url"][S_nSprache]+'" class="klein" target="parteiendetail">'+WOMT_aTexte["allg_link_parteiendetail"][S_nSprache]+'</a><br>';
+			rw += '<img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"> <a href="'+WOMT_aTexte["allg_link_themawahl_url"][S_nSprache]+'" class="klein" target="themawahl">'+WOMT_aTexte["allg_link_themawahl"][S_nSprache]+'</a><br>';
+			if (parent.CONST_SHOW_DOWNLOAD==1){
+				rw += '<img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"> <a href="'+WOMT_aTexte["allg_link_download_url"][S_nSprache]+'" class="klein" target="download">'+WOMT_aTexte["allg_link_download"][S_nSprache]+'</a><br>';
+			}
+			rw += '<img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"> <a href="'+WOMT_aTexte["allg2_link_unterrichtsmaterial_url"][S_nSprache]+'" class="klein" target="unterrichtsmaterial">'+WOMT_aTexte["allg2_link_unterrichtsmaterial"][S_nSprache]+'</a>';
+			rw += '</td>';
+			rw += '</tr>';
+			rw += '</table>';
+			
+				rw += '	<br><table border="0" cellpadding="0" cellspacing="0" width="730">';
+				rw += '	<tr>';
+				rw += '	<td valign="top"><img src="images/pfeil_orange.gif" alt="" width="9" height="10" border="0"><a href="" onClick="parent.popup_impressum();return false;" TARGET="popup_impressum" class="klein">'+WOMT_aTexte["allg_link_impressum"][S_nSprache]+'</a><br></td>';
+				rw += '	</tr>';
+				rw += '	</table><img src="images/fill.gif" width="1" height="10" alt="" border="0"><br>';
+
+				if (parent.CONST_WOM_VERSION_ZDF==1){
+					rw += '	<table border="0" cellpadding="5" cellspacing="0" width="730" height="30">';
+					rw += '		<tr>';
+					rw += '			<td valign="top">';
+					rw += 				'<a href="'+WOMT_aTexte["allg_zdf_tv_url"][S_nSprache]+'" target="_blank"><img src="images/sponsoren/zdf_tv.gif" border="0" height="40" width="195" alt="'+WOMT_aTexte["allg_zdf_tv_alttag"][S_nSprache]+'">';
+					rw += 			'</td>';
+					rw += '		</tr>';
+					rw += '	</table>';
+				}
+			
+              rw +=   '</center>';
+
+                return rw;
+            }
+
+            document.writeln(write_4_auswertung());
+
+        </script>
+    </body>
+</html>

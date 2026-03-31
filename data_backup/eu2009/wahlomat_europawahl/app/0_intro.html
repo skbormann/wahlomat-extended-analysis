@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" />
+    <script language="javascript" type="text/javascript">
+        <!--
+     	//alert (parent.print_meta());
+    	document.writeln(parent.print_meta());
+    	//-->
+    </script>
+</head>
+<body id="wahlomat2006">
+<script language="javascript" type="text/javascript">
+             <!--
+            if (parent.TOPPY!=1){
+   	            location.href = "main_app.html";
+            }
+            S_nSprache				= parent.S_nSprache;
+            WOMT_aThesenBilder		= parent.WOMT_aThesenBilder;
+            WOMT_aThesen			= parent.WOMT_aThesen;
+            WOMT_nThesen			= parent.WOMT_nThesen;
+            WOMT_nTexte				= parent.WOMT_nTexte;
+            WOMT_aParteienLogos		= parent.WOMT_aParteienLogos;
+            WOMT_nParteien			= parent.WOMT_nParteien;
+            WOMT_aBilder			= parent.WOMT_aBilder;
+            WOMT_aTexte				= parent.WOMT_aTexte;
+            WOMT_aSprachen_ID2N		= parent.WOMT_aSprachen_ID2N;
+		
+            function write_0_intro(){
+            	rw = '';
+            	rw += '<div id="main">\n';
+                 rw += parent.print_main_head();
+                 
+            	rw += '<div id="main_wm">\n';
+
+            	rw += '<div id="';
+            	if (parent.gStatusURL_Status!=-1){
+            	    rw += 'main_wm_start';
+            	} else {
+            	    rw += 'main_wm_sub';
+            	}
+            	rw += '">\n';
+
+            	rw += '<div id="content">\n';
+
+            	rw += '<div id="content_head_start">\n';
+            	rw += '<h2>'+parent.wom_html(WOMT_aTexte["wahlomat_content_head"][S_nSprache])+'<\/h2>\n';
+            	rw += '<!-- Blindennavigation: Anfang -->\n';
+            	rw += '<div class="unsichtbar">\n';
+            	rw += ''+parent.wom_html(WOMT_aTexte["0_bn_hinweis_text"][S_nSprache])+'\n';
+            	rw += '<ul>\n';
+            	rw += '<li><a href="#content_center_start" tabindex="10" title="">'+parent.wom_html(WOMT_aTexte["0_bn_willkommen_text"][S_nSprache])+'<\/a><\/li>\n';
+            	rw += '<li><a href="#leftnav_normal" tabindex="11" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'<\/a><\/li>\n';
+            	rw += '<\/ul>\n';
+            	rw += '<\/div>\n';
+            	rw += '<!-- Blindennavigation: Ende -->\n';
+            	rw += '<\/div>\n';
+		
+		                l_status = 1;
+					    textnr = "2";
+					    if (parent.gStatusURL_Status=="0"){
+					        l_status = -1;
+					        textnr = "";
+                        }
+                        
+            	rw += '<div id="content_center_start">\n';
+            	rw += '<h4 class="start" ';
+            	if ((parent.S_nSkin==1)&&(parent.gStatusURL_Status!=-1)){
+            	     rw += 'style="color:#ffffff;"';
+            	} else {
+            	    rw += '';
+            	}
+            	rw += '>\n';
+                        if (parent.gStatusURL_Status!=-1){
+            	            rw += '<a ';
+            	            if((parent.S_nSkin==1)&&(parent.gStatusURL_Status!=-1)){
+            	               rw+= 'style="color:#ffffff;"';
+            	            } else {
+            	                rw +='';
+            	            }
+            	            rw += ' href="" onclick="parent.replaceIFrame('+l_status+');return false;" tabindex="13" ';
+            	            rw += ' title="'+parent.wom_titletag(WOMT_aTexte["0_ms_start_title"+textnr][S_nSprache])+'">\n';
+    					}
+            	        rw += ''+parent.wom_html(WOMT_aTexte["0_ms_title_text"+textnr][S_nSprache])+'\n';
+    				    if (parent.gStatusURL_Status!=-1){
+            	            rw += '<\/a>\n';
+    				    }
+            	rw += '<\/h4>\n';
+            	
+                if (parent.gStatusURL_Status!=-1){
+			        if (parent.S_nSprache==1){
+			            if (parent.S_nSkin==0){
+			                rw += '<div class="b1_start" style="padding-top:2px;">';
+			            } else {
+			                rw += '<div class="b1_start" style="padding-top:2px;color:#ffffff;">';
+			            }
+			        } else {
+			            rw += '<div class="b1_start" ';
+			            if ((parent.S_nSkin==1)&&(parent.gStatusURL_Status!=-1)){
+			                rw += 'style="color:#ffffff;">';
+			            } else {
+			                rw += '>';
+			            }
+			        }
+			    } else {
+			         rw += '<div class="b1" ';
+			        if ((parent.S_nSkin==1)&&(parent.gStatusURL_Status!=-1)){
+			            rw += 'style="color:#ffffff;">';
+			            
+			        } else {
+			            rw += '>';
+			        }
+			    }
+
+			    text = WOMT_aTexte["0_ms_intro_text"+textnr][S_nSprache];
+			    text = text.replace(/\[THESENANZAHL\]/,WOMT_nThesen);
+			    text = text.replace(/\[PARTEIENANZAHL\]/,WOMT_nParteien);
+			    
+			    rw += parent.wom_html(text);
+			    if (parent.gStatusURL_Status==-1){
+	                rw += '<a class="icontext" href="http://www.werstehtzurwahl.de" tabindex="14" title="werstehtzurwahl.de" target="_blank">www.werstehtzurwahl.de<\/a>\n';
+			    }
+        	    rw += '<\/div>';
+        	    
+                lStyle = '';
+                lWidthA = '79';
+			    if (parent.S_nSprache==1){
+			        lWidthA ='100';
+			        lStyle = 'style="margin-left:330px;width:100px;background:transparent url(./pix/start_en.gif) no-repeat scroll 0 0;"';
+			    }
+                if (parent.gStatusURL_Status!=-1){
+  	                rw += '<div class="b2"><a href="" onclick="parent.replaceIFrame('+l_status+');return false;" tabindex="15" title="'+parent.wom_titletag(WOMT_aTexte["0_ms_start_title"+textnr][S_nSprache])+'"><span>'+parent.wom_html(WOMT_aTexte["0_ms_button_text"+textnr][S_nSprache])+'<\/span><\/a><\/div>\n';
+                } else { 
+    	            rw += '<div class="b2_weiter" '+lStyle+'><a href="" onclick="parent.replaceIFrame('+l_status+');return false;" tabindex="15" title="'+parent.wom_titletag(WOMT_aTexte["0_ms_start_title"+textnr][S_nSprache])+'" style="display: block; width:'+lWidthA+'px; height: 18px; position: static;"><span>'+parent.wom_html(WOMT_aTexte["0_ms_button_text"+textnr][S_nSprache])+'<\/span><\/a><\/div>\n';
+                }
+        	    rw += '<\/div>\n';
+    				if (parent.gStatusURL_Status!=-1){
+				        rw += '<div id="content_center_b_start">&nbsp;</div>';
+				    } else {
+				        rw += '<div id="content_center_b_weiter">&nbsp;</div>';
+				    }
+            	rw += '<!-- Blindennavigation: Anfang -->\n';
+            	rw += '<div class="unsichtbar">\n';
+            	rw += parent.wom_html(WOMT_aTexte["0_bn_hinweis_text_2"][S_nSprache])+'\n';
+            	rw += '<\/div>\n';
+            	rw += '<!-- Blindennavigation: Ende -->\n';
+            	rw += '<div id="content_choice">\n';
+            	rw += '<div class="b1"><span>'+parent.wom_html(WOMT_aTexte["a_button_stimmezu_text"][S_nSprache])+'<\/span><\/div>\n';
+            	rw += '<div class="b2"><span>'+parent.wom_html(WOMT_aTexte["a_button_neutral_text"][S_nSprache])+'<\/span><\/div>\n';
+            	rw += '<div class="b3"><span>'+parent.wom_html(WOMT_aTexte["a_button_stimmenichtzu_text"][S_nSprache])+'<\/span><\/div>\n';
+            	rw += '<div class="b4"><span>'+parent.wom_html(WOMT_aTexte["a_button_theseueberspringen_text"][S_nSprache])+'<\/span><\/div>\n';
+            	rw += '<div class="b5">&nbsp;<\/div>\n';
+            	rw += '<\/div>\n';
+            	rw += '<div id="content_choice_b">&copy;'+parent.wom_html(WOMT_aTexte["a_copyright_text"][S_nSprache])+'<\/div>\n';
+            	rw += '<\/div>\n';
+            	rw += '<div id="steps">\n';
+            	rw += '<\/div>\n';
+
+				rw +=   parent.print_skinselect();
+
+            	rw += '<div id="leftnav_normal"\n';
+			    if (parent.gStatusURL_Status==0){
+            	        rw += "style='top:80px;'";
+			    }
+                rw += '>\n';
+				
+				rw += parent.print_left_nav();
+                
+                rw += '<\/div>\n';
+			
+            	rw += '<!-- Blindennavigation: Anfang -->\n';
+            	rw += '<div class="unsichtbar">\n';
+            	rw += '<ul>\n';
+            	rw += '<li><a href="#main" tabindex="630" title="">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'<\/a><\/li>\n';
+            	rw += '<li><a href="#content_center_start" tabindex="731" title="">'+parent.wom_html(WOMT_aTexte["0_bn_willkommen_text"][S_nSprache])+'<\/a><\/li>\n';
+            	rw += '<\/ul>\n';
+            	rw += '<\/div>\n';
+            	rw += '<!-- Blindennavigation: Ende -->\n';
+            	rw += '<\/div>\n';
+
+                rw +=   parent.print_main_foot();
+
+            	rw += '<\/div>\n';
+
+            	rw += '<\/div>\n';
+            	return rw;
+            }
+            document.writeln(write_0_intro());
+            //-->
+        </script>
+</body>
+</html>

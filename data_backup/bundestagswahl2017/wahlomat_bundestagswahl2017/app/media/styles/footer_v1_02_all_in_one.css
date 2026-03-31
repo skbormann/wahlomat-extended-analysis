@@ -1,0 +1,393 @@
+/* Footer immer */
+.wom_footertext {
+	clear: both;
+	font-size: 14px;
+	font-weight: normal;
+	float: left;
+	margin-top: 36px;
+}
+/*
+
+Reihfenfolge Footer und Datei
+
+http://www.spiegel.de
+http://www.faz.net
+http://www.welt.de
+http://www.sueddeutsche.de
+http://www.bild.de
+http://www.zeit.de
+http://www.handelsblatt.com
+http://www.wiwo.de
+http://www.focus.de
+http://www.taz.de
+http://www.stern.de
+http://www.chip.de
+
+http://www.ndr.de
+http://www.wdr.de
+http://www.br.de
+http://www.hr.de
+http://www.rbb-online.de/
+http://www.sr.de
+http://www.dw.com
+http://www.swr.de
+http://www.zdf.de
+http://www.sat1.de
+http://www.1und1.de
+http://www.t-online.de
+http://www.msn.de
+http://www.freenet.de
+http://www.yahoo.de
+http://www.rnd-news.de
+http://www.vrm.de
+http://www.ippen-digital.de/
+
+http://www.ams-net.de/
+http://www.express.de
+http://www.ksta.de
+http://www.rundschau-online.de
+http://www.saarbruecker-zeitung.de
+http://www.weser-kurier.de
+http://www.mt.de
+http://www.koeln.de
+http://www.noz.de
+http://www.general-anzeiger-bonn.de
+http://www.mhn-medien.de/
+http://www.mittelbayerische.de
+http://www.infranken.de
+http://www.antenne.de
+http://www.berliner-zeitung.de
+http://www.berliner-kurier.de
+http://www.pz-news.de
+http://www.volksstimme.de
+http://www.mz-web.de
+http://www.nordbayern.de
+http://www.rp-online.de
+http://www.ntz.de
+http://www.gaeubote.de
+http://www.tagesspiegel.de
+http://www.wahlen.volksfreund.de
+http://www.zvw.de
+http://www.zvw.de
+http://www.morgenpost.de
+*/
+
+
+#wom .wom_footer div.wom_fh {
+	height: 55px !important;
+	display: block;
+	float: left;
+}
+#wom .wom_footer li div a {
+	font-size: 11px;
+	height: 45px;
+	display: block;
+	position: relative;
+	padding: 5px;
+	border: none;
+	float: left;
+	z-index: 1;
+	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+	-webkit-filter: grayscale(100%);
+	-ms-filter: grayscale(100%);
+	color:#fff;
+	font-size:10px;
+}
+
+#wom .wom_footer li div a:focus {
+    outline: 1px dotted #000;
+    outline: auto -webkit-focus-ring-color;
+    outline-color: #00000;
+}
+
+
+#wom .wom_footer li div a:hover,
+#wom .wom_footer li div a:focus {
+	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale");
+	-webkit-filter: grayscale(0%);
+	-ms-filter: grayscale(0%);
+}
+#wom .wom_footer li div a span {
+	background-image: url('../pix_change/logos_v1_02.png');
+	background-repeat: no-repeat;
+	display: block;
+	position: absolute;
+	top: -1px;
+	left: -1px;
+	overflow:hidden;
+}
+
+.wom_b1 a, .wom_b1 span { background-position: 0px 0px; width: 159px; height: 45px; }
+.wom_b1 a {margin-left:0px;}
+.wom_b2 a, .wom_b2 span { background-position: 0px -45px; width: 86px; height: 45px; }
+.wom_b2 a {margin-left:37px;}
+.wom_b3 a, .wom_b3 span { background-position: 0px -90px; width: 111px; height: 45px; }
+.wom_b3 a {margin-left:37px;}
+.wom_b4 a, .wom_b4 span { background-position: 0px -135px; width: 205px; height: 45px; }
+.wom_b4 a {margin-left:37px;}
+.wom_b5 a, .wom_b5 span { background-position: 0px -180px; width: 82px; height: 45px; }
+.wom_b5 a {margin-left:37px;}
+.wom_b6 a, .wom_b6 span { background-position: 0px -225px; width: 158px; height: 45px; }
+.wom_b6 a {margin-left:0px;}
+.wom_b7 a, .wom_b7 span { background-position: 0px -270px; width: 102px; height: 45px; }
+.wom_b7 a {margin-left:20px;}
+.wom_b8 a, .wom_b8 span { background-position: 0px -315px; width: 74px; height: 45px; }
+.wom_b8 a {margin-left:20px;}
+.wom_b9 a, .wom_b9 span { background-position: 0px -360px; width: 69px; height: 45px; }
+.wom_b9 a {margin-left:20px;}
+.wom_b10 a, .wom_b10 span { background-position: 0px -405px; width: 114px; height: 45px; }
+.wom_b10 a {margin-left:20px;}
+.wom_b11 a, .wom_b11 span { background-position: 0px -450px; width: 80px; height: 45px; }
+.wom_b11 a {margin-left:20px;}
+.wom_b12 a, .wom_b12 span { background-position: 0px -495px; width: 76px; height: 45px; }
+.wom_b12 a {margin-left:20px;}
+.wom_b48 a, .wom_b48 span { background-position: 0px -2115px; width: 118px; height: 45px; }
+.wom_b48 a {margin-left:0px;}
+.wom_b13 a, .wom_b13 span { background-position: 0px -540px; width: 50px; height: 45px; }
+.wom_b13 a {margin-left:23px;}
+.wom_b14 a, .wom_b14 span { background-position: 0px -585px; width: 78px; height: 45px; }
+.wom_b14 a {margin-left:23px;}
+.wom_b15 a, .wom_b15 span { background-position: 0px -630px; width: 34px; height: 45px; }
+.wom_b15 a {margin-left:23px;}
+.wom_b16 a, .wom_b16 span { background-position: 0px -675px; width: 48px; height: 45px; }
+.wom_b16 a {margin-left:23px;}
+.wom_b17 a, .wom_b17 span { background-position: 0px -720px; width: 82px; height: 45px; }
+.wom_b17 a {margin-left:23px;}
+.wom_b18 a, .wom_b18 span { background-position: 0px -765px; width: 59px; height: 45px; }
+.wom_b18 a {margin-left:23px;}
+.wom_b19 a, .wom_b19 span { background-position: 0px -810px; width: 37px; height: 45px; }
+.wom_b19 a {margin-left:23px;}
+.wom_b20 a, .wom_b20 span { background-position: 0px -855px; width: 104px; height: 45px; }
+.wom_b20 a {margin-left:22px;}
+.wom_b21 a, .wom_b21 span { background-position: 0px -900px; width: 75px; height: 45px; }
+.wom_b21 a {margin-left:0px;}
+.wom_b22 a, .wom_b22 span { background-position: 0px -945px; width: 147px; height: 45px; }
+.wom_b22 a {margin-left:15px;}
+.wom_b23 a, .wom_b23 span { background-position: 0px -990px; width: 49px; height: 45px; }
+.wom_b23 a {margin-left:15px;}
+.wom_b24 a, .wom_b24 span { background-position: 0px -1035px; width: 62px; height: 45px; }
+.wom_b24 a {margin-left:15px;}
+.wom_b25 a, .wom_b25 span { background-position: 0px -1080px; width: 27px; height: 45px; }
+.wom_b25 a {margin-left:17px;}
+.wom_b26 a, .wom_b26 span { background-position: 0px -1125px; width: 134px; height: 45px; }
+.wom_b26 a {margin-left:17px;}
+.wom_b27 a, .wom_b27 span { background-position: 0px -1170px; width: 70px; height: 45px; }
+.wom_b27 a {margin-left:17px;}
+.wom_b28 a, .wom_b28 span { background-position: 0px -1215px; width: 122px; height: 45px; }
+.wom_b28 a {margin-left:17px;}
+.wom_b29 a, .wom_b29 span { background-position: 0px -1260px; width: 96px; height: 45px; }
+.wom_b29 a {margin-left:0px;}
+.wom_b30 a, .wom_b30 span { background-position: 0px -1305px; width: 57px; height: 45px; }
+.wom_b30 a {margin-left:22px;}
+.wom_b31 a, .wom_b31 span { background-position: 0px -1350px; width: 62px; height: 45px; }
+.wom_b31 a {margin-left:22px;}
+.wom_b32 a, .wom_b32 span { background-position: 0px -1395px; width: 136px; height: 45px; }
+.wom_b32 a {margin-left:22px;}
+.wom_b33 a, .wom_b33 span { background-position: 0px -1440px; width: 71px; height: 45px; }
+.wom_b33 a {margin-left:22px;}
+.wom_b34 a, .wom_b34 span { background-position: 0px -1485px; width: 46px; height: 45px; }
+.wom_b34 a {margin-left:22px;}
+.wom_b35 a, .wom_b35 span { background-position: 0px -1530px; width: 195px; height: 45px; }
+.wom_b35 a {margin-left:22px;}
+.wom_b36 a, .wom_b36 span { background-position: 0px -1575px; width: 175px; height: 45px; }
+.wom_b36 a {margin-left:0px;}
+.wom_b37 a, .wom_b37 span { background-position: 0px -1620px; width: 32px; height: 45px; }
+.wom_b37 a {margin-left:44px;}
+.wom_b38 a, .wom_b38 span { background-position: 0px -1665px; width: 171px; height: 45px; }
+.wom_b38 a {margin-left:44px;}
+.wom_b39 a, .wom_b39 span { background-position: 0px -1710px; width: 179px; height: 45px; }
+.wom_b39 a {margin-left:44px;}
+.wom_b40 a, .wom_b40 span { background-position: 0px -1755px; width: 62px; height: 45px; }
+.wom_b40 a {margin-left:44px;}
+.wom_b41 a, .wom_b41 span { background-position: 0px -1800px; width: 157px; height: 45px; }
+.wom_b41 a {margin-left:0px;}
+.wom_b42 a, .wom_b42 span { background-position: 0px -1845px; width: 163px; height: 45px; }
+.wom_b42 a {margin-left:49px;}
+.wom_b43 a, .wom_b43 span { background-position: 0px -1890px; width: 185px; height: 45px; }
+.wom_b43 a {margin-left:49px;}
+.wom_b44 a, .wom_b44 span { background-position: 0px -1935px; width: 145px; height: 45px; }
+.wom_b44 a {margin-left:49px;}
+.wom_b45 a, .wom_b45 span { background-position: 0px -1980px; width: 146px; height: 45px; }
+.wom_b45 a {margin-left:0px;}
+.wom_b46 a, .wom_b46 span { background-position: 0px -2025px; width: 66px; height: 45px; }
+.wom_b46 a {margin-left:31px;}
+.wom_b47 a, .wom_b47 span { background-position: 0px -2070px; width: 172px; height: 45px; }
+.wom_b47 a {margin-left:32px;}
+.wom_b49 a, .wom_b49 span { background-position: 0px -2160px; width: 155px; height: 45px; }
+.wom_b49 a {margin-left:31px;}
+.wom_b50 a, .wom_b50 span { background-position: 0px -2205px; width: 132px; height: 45px; }
+.wom_b50 a {margin-left:31px;}
+.wom_b51 a, .wom_b51 span { background-position: 0px -2250px; width: 160px; height: 45px; }
+.wom_b51 a {margin-left:0px;}
+.wom_b52 a, .wom_b52 span { background-position: 0px -2295px; width: 140px; height: 45px; }
+.wom_b52 a {margin-left:14px;}
+.wom_b53 a, .wom_b53 span { background-position: 0px -2340px; width: 111px; height: 45px; }
+.wom_b53 a {margin-left:12px;}
+.wom_b54 a, .wom_b54 span { background-position: 0px -2385px; width: 104px; height: 45px; }
+.wom_b54 a {margin-left:12px;}
+.wom_b55 a, .wom_b55 span { background-position: 0px -2430px; width: 100px; height: 45px; }
+.wom_b55 a {margin-left:14px;}
+.wom_b56 a, .wom_b56 span { background-position: 0px -2475px; width: 118px; height: 45px; }
+.wom_b56 a {margin-left:12px;}
+.wom_b57 a, .wom_b57 span { background-position: 0px -2520px; width: 134px; height: 45px; }
+.wom_b57 a {margin-left:0px;}
+.wom_b58 a, .wom_b58 span { background-position: 0px -2565px; width: 78px; height: 45px; }
+.wom_b58 a {margin-left:51px;}
+.wom_b59 a, .wom_b59 span { background-position: 0px -2610px; width: 205px; height: 45px; }
+.wom_b59 a {margin-left:51px;}
+.wom_b60 a, .wom_b60 span { background-position: 0px -2655px; width: 100px; height: 45px; }
+.wom_b60 a {margin-left:51px;}
+.wom_b61 a, .wom_b61 span { background-position: 0px -2700px; width: 75px; height: 45px; }
+.wom_b61 a {margin-left:51px;}
+.wom_b62 a, .wom_b62 span { background-position: 0px -2745px; width: 103px; height: 45px; }
+.wom_b62 a {margin-left:0px;}
+.wom_b63 a, .wom_b63 span { background-position: 0px -2790px; width: 110px; height: 45px; }
+.wom_b63 a {margin-left:51px;}
+
+
+
+
+@media screen and (max-width: 910px) {
+    .wom_b1 a,
+    .wom_b2 a,
+    .wom_b3 a,
+    .wom_b4 a,
+    .wom_b5 a,
+    .wom_b6 a,
+    .wom_b7 a,
+    .wom_b8 a,
+    .wom_b9 a,
+    .wom_b10 a,
+    .wom_b11 a,
+    .wom_b12 a,
+    .wom_b13 a,
+    .wom_b14 a,
+    .wom_b15 a,
+    .wom_b16 a,
+    .wom_b17 a,
+    .wom_b18 a,
+    .wom_b19 a,
+    .wom_b20 a,
+    .wom_b21 a,
+    .wom_b22 a,
+    .wom_b23 a,
+    .wom_b24 a,
+    .wom_b25 a,
+    .wom_b26 a,
+    .wom_b27 a,
+    .wom_b28 a,
+    .wom_b29 a,
+    .wom_b30 a,
+    .wom_b31 a,
+    .wom_b32 a,
+    .wom_b33 a,
+    .wom_b34 a,
+    .wom_b35 a,
+    .wom_b36 a,
+    .wom_b37 a,
+    .wom_b38 a,
+    .wom_b39 a,
+    .wom_b40 a,
+    .wom_b41 a,
+    .wom_b42 a,
+    .wom_b43 a,
+    .wom_b44 a,
+    .wom_b45 a,
+    .wom_b46 a,
+    .wom_b47 a,
+    .wom_b48 a,
+    .wom_b49 a,
+    .wom_b50 a,
+    .wom_b51 a,
+    .wom_b52 a,
+    .wom_b53 a,
+    .wom_b54 a,
+    .wom_b55 a,
+    .wom_b56 a,
+    .wom_b57 a,
+    .wom_b58 a,
+    .wom_b59 a,
+    .wom_b60 a,
+    .wom_b61 a,
+    .wom_b62 a,
+    .wom_b63 a,
+    .wom_b64 a,
+    .wom_b65 a {
+        margin-left:0px; margin-right:15px
+    }
+
+}
+
+@media screen and (max-width: 630px) {
+    footer.wom_footer {
+        margin-left:10px;
+    }
+    .wom_b1 a,
+    .wom_b2 a,
+    .wom_b3 a,
+    .wom_b4 a,
+    .wom_b5 a,
+    .wom_b6 a,
+    .wom_b7 a,
+    .wom_b8 a,
+    .wom_b9 a,
+    .wom_b10 a,
+    .wom_b11 a,
+    .wom_b12 a,
+    .wom_b13 a,
+    .wom_b14 a,
+    .wom_b15 a,
+    .wom_b16 a,
+    .wom_b17 a,
+    .wom_b18 a,
+    .wom_b19 a,
+    .wom_b20 a,
+    .wom_b21 a,
+    .wom_b22 a,
+    .wom_b23 a,
+    .wom_b24 a,
+    .wom_b25 a,
+    .wom_b26 a,
+    .wom_b27 a,
+    .wom_b28 a,
+    .wom_b29 a,
+    .wom_b30 a,
+    .wom_b31 a,
+    .wom_b32 a,
+    .wom_b33 a,
+    .wom_b34 a,
+    .wom_b35 a,
+    .wom_b36 a,
+    .wom_b37 a,
+    .wom_b38 a,
+    .wom_b39 a,
+    .wom_b40 a,
+    .wom_b41 a,
+    .wom_b42 a,
+    .wom_b43 a,
+    .wom_b44 a,
+    .wom_b45 a,
+    .wom_b46 a,
+    .wom_b47 a,
+    .wom_b48 a,
+    .wom_b49 a,
+    .wom_b50 a,
+    .wom_b51 a,
+    .wom_b52 a,
+    .wom_b53 a,
+    .wom_b54 a,
+    .wom_b55 a,
+    .wom_b56 a,
+    .wom_b57 a,
+    .wom_b58 a,
+    .wom_b59 a,
+    .wom_b60 a,
+    .wom_b61 a,
+    .wom_b62 a, 
+    .wom_b63 a, 
+    .wom_b64 a, 
+    .wom_b65 a {
+        margin-left:0px; margin-right:10px
+    }
+
+}

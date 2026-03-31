@@ -1,0 +1,603 @@
+@media screen and (max-width: 630px){
+    
+    html{
+        /* min-height: 100%; iframe */
+    }
+    /*body {height: 100vh; display: block;}GLAMUSCHANGE*/
+    body {
+        /* min-height: 100vh; iframe */
+        display: block;
+    }
+    .wom_main_wrapper{
+        padding-top: 0; 
+        -webkit-text-size-adjust:100%; 
+        /* min-height: 100vh; iframe */
+        display: block; 
+        background:#fff url(../pix/bg_tablet.png) 
+        repeat-x right 0 !important;
+    }
+
+    /*layout & navi*/
+    p {font-size: 17px;}
+    .wom_main_content {margin-bottom: 0;}
+    .wom_content_box {padding:10px 3% 0;}
+
+    .wom_navi {padding:3% 4%; width: 92%;}
+    .wom_navi .wom_accordion-tab {display: block; position: relative; padding: 0 22px 0 35px; cursor: pointer; background-color: transparent; font-size:15px; line-height:40px; color:#000; font-family: "Roboto",arial,sans-serif;}
+    .wom_navi .wom_accordion-tab + ul {display: none; border-bottom: 1px solid #000;}
+    .wom_navi .wom_accordion-tab + ul li {margin-left: 8%;}
+    .wom_navi .wom_accordion-tab:before { background:rgba(0, 0, 0, 0) url(../pix/icon/zusatzinfo.png) no-repeat scroll 5px 9px;
+        background-size: 63% auto; content:''; 
+        display: inline-block; position: absolute; left:0; width: 31px; height: 33px;}
+    .wom_navi .wom_accordion-tab:hover:before,.wom_navi .wom_accordion-tab.touch:before{background-size: 72%;}
+    .wom_navi .wom_accordion-tab:after {
+            width:30px; height:30px; content:''; display: inline-block; 
+            background:url(../pix/icon/arrow_black_down.png) no-repeat right center;
+            background-size: 50% auto; 
+            position: absolute; 
+            right: 0; 
+            vertical-align: middle; 
+            -webkit-transition: all 0.3s; 
+            -moz-transition: all 0.3s; 
+            -ms-transition: all 0.3s; 
+            -o-transition: all 0.3s; 
+            transition: all 0.3s;
+    }
+    .wom_navi .wom_accordion-tab.wom_open:after {-webkit-transform: rotate(180deg); -moz-transform: rotate(180deg); -ms-transform: rotate(180deg);-o-transform: rotate(180deg); transform: rotate(180deg);}
+
+    .wom_navi li a {font-size: 15px;}
+    div.wom_content, div.wom_wrapper{margin:0 !important;padding-top:0 !important}
+    .wom_main_content {float: none; max-width: 100%; margin-bottom: 0;}
+    .wom_main_navi {width: 100%;}
+    .wom_main_navi ul li{display: inline-block; width: 92%; margin-right:0;}
+    .wom_main_navi a.abutton { text-align:left; border-bottom: 1px solid #000;}
+    /*.wom_main_navi a.wom_accordion-tab {width: 100%; text-align:left; border-bottom: 1px solid #000;display: inline-block;box-sizing: border-box;}*/
+    
+
+    .wom_logo a.wom_logo_bpb {
+        display: inline-block;
+        margin-right: 5%;
+        vertical-align: top;
+        /*width: 45%;*/
+    }
+
+    .wom_logo a.wom_logo_landeszentrale {
+        display: inline-block;
+        margin-right: 1%;
+        vertical-align: top;
+        /*width: 45%;*/
+    }
+ 
+    /*phone header*/
+    .wom_wahlomat_startseite, .wom_wahlomat {
+        min-height: 0;
+        padding-bottom: 30px;
+        float: none; 
+        height: auto;
+        background-image: none; 
+        background: #ffd554; /* Old browsers */
+        background: -moz-linear-gradient(-45deg, #ffd554 0%, #ffbf27 21%, #fe9809 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#ffd554), color-stop(21%,#ffbf27), color-stop(100%,#fe9809)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(-45deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(-45deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(-45deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* IE10+ */
+        background: linear-gradient(135deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd554', endColorstr='#fe9809',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    }
+    .wom_phone-header {display: block; border-bottom:1px solid #000; padding:13px 0; position: relative;}
+    .wom_phone-header h2{color: #000; font-weight: normal; font-size: 20px; text-align: right; margin:7px 0 14px 0;}
+    .wom_phone-header img {width:170px; margin:0 auto; display:block;}
+    .wom_phone-header a {font-size: 0; position: absolute; top:8%;}
+    .wom_phone-header a.wom_link-back {left:3%;}
+    .wom_phone-header a.wom_link-back:before {content: ''; display: inline-block; width: 40px; height: 40px; 
+        background:rgba(0, 0, 0, 0) url(../pix/icon/arrow_back.png) no-repeat scroll center center;
+        background-size: 85% auto;}
+    .wom_phone-header a.wom_link-back:hover:before, .wom_phone-header a.wom_link-back.touch:before {background:rgba(0, 0, 0, 0) url(../pix/icon/arrow_back.png) no-repeat scroll center center;
+        background-size: 95% auto;}
+    .wom_phone-header a.wom_link-home {right: 3%;overflow:hidden;width:40px;}
+    .wom_phone-header a.wom_link-home:before {content: "\e602"; background: url(../pix/icon/home.png) no-repeat center center; 
+        background-size: 85% auto; content: ''; display: inline-block; width: 40px; height: 40px;}
+    .wom_phone-header a.wom_link-home:hover:before,.wom_phone-header a.wom_link-home.touch:before {background:rgba(0, 0, 0, 0) url(../pix/icon/home.png) no-repeat scroll center center;
+        background-size: 95% auto;}
+
+    .wom_wahlomat .wom_phone-header {border-bottom:1px solid #f09f0b;}
+    
+
+
+    /*content*/
+    h1 {font-size:25px; line-height: 33px;}
+    .wom_main_content > * {padding-left:4%; padding-right: 4%;}
+    .wom_skip .wom_next, .wom_skip .wom_previous {font-size: 17px;}
+    p.wom_small p {font-size:17px;}
+    .wom_ergebnis_list span.wom_ergebnis_balken {font-size: 18px;}
+    .wom_parteien_list li:not(.wom_clone_pbox) {width: 23.5%; margin-right: 2%;}
+    /*.wom_parteien_list li:nth-child(4n){margin-right:0;}*/
+    .wom_parteien_list li.wom_box_5th{margin-right:2%;}
+    .wom_parteien_list li.wom_box_4th{margin-right:0;}
+
+    /*footer*/
+    .wom_logo{margin-bottom: 0;display:none}
+    .wom_logo.wom_logo_status_0{margin-bottom: 0;margin-top:20px;display:block}
+    
+
+    
+    
+    div.wom_footertext{margin-top: 0;}
+    #wom div.wom_footer {padding:0 4% 3%;}
+
+    
+    /*homepage*/
+    .wom_wom_bgcolor{background-color: transparent;}
+    .wom_main_content > .wom_wahlomat_startseite {padding:0;}
+    .wom_wahlomat_startseite .wom_phone-header {padding:0 4%; margin:0 -4% 0px; border-bottom:1px solid #f09f0b;}
+    .wom_wahlomat_startseite .wom_phone-header img {width: 60%; margin:0;}
+    
+    .wom_header-margin{display: block; height:25px;width:30px;}
+    
+    .wom_header-margin.wom_header-margin-start,
+    .wom_header-margin.wom_header-margin-these{
+        display:block;
+        height:25px;width:30px;
+    }
+    .wom_header-margin.wom_header-margin-these-small{height:15px;display:block;}
+    
+    .wom_header-margin.wom_header-margin-auswertung,
+    .wom_header-margin.wom_header-margin-detailauswertung,
+    .wom_header-margin.wom_header-margin-parteiauswahl,
+    .wom_header-margin.wom_header-margin-gewichtung{
+        display: block; height:25px;width:30px;
+    }
+     
+    .wom_welcome {padding:3% 4%;}
+    .wom_welcome a{padding:15px 0 20px; width: 100%; display: block; text-align: right; position: static;}
+
+
+    /*questions*/
+    .wom_points, .wom_thesen h1 span{display: none;}
+    .wom_thesen {width: auto; margin:0; padding:0px 0 0 0; height: auto;}
+    .wom_thesen h1 {padding-top: 0; font-size: 14px;}
+    .wom_thesen p {font-size: 16px; line-height: 22px;}
+    .wom_thesen .wom_skipper {position: static; color:#000; font-size: 15px; display: block; text-align: right; padding:8px 0 0 0;}
+    .wom_skipper .wom_icon-arrow-right:before {background:url(../pix/icon/breadcrumb_black_weiter.png) no-repeat 2px 3px; background-size: 52% auto;}
+    .wom_thesen .wom_phone-thesenzahl {display: block; color: #fff; font-size: 20px; margin-bottom: 25px; padding:0; margin-top:5px;}
+    .wom_thesen .wom_phone-thesenzahl span {font-weight: bold;}
+    .wom_phone-whitebox {min-height:155px; background-color: #fff; position: relative; padding:3%; -ms-box-shadow: 2px 2px 2px #c4792a; -webkit-box-shadow: 2px 2px 2px #c4792a; -moz-box-shadow: 2px 2px 2px #c4792a; -o-box-shadow: 2px 2px 2px #c4792a; box-shadow: 2px 2px 2px #c4792a;}
+    .wom_slider_border {min-height:135px;}
+    .wom_phone-whitebox:after {content:''; display:block; width: 33px; height:30px; position: absolute; left:67px; bottom:-30px; background:rgba(0, 0, 0, 0) url("../pix/icon/pfeil_links.png") no-repeat scroll 0 0;}
+    .wom_entscheidung a {font-size: 17px; letter-spacing: 0.2px;}
+
+    .wom_entscheidung {width:auto; position: static; height: auto;}
+    .wom_entscheidung li.wom_yes, 
+    .wom_entscheidung li.wom_neutral, 
+    .wom_entscheidung li.wom_no{width: 100%; display: block; border:none; margin-bottom: 10px; height: 100%;}
+
+    /*gewichtung*/
+    .wom_breadcrumb {display: none;}
+    .wom_skip {min-height:50px;}
+    .wom_auswertung label{width: auto; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;}
+
+    .desktophover .wom_label_over:hover {
+        background-position: right top !important;
+    }
+    .wom_auswertung .wom_trigger { 
+        background-position: right top !important;
+    } 
+    .wom_trigger_active label {
+        background-position: right top !important;
+        /*border:2px solid #f00;*/
+    }
+    .wom_auswertung li{padding-right:65px;}
+
+    /*auswertung*/
+    .wom_info_box img {display: none;}
+    .wom_info_box img + h2 {margin-top: 15px;}
+    .wom_ergebnis_list p {margin-left:0;}
+
+    .wom_link_zu_kommentare span {margin-right: 0;}
+    .wom_link_zu_kommentare a {padding-right: 60px;}
+    .wom_link_zu_kommentare a:after {height:80px;}
+    
+    /*detailauswertung / begruendung*/
+    .wom_thesen_box {width: auto;}
+    .wom_antworten_box p {padding:15px 0 5px; width: auto;}
+    .wom_antworten_box {width: 100%;}
+    .wom_votum_list {width: 100%;}
+    .wom_votum_list li {width: 100%;}
+    .wom_thesen_box > li > div {height: auto !important;}
+    .wom_antworten_box p {background:url() no-repeat 0 0;}
+    .wom_antworten_box p span:before {background:rgba(0, 0, 0, 0) url("../pix/icon/kommentar.png") no-repeat scroll 0px 4px;
+        background-size: 100% auto; margin-right:10px; content: ''; display: inline-block; width: 21px; height: 23px;}
+
+    .wom_thesen_points {display: none;}
+    .wom_thesen_number {display: block; padding-top:30px; text-align: center;}
+    .wom_thesen_number p {display: inline-block; font-size: 20px; margin-bottom: 35px;}
+    .wom_thesen_number p span{font-weight: bold;}
+    
+    .wom_thesen_number p.wom_dot_black:before, .wom_thesen_number p.wom_star_orange:before {display: inline-block; content: ''; height: 15px; width: 15px; margin-right: 8px;}
+    .wom_thesen_number p.wom_dot_black:before {background:hsla(0, 0%, 0%, 0) url("../pix/icon/dot_black_6px.png") no-repeat scroll center center;
+        background-size: 52% auto;}
+    .wom_thesen_number p.wom_star_orange:before {background:hsla(0, 0%, 0%, 0) url("../pix/icon/star_yellow_15px.png") no-repeat scroll -1px -1px; background-size:100% auto;}
+    
+    .wom_thesen_number .wom_thesen_back {background:rgba(0, 0, 0, 0) url("../pix/icon/arrow_back.png") no-repeat scroll center center;
+        background-size: 80% auto; height: 40px; width: 40px; display:inline-block; position: static; float:left;}
+    .wom_thesen_number .wom_thesen_next {background:rgba(0, 0, 0, 0) url("../pix/icon/arrow_next.png") no-repeat scroll center center;
+        background-size: 80% auto; display:inline-block; position: static; height: 40px; width: 40px; float: right;}
+    .wom_thesen_number .wom_thesen_next:hover, .wom_thesen_number .wom_thesen_back:hover, .wom_thesen_number .wom_thesen_next.touch, .wom_thesen_number .wom_thesen_back.touch {background-size:90%;}
+    .phone .wom_these_next, .phone .wom_these_previous {display: none;}
+    .wom_thesen_number .wom_thesen_back.wom_hide_link, .wom_thesen_number .wom_thesen_next.wom_hide_link{display: none;}
+    .wom_slider_border:after {content: ''; display: inline-block; background:rgba(0, 0, 0, 0) url("../pix/icon/pfeil_kommentare_links.png") no-repeat scroll 0 0; position: absolute; bottom: -26px; left: 50%; width: 26px; height: 26px; margin-left:10px;}
+
+    .wom_slider_border {position: relative; height: auto;}
+    .wom_thesen_box{position: static;}
+    .wom_thesen_box li {padding:3% 4%; margin-bottom: 0; width: 92%;}
+
+    /*.wom_antworten_box ul li .wom_partei_balken {width: 85%;}*/
+
+    #umfrage {width: 100%; height: auto; padding-bottom: 20px;}
+
+    .wom_thesen .wom_bogus{left:3%;}
+    .wom_phone-whitebox {padding-bottom: 30px;}
+
+    p.partei-noscript {padding-left:4%;padding-right:4%;}
+    .impressum-no-script { display:inline;} 
+    
+    
+    
+}
+
+
+
+/*** survey ***/
+@media screen and (max-width: 630px){
+    .wom_main_content.wom_survey{overflow: hidden; margin-bottom: 30px;}
+    .wom_main_content.wom_survey > * {padding-right:0; padding-left: 0;}
+    
+    .wom_survey{padding:0 4%;}
+    .wom_survey h1 {font-size: 25px; line-height: 29px; margin-bottom: 35px;}
+    .wom_survey h3 {font-size: 17px;}
+
+    .wom_survey_header {margin-top:15px;}
+    .wom_survey_header h2 {font-size: 16px; line-height: 26px; margin-bottom: 8px;}
+    .wom_survey_header img {margin-bottom: 20px;}
+    
+    .wom_survey .wom_start-link {margin-top: 30px;}
+    .wom_progressbar > p {font-size: 17px;}
+    .wom_progressbar > p span {display: none;}
+
+    .wom_skip .wom_next{right:4%;}
+
+    .wom_survey input[type="radio"] {top:11px; left:4px;}
+    .wom_survey input[type="radio"] + label:before {top:11px;}
+    .wom_survey input[type="radio"]:checked + label:after {top:15px;}
+
+    /*survey / choice*/
+    .wom_survey form {margin-left: -4%; margin-right: -4%;}
+    .wom_survey form > ul {padding:0 4% 0 4%;}
+    .wom_survey .wom_choice p{display: block; width: 100%; margin-bottom: 10px;}
+    .wom_survey .wom_choice li > div{display: block; width: 100%; text-align: left; margin-bottom: 20px;}
+    .wom_survey .wom_choice li > div:nth-child(5n){margin-left: 0;}
+    .wom_survey .wom_choice div input[type="radio"] + label {font-size: 17px; left:0; width: 100%;}
+
+    .wom_choice_header {display: none;}
+    .wom_survey .wom_choice li > div:nth-child(2n), .wom_survey .wom_choice l<i > div:nth-child(4n), .wom_survey .wom_choice li > div:nth-child(5n) {width: 100%; margin-left:0;}
+
+    .wom_survey textarea {width: 96%; margin-left: 2%; min-height: 200px;}
+
+}
+
+#wom.static_phone .wom_logo a.wom_logo_bpb {
+        display: inline-block;
+        margin-right: 5%;
+        vertical-align: top;
+        /*width: 45%;*/
+}
+
+#wom.static_phone .wom_logo a.wom_logo_landeszentrale {
+    display: inline-block;
+    margin-right: 1%;
+    vertical-align: top;
+    /*width: 45%;*/
+}
+    
+@media screen and (max-width: 350px){
+    .wom_logo a.wom_logo_bpb {
+        display: block;
+        width: 160px;
+        padding-right:10px;
+    }
+
+    .wom_logo a.wom_logo_landeszentrale {
+        display: block;
+        width: 138px;
+        height:97px;
+        padding-right:0px;
+    }
+
+    #wom.static_phone .wom_logo a.wom_logo_bpb {
+            display: block;
+            width: 160px;
+            padding-right:10px;
+    }
+    #wom.static_phone .wom_logo a.wom_logo_landeszentrale {
+        display: block;
+        width: 138px;
+        height:97px;
+        padding-right:0px;
+    }
+    
+}
+
+@media screen and (max-width: 480px){
+    #wom.static_phone div.wom_footer .wom_fh {display: block; float: none;height: 45px !important;}
+    #wom div.wom_footer .wom_fh {display: block; float: none;height: 45px !important;}
+}
+
+/*for only phone version version=phone*/
+
+    #wom.static_phone.wom_main_wrapper{padding-top: 0; background:#fff url(../pix/bg_tablet.png) repeat-x right 0 !important;}
+
+    /*layout & navi*/
+    #wom.static_phone h1 {font-size:25px; line-height: 33px;}
+    #wom.static_phone p {font-size: 17px;}
+    #wom.static_phone .wom_main_content {margin-bottom: 0;}
+    #wom.static_phone .wom_navi {padding:3% 4%; width: 92%;}
+    #wom.static_phone .wom_navi .wom_accordion-tab {display: block; position: relative; padding: 0 22px 0 35px; cursor: pointer; background-color: transparent; font-size:15px; line-height:40px; color:#000; font-family: "Roboto",arial,sans-serif;}
+    #wom.static_phone .wom_navi .wom_accordion-tab + ul {display: none; border-bottom: 1px solid #000;}
+    #wom.static_phone .wom_navi .wom_accordion-tab + ul li {margin-left: 8%;}
+    #wom.static_phone .wom_navi .wom_accordion-tab:before { 
+        background:rgba(0, 0, 0, 0) url(../pix/icon/zusatzinfo.png) no-repeat scroll 5px 9px;
+        background-size:63% auto;
+        content:''; display: inline-block; position: absolute; left:0; width: 31px; height: 33px;}
+    #wom.static_phone .wom_navi .wom_accordion-tab:hover:before,#wom.static_phone .wom_navi .wom_accordion-tab.touch:before{background-size: 72%;}
+    #wom.static_phone .wom_navi .wom_accordion-tab:after {width:30px; height:30px; content:''; display: inline-block; background:url(../pix/icon/arrow_black_down.png) no-repeat right center;
+        background-size: 50% auto; position: absolute; right: 0; vertical-align: middle; -webkit-transition: all 0.3s; -moz-transition: all 0.3s; -ms-transition: all 0.3s; -o-transition: all 0.3s; transition: all 0.3s;}
+    #wom.static_phone .wom_navi .wom_accordion-tab.wom_open:after {-webkit-transform: rotate(180deg); -moz-transform: rotate(180deg); -ms-transform: rotate(180deg);-o-transform: rotate(180deg); transform: rotate(180deg);}
+    #wom.static_phone .wom_navi li a {font-size: 15px;}
+    /*#wom.static_phone div.wom_content, #wom.static_phone div.wom_wrapper{margin:0 !important;}*/
+    #wom.static_phone .wom_main_content {float: none; max-width: 100%; margin-bottom: 0;}
+    #wom.static_phone .wom_main_navi {width: 100%;}
+    #wom.static_phone .wom_main_navi ul li{display: inline-block; width: 92%; margin-right:0;}
+    #wom.static_phone .wom_main_navi a.abutton {text-align:left; border-bottom: 1px solid #000;}
+    
+    /*#wom.static_phone .wom_main_navi a.wom_accordion-tab {width: 100%; text-align:left; border-bottom: 1px solid #000;box-sizing: border-box;display:inline-block;}*/
+    
+    /*phone header*/
+    #wom.static_phone .wom_wahlomat_startseite, #wom.static_phone .wom_wahlomat {
+        min-height: 0;
+        padding-bottom: 30px;
+        float: none; 
+        height: auto;
+        background-image: none; 
+        background: #ffd554; /* Old browsers */
+        background: -moz-linear-gradient(-45deg, #ffd554 0%, #ffbf27 21%, #fe9809 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#ffd554), color-stop(21%,#ffbf27), color-stop(100%,#fe9809)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(-45deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(-45deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(-45deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* IE10+ */
+        background: linear-gradient(135deg, #ffd554 0%,#ffbf27 21%,#fe9809 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd554', endColorstr='#fe9809',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    }
+    #wom.static_phone .wom_phone-header {display: block; border-bottom:1px solid #000; padding:13px 0; position: relative;}
+    #wom.static_phone .wom_phone-header h2{color: #000; font-weight: normal; font-size: 20px; text-align: right; margin:7px 0 14px 0;}
+    #wom.static_phone .wom_phone-header img {width:170px; margin:0 auto; display:block;}
+    #wom.static_phone .wom_phone-header a {font-size: 0; position: absolute; top:8%;}
+    #wom.static_phone .wom_phone-header a.wom_link-back {left:3%;}
+    #wom.static_phone .wom_phone-header a.wom_link-back:before {content: ''; display: inline-block; width: 40px; height: 40px; 
+        background:rgba(0, 0, 0, 0) url(../pix/icon/arrow_back.png) no-repeat scroll center center;
+        background-size: 85% auto;}
+    #wom.static_phone .wom_phone-header a.wom_link-back:hover:before, #wom.static_phone .wom_phone-header a.wom_link-back.touch:before {background:rgba(0, 0, 0, 0) url(../pix/icon/arrow_back.png) no-repeat scroll center center;background-size: 95% auto;}
+    #wom.static_phone .wom_phone-header a.wom_link-home {right: 3%;}
+    #wom.static_phone .wom_phone-header a.wom_link-home:before {content: "\e602"; background: url(../pix/icon/home.png) no-repeat center center; 
+        background-size:  85% auto; content: ''; display: inline-block; width: 40px; height: 40px;}
+    #wom.static_phone .wom_phone-header a.wom_link-home:hover:before,#wom.static_phone .wom_phone-header a.wom_link-home.touch:before {background:rgba(0, 0, 0, 0) url(../pix/icon/home.png) no-repeat scroll center center;
+        background-size: 95% auto;}
+
+
+    #wom.static_phone .wom_wahlomat .wom_phone-header {border-bottom:1px solid #f09f0b;}
+    
+
+
+    #wom.static_phone .wom_thesen_number p.wom_dot_black:before, .wom_thesen_number p.wom_star_orange:before {display: inline-block; content: ''; height: 15px; width: 15px; margin-right: 8px;}
+    #wom.static_phone .wom_thesen_number p.wom_dot_black:before {background:hsla(0, 0%, 0%, 0) url("../pix/icon/dot_black_6px.png") no-repeat scroll center center;
+        background-size: 52% auto;}
+    #wom.static_phone .wom_thesen_number p.wom_star_orange:before {background:hsla(0, 0%, 0%, 0) url("../pix/icon/star_yellow_15px.png") no-repeat scroll -1px -1px; background-size:100% auto;}
+    
+
+
+    /*content*/
+    #wom.static_phone .wom_skip .wom_next, 
+    #wom.static_phone .wom_skip .wom_previous {font-size: 17px;}
+    #wom.static_phone .wom_parteien_list li div h2  {font-size: 16px;}
+    /*#wom.static_phone .wom_parteien_list li:not(.wom_clone_pbox) {width: 23.5%; margin-right: 2%;}*/
+    #wom.static_phone .wom_parteien_list li:not(.wom_clone_pbox) {width: 96%; margin-right: 2%;}
+    /*#wom.static_phone .wom_parteien_list li:nth-child(4n){margin-right:0;}*/
+    #wom.static_phone .wom_parteien_list li.wom_box_5th{margin-right:2%;}
+    #wom.static_phone .wom_parteien_list li.wom_box_4th{margin-right:0;}
+    #wom.static_phone p.wom_small p {font-size:17px;}
+    #wom.static_phone .wom_ergebnis_list span.wom_ergebnis_balken {font-size: 18px;}
+    
+    #wom.static_phone .wom_welcome h1 {
+        font-size: 18px;
+        line-height: 24px;
+        margin-bottom: 25px;
+    }
+    /*footer*/
+    
+    /*footer*/
+    #wom.static_phone .wom_logo{margin-bottom: 0;display:none}
+    #wom.static_phone .wom_logo.wom_logo_status_0{margin-bottom: 0;margin-top:20px;display:block}
+    
+    
+    #wom.static_phone div.wom_footertext{margin-top: 0;}
+    #wom.static_phone div.wom_footer {padding:0 4% 3%;}
+    
+    #wom.static_phone .wom_socialshare{margin-bottom: 0;}
+    
+
+    
+    /*homepage*/
+    #wom.static_phone .wom_wom_bgcolor{background-color: transparent;}
+    /*#wom.static_phone .wom_wom_bgcolor{background-color: transparent;    padding-left: 0;padding-right: 0}*/
+    #wom.static_phone .wom_main_content .wom_wom_bgcolor{padding-left: 0;padding-right: 0}
+    
+    #wom.static_phone .wom_main_content > .wom_wahlomat_startseite {padding:0;}
+    #wom.static_phone .wom_main_content > * {padding-left: 4%;padding-right: 4%;}
+    #wom.static_phone .wom_wahlomat_startseite .wom_phone-header {padding:0 4%; margin:0 -4% 0; border-bottom:1px solid #f09f0b;}
+    
+    #wom.static_phone .wom_wahlomat_startseite .wom_phone-header img {width: 60%; margin:0;}
+    
+    #wom.static_phone .wom_header-margin{display: block; height:25px;width:30px;}
+    
+    #wom.static_phone .wom_header-margin.wom_header-margin-start,
+    #wom.static_phone .wom_header-margin.wom_header-margin-these{
+        display:block;height:25px;width:30px;
+    }
+    #wom.static_phone .wom_header-margin.wom_header-margin-these-small{display:block;height:15px;}
+    
+    #wom.static_phone .wom_header-margin.wom_header-margin-auswertung,
+    #wom.static_phone .wom_header-margin.wom_header-margin-detailauswertung,
+    #wom.static_phone .wom_header-margin.wom_header-margin-parteiauswahl,
+    #wom.static_phone .wom_header-margin.wom_header-margin-gewichtung{
+        display: block; height:25px;width:30px;
+    }
+    
+
+    #wom.static_phone .wom_welcome {padding:3% 4%;}
+    #wom.static_phone .wom_welcome a{padding:15px 0 20px; width: 100%; display: block; text-align: right; position: static;}
+
+
+    /*questions*/
+    #wom.static_phone .wom_points, #wom.static_phone .wom_thesen h1 span{display: none;}
+    #wom.static_phone .wom_thesen {width: auto; margin:0; padding:0px 0 0 0; height: auto;}
+    #wom.static_phone .wom_thesen h1 {padding-top: 0; font-size: 14px;line-height: 24px;}
+    #wom.static_phone .wom_thesen p {font-size: 16px; line-height: 22px;}
+
+
+    #wom.static_phone .wom_thesen .wom_skipper {position: static; color:#000; font-size: 15px; display: block; text-align: right; padding:8px 0 0 0;}
+    #wom.static_phone .wom_thesen .wom_skipper:hover{color:#E45000;}
+    #wom.static_phone .wom_thesen .wom_phone-thesenzahl {display: block; color: #fff; font-size: 20px; margin-bottom: 25px; padding:0; margin-top:5px;}
+    #wom.static_phone .wom_thesen .wom_phone-thesenzahl span {font-weight: bold;}
+    
+    #wom.static_phone .wom_phone-whitebox {min-height:155px; background-color: #fff; position: relative; padding:3%; -ms-box-shadow: 2px 2px 2px #c4792a; -webkit-box-shadow: 2px 2px 2px #c4792a; -moz-box-shadow: 2px 2px 2px #c4792a; -o-box-shadow: 2px 2px 2px #c4792a; box-shadow: 2px 2px 2px #c4792a;}
+
+
+    #wom.static_phone .wom_phone-whitebox:after {content:''; display:block; width: 33px; height:30px; position: absolute; left:67px; bottom:-30px; background:rgba(0, 0, 0, 0) url("../pix/icon/pfeil_links.png") no-repeat scroll 0 0;}
+    #wom.static_phone .wom_phone-whitebox {padding-bottom: 30px;}
+    #wom.static_phone .wom_thesen .wom_bogus{left:3%;}
+    #wom.static_phone .wom_entscheidung a {font-size: 17px; letter-spacing: 0.2px;}
+
+    #wom.static_phone .wom_entscheidung {width:auto; position: static; height: auto;}
+    #wom.static_phone .wom_entscheidung li.wom_yes, #wom.static_phone .wom_entscheidung li.wom_neutral, #wom.static_phone .wom_entscheidung li.wom_no{width: 100%; display: block; border:none; margin-bottom: 10px; height: 100%;}
+
+    /*gewichtung*/
+    #wom.static_phone .wom_breadcrumb {display: none;}
+    #wom.static_phone .wom_skip {min-height:50px;}
+    #wom.static_phone .wom_auswertung label{width: auto; overflow: hidden; text-overflow:ellipsis; white-space: nowrap;}
+
+    
+    #wom.static_phone.desktophover .wom_label_over:hover {
+        background-position: right top !important;
+    }
+    #wom.static_phone .wom_auswertung .wom_trigger {background-position: right top !important;}  
+    #wom.static_phone .wom_trigger_active label {background-position: right top !important;}
+    #wom.static_phone .wom_auswertung li{padding-right:65px;}
+
+    /*auswertung*/
+    #wom.static_phone .wom_info_box img {display: none;}
+    #wom.static_phone .wom_info_box img + h2 {margin-top: 15px;}
+    #wom.static_phone .wom_ergebnis_list p {margin-left:0;}
+
+    #wom.static_phone .wom_link_zu_kommentare span {margin-right: 0;}
+    #wom.static_phone .wom_link_zu_kommentare a {padding-right: 60px;}
+    #wom.static_phone .wom_link_zu_kommentare a:after {height:80px;}
+    
+    @media screen and (min-width: 470px) {
+        #wom.static_phone .wom_link_zu_kommentare a:after { background-position: right 8px;}
+        .wom_link_zu_kommentare a:after { background-position: right 8px;}
+        .wom_link_zu_kommentare a:hover:after { background-position: right 8px;}
+    }
+    
+    /*detailauswertung / begruendung*/
+    #wom.static_phone .wom_thesen_box {width: auto;}
+    #wom.static_phone .wom_antworten_box p {padding:15px 0 5px; width: auto;}
+    #wom.static_phone .wom_antworten_box {width: 100%;}
+    #wom.static_phone .wom_votum_list {width: 100%;}
+    #wom.static_phone .wom_votum_list li {width: 100%;}
+    #wom.static_phone .wom_thesen_box > li > div {height: auto !important;}
+    #wom.static_phone .wom_antworten_box p {background:url() no-repeat 0 0;}
+    #wom.static_phone .wom_antworten_box p span:before {background:rgba(0, 0, 0, 0) url("../pix/icon/kommentar.png") no-repeat scroll 0px 4px;
+        background-size: 100% auto; margin-right:10px; content: ''; display: inline-block; width: 21px; height: 23px;}
+
+    #wom.static_phone .wom_thesen_points {display: none;}
+    #wom.static_phone .wom_thesen_number {display: block;}
+    #wom.static_phone .wom_thesen_number p {display: inline-block; font-size: 20px; margin-bottom: 35px;}
+    /*#wom.static_phone .wom_thesen_number p {display: inline-block; font-size: 20px; margin-bottom: 35px;margin-top:8px}*/
+    #wom.static_phone .wom_thesen_number p span{font-weight: bold;}
+    #wom.static_phone .wom_thesen_number .wom_thesen_back {background:rgba(0, 0, 0, 0) url("../pix/icon/arrow_back.png") no-repeat scroll center center;
+        background-size: 80% auto; height: 40px; width: 40px; display:inline-block; position: static; float:left;}
+    #wom.static_phone .wom_thesen_number .wom_thesen_next {background:rgba(0, 0, 0, 0) url("../pix/icon/arrow_next.png") no-repeat scroll center center;
+        background-size: 80% auto; display:inline-block; position: static; height: 40px; width: 40px; float: right;}
+    #wom.static_phone .wom_thesen_number .wom_thesen_next:hover, #wom.static_phone .wom_thesen_number .wom_thesen_back:hover {background-size:90%;}
+    #wom.static_phone .wom_thesen_number .wom_thesen_back.wom_hide_link, .wom_thesen_number .wom_thesen_next.wom_hide_link{display: none !important;}
+    #wom.static_phone .wom_these_next, #wom.static_phone .wom_these_previous {
+        display: none !important;
+    }
+
+    #wom.static_phone .wom_thesen_number {padding-top:30px; text-align: center;}
+    #wom.static_phone .wom_slider_border:after {content: ''; display: inline-block; background:rgba(0, 0, 0, 0) url("../pix/icon/pfeil_kommentare_links.png") no-repeat scroll 0 0; position: absolute; bottom: -26px; left: 50%; width: 26px; height: 26px;}
+
+    #wom.static_phone .wom_slider_border {position: relative; height: auto;min-height:135px;}
+    #wom.static_phone .wom_thesen_box{position: static;}
+    /*#wom.static_phone .wom_antworten_box ul li .wom_partei_balken {width: 85%;}*/
+
+    #wom.static_phone .wom_thesen_box li {padding:3% 4%; margin-bottom: 0; width: 92%;}
+
+    /*#wom.static_phone .wom_antworten_box ul li .wom_partei_balken {width: 85%;}*/
+
+    #wom.static_phone #umfrage {width: 100%; height: auto; padding-bottom: 20px;}
+    /*#wom.static_phone ul.wom_parteien_list label, #wom.static_phone ul.wom_parteien_list label.wom_on{border:0 none;}*/
+    
+    
+
+
+
+    /*survey*/
+    #wom.static_phone .wom_main_content.wom_survey{margin-top: 5px; overflow: hidden; margin-bottom: 30px;}
+    #wom.static_phone .wom_main_content.wom_survey > * {padding-right:0; padding-left: 0;}
+    
+    #wom.static_phone .wom_survey{padding:0 4%;}
+    #wom.static_phone .wom_survey h1 {font-size: 25px; line-height: 29px; margin-bottom: 35px;}
+    #wom.static_phone .wom_survey h3 {font-size: 17px;}
+
+    #wom.static_phone .wom_survey_header {margin-top:15px;}
+    #wom.static_phone .wom_survey_header h2 {font-size: 16px; line-height: 26px; margin-bottom: 8px;}
+    #wom.static_phone .wom_survey .wom_start-link {margin-top: 30px;}
+    #wom.static_phone .wom_progressbar > p {font-size: 17px;}
+    #wom.static_phone .wom_progressbar > p span {display: none;}
+
+    /*#wom.static_phone .wom_skip .wom_next{right:4%;}GLAMUS REMOVED*/
+    #wom.static_phone .wom_skip .wom_next{right:4%;}
+
+    #wom.static_phone .wom_survey input[type="radio"] {top:11px; left:4px;}
+    #wom.static_phone .wom_survey input[type="radio"] + label:before {top:11px;}
+    #wom.static_phone .wom_survey input[type="radio"]:checked + label:after {top:15px;}
+
+    /*survey / choice*/
+    #wom.static_phone .wom_survey form {margin-left: -4%; margin-right: -4%;}
+    #wom.static_phone .wom_survey form > ul {padding:0 4% 0 4%;}
+    #wom.static_phone .wom_survey .wom_choice p{display: block; width: 100%; margin-bottom: 10px;}
+    #wom.static_phone .wom_survey .wom_choice li > div{display: block; width: 100%; text-align: left; margin-bottom: 20px;}
+    #wom.static_phone .wom_survey .wom_choice li > div:nth-child(5n){margin-left: 0;}
+    #wom.static_phone .wom_survey .wom_choice div input[type="radio"] + label {font-size: 17px; left:0; width: 100%;}
+ 
+    #wom.static_phone .wom_choice_header {display: none;}
+    #wom.static_phone .wom_survey .wom_choice li > div:nth-child(2n), #wom.static_phone .wom_survey .wom_choice li > div:nth-child(4n), #wom.static_phone .wom_survey .wom_choice li > div:nth-child(5n) {width: 100%; margin-left:0;}
+
+/*
+@media screen and (minx-width: 630px){    
+    #wom.static_phone .wom_main_content {
+        width:100%;
+    }
+}
+*/
+    

@@ -1,0 +1,52 @@
+/* Footer immer */
+.foottext1  {clear:all; font:normal 0.6em verdana,   arial,   sans-serif; float:left;}
+
+/* Reihe 1 im Jpg
+    ZDF
+    SPIEGEL
+    FAZ
+    HAZ
+    WIWO
+    
+    HANDELSBLATT
+    BILD
+    STERN
+    NDR
+    ZEIT
+    
+    SZ
+    TAZ
+    NOZ
+
+Im Footer:
+    ZDF
+    SPIEGEL
+    ZEIT
+    TAZ
+    SZ
+    
+    NDR
+    FAZ
+    HAZ
+    BILD
+    STERN
+    WIWO
+    
+    HANDELSBLATT
+    NOZ
+*/
+#main_foot_sub div.b1 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 0px; width:63px; height:45px;}
+#main_foot_sub div.b2 a {margin-left:34px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -45px; width:136px; height:45px;}
+#main_foot_sub div.b3 a {margin-left:34px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -405px; width:140px; height:45px;}
+#main_foot_sub div.b4 a {margin-left:36px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -495px; width:115px; height:45px;}
+#main_foot_sub div.b5 a {margin-left:37px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -450px; width:134px; height:45px;}
+
+#main_foot_sub div.b6 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -360px; width:62px; height:45px;}
+#main_foot_sub div.b7 a {margin-left:47px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -90px; width:81px; height:45px;}
+#main_foot_sub div.b8 a {margin-left:47px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -135px; width:146px; height:45px;}
+#main_foot_sub div.b9 a {margin-left:48px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -270px; width:41px; height:45px;}
+#main_foot_sub div.b10 a {margin-left:47px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -315px; width:100px; height:45px;}
+#main_foot_sub div.b11 a {margin-left:44px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -180px; width:67px; height:45px;}
+
+#main_foot_sub div.b12 a {margin-left:0px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -225px; width:107px; height:45px;}
+#main_foot_sub div.b13 a {margin-left:47px; background:url(../pix_change/logos_v1_00.jpg) no-repeat 0 -540px; width:123px; height:45px;}

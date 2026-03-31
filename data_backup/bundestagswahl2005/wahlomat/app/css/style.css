@@ -1,0 +1,74 @@
+body {background-color:#FBF4CD; text-align:center; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:85%;}
+table {font-family:Verdana, Arial, Helvetica, sans-serif; border-collapse:collapse;}
+div {font-family:Verdana, Arial, Helvetica, sans-serif; }
+
+/* headlines */
+h1 {font-size:0.8em; color:#645F45; margin:0px; margin-bottom:1em; font-weight:bold;}
+h2 {font-size:0.8em; color:#645F45; margin:0px; margin-bottom:1em; font-weight:bold;}
+h3 {font-size:0.7em; color:#645F45; margin:0px; margin-bottom:0px; font-weight:bold;}
+
+h1.schwarz {font-size:0.8em; color:#000; margin:0px; margin-bottom:1em; font-weight:bold;}
+h1.gross {font-size:1.1em; color:#645F45; margin:0px; margin-bottom:1em; font-weight:bold;}
+
+/* inhalte */
+.fliesstext {font-size:0.75em; line-height:1.3em; color:#645F45;}
+.fliesstext_schwarz {font-size:0.75em; line-height:1.3em; color:#000;}
+.klein {font-size:0.65em; line-height:1.3em; color:#645F45;}
+.klein_rot {font-size:0.65em; line-height:1.3em; color:#961734;}
+.gross {font-size:1.1em; color:#645F45; margin:0px; margin-bottom:1em; font-weight:bold;}
+
+table#gelb a.hell_nr_links:visited, a.hell_nr_links:hover, a.hell_nr_links:link {font-size:1em; font-weight:bold; background-color:#FBF4CD; color:#961734; padding:2px; text-align:center; text-decoration:none;}
+table#gelb a.weiss_nr_links:visited, a.weiss_nr_links:link, a.weiss_nr_links:hover{font-size:1em; font-weight:bold; background-color:#FFF; color:#961734; padding:2px; text-align:left; text-decoration:none;}
+
+input.gewichtungmultilinebutton { font-size:0.8em; font-family:verdana,arial,sans-serif; font-weight:bold; line-height:16px; background-color:#FFFFFF; color:#645F45; padding:2px; text-align:right; text-decoration:none; border:none; cursor:pointer;}
+
+a:visited {font-size:0.75em; line-height:1.3em; color:#645F45; text-decoration:none;}
+a:link {font-size:0.75em; line-height:1.3em; color:#645F45; text-decoration:none;}
+a:hover {font-size:0.75em; line-height:1.3em; color:#645F45; text-decoration:underline;}
+a.infokasten, a.infokasten:visited, a.infokasten:link, a.infokasten:hover {font-size:0.75em; line-height:1.3em; color:#666;}
+a.klein, a.klein:visited, a.klein:link, a.klein:hover {font-size:0.65em; line-height:1.3em; color:#645F45;}
+a.klein_rot, a.klein_rot:visited, a.klein_rot:link, a.klein_rot:hover {font-size:0.65em; line-height:1.3em; color:#961734;}
+a.gross, a.gross:visited, a.gross:link, a.gross:hover {font-size:1.1em; color:#645F45; margin:0px; margin-bottom:1em; font-weight:bold;}
+a.table:visited {font-size:1.0em; line-height:1.3em; color:#645F45; text-decoration:none;}
+a.table:link {font-size:1.0em; line-height:1.3em; color:#645F45; text-decoration:none;}
+a.table:hover {font-size:1.0em; line-height:1.3em; color:#645F45; text-decoration:underline;}
+
+td.abstand {padding:3px;}
+table.ergebnis { border:1px solid #FEAE02;}
+td.fortschritt {font-size: 0.75em; color:#666666;}
+
+td.fortschritton {font-size: 0.75em; color:#645F45;}
+
+a.fortschritt {font-size: 1em; color:#666666;}
+a.fortschritt:hover {font-size: 1em; color:#666666;}
+a.fortschritt:visited {font-size: 1em; color:#666666;}
+
+a.fortschritt:link {font-size: 1em; color:#666666;}
+a.fortschritt:hover {font-size: 1em; color:#666666;}
+a.fortschritton {font-size: 1em; color:#645F45;}
+
+
+/* Tabelle weiss mit Rahmen rechts und unten */
+table#weiss {background-color:#FFF; font-family:verdana,arial,sans-serif; border-right:3px solid #958E67; border-bottom:3px solid #958E67; border-spacing:0;}
+
+/* Datentabelle Gelb */
+table#gelb {color:#515151; width:460px; border-collapse:collapse;}
+table#gelb td {font-size:0.7em; font-family:verdana,arial,sans-serif; line-height:1em; background-color:#FFF; color:#000; padding:2px; border: 1px solid #FEAE02;}
+table#gelb td.hell {background-color:#FBF4CD; color:#000;}
+table#gelb td.dunkel {background-color:#F8EA9F; color:#000;}
+table#gelb td.hell_nr {font-weight:bold; background-color:#FBF4CD; vertical-align:top; color:#961734; text-align:center;}
+table#gelb td.hell_nr_links {font-weight:bold; background-color:#FBF4CD; color:#961734;}
+table#gelb td.weiss_nr_links {font-weight:bold; color:#961734;}
+table#gelb td.dunkel_nr {font-weight:bold; background-color:#F8EA9F; color:#645F45; vertical-align:top; text-align:center;}
+table#gelb td.kopf_hell {font-weight:bold; background-color:#F9EDAC; color:#645F45;}
+table#gelb td.kopf_hell_center {font-weight:bold; background-color:#F9EDAC; color:#645F45; text-align:center;}
+table#gelb td.kopf_dunkel {font-weight:bold; background-color:#F7E68B; color:#645F45;}
+table#gelb td.kopf_dunkel_center {font-weight:bold; background-color:#F7E68B; color:#645F45; text-align:center;}
+table#gelb td.detail_links {color:#000; padding:0px; width:58px; height:43px;}
+table#gelb td.detail_rechts {color:#000; padding:0px; text-align:right; width:58px; height:43px;}
+table#gelb td.detail_center {color:#000; padding:0px; text-align:center; width:58px; height:43px;}
+
+/* Datentabelle Legende */
+table#legende {background-color:#FBF4CD; color:#515151; width:157px; border-right: 4px solid #97927B; border-bottom: solid 4px #97927B;}
+table#legende td {background-color:#FBF4CD; font-family:verdana,arial,sans-serif; font-size:0.7em; line-height:1em; color:#515151;}
+

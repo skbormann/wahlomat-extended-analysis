@@ -1,0 +1,19 @@
+/* ipod */
+
+html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6{margin:0;padding:0;-webkit-text-size-adjust:none;}
+ul, li, ol, dl, dd, dt{list-style:none; padding:0; margin:0;}
+a{text-decoration:none;}
+ul.start a {font-size:38px !important;}
+#leftnav_fixed_sub div a:link, #leftnav_fixed_sub div a:visited, #leftnav_fixed_sub div a:active {font-size:12px !important;}
+#leftnav_fixed_sub div a:hover, #leftnav_fixed_sub div a:focus, #leftnav_fixed_sub div a:active {font-size:12px !important;}
+#content_center_start {height:200px;}
+#content_center_start div.b1_start {font-size:15px !important; line-height:15px !important;}
+#content_center_wahl {height:180px;}
+#content_choice {margin:-40px 0 0 0;}
+#content_choice div.b1 span, #content_choice div.b2 span, #content_choice div.b3 span, #content_choice div.b1 a, #content_choice div.b2 a, #content_choice div.b3 a {font-size:13px !important; font-weight:normal !important;}
+#content_choice div.b4 span, #content_choice div.b4 a {font-size:13px !important; font-weight:normal !important;}
+#content_center_w {background:transparent url(../pix/body_cont_wc_mobile.gif) no-repeat 4px 379px !important; padding:96px 0 0 0;}
+#content_center_e {background:url(../pix/body_cont_ec_mobile.gif) no-repeat 6px 0px !important;}
+#content_foot_e {margin:-1px 0 0 -1px !important;}
+.buttons_neu .buttons_rechts div.button span {background:url(../pix/buttons_rechts_ende.jpg) no-repeat 5px left !important;}
+#content_foot_e {clear:both; background:url(../pix/body_cont_eb.jpg) no-repeat 0px 0 !important;}

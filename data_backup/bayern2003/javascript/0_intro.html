@@ -1,0 +1,177 @@
+<!--
+  --------------------------------------------------------------
+  Darstellung des Intro-Screens
+  --------------------------------------------------------------
+  Author:		Ulrich Santo(US)
+  Firm:			GLAMUS GmbH
+  E-Mail:		santo@glamus.de
+  Tel:			+49 228 97617 21
+  Copyright		(C) Bundeszentrale für poltische Bildung
+
+  Revised on 27.4.2003 13:44
+    Themen
+    1.0   am 25.4.2003  (US)
+    	erste Version
+    1.1   am 27.4.2003  (US)
+    	- Kommentare eingefügt
+    	- Layout auf Netscape 4.7 / IE / Netscape 6.0 validiert
+  --------------------------------------------------------------
+*/
+
+/* 
+   --------------------------------------------------
+   Farbdefinitionen für die Auswertung
+   --------------------------------------------------
+*/
+
+  $bgcolor_0065CE=' bgcolor="#0065CE" ';
+  $bgcolor_FFFFFF=' bgcolor="#FFFFFF" ';
+  $bgcolor_000000=' bgcolor="#000000" ';
+
+
+/* 
+   --------------------------------------------------
+   Variablen aus der Definitionsdatei
+      müssen global definiert werden vor dem Zugriff
+   --------------------------------------------------
+*/
+
+  global $WOMT_aThesenBilder;
+  global $WOMT_aThesen;
+  global $WOMT_nTableWidth;
+  global $WOMT_nTexte;
+  global $WOMT_aParteienLogos;
+  global $WOMT_nParteien;
+  global $WOMT_aBilder;
+
+
+/* 
+   --------------------------------------------------
+   Session Variablen 
+      müssen global definiert werden vor dem Zugriff
+   -------------------------------------------------- 
+*/
+
+  global $S_nTheseAktuell;
+  global $S_nTheseMax;
+  global $S_nSprache;
+  
+//-->
+<html>
+<head>
+<title>Wahlomat</title>
+<link rel=stylesheet type="text/css" href="styles.css">
+</head>
+
+<body class=adf>
+  <script language="javascript"> 
+   if (parent.TOPPY!=1){
+   	  location.href = "main_app.html";
+   	  exit;
+   };
+   S_nSprache=parent.S_nSprache;
+   WOMT_aThesenBilder=parent.WOMT_aThesenBilder;
+   WOMT_aThesen=parent.WOMT_aThesen;
+   WOMT_nTableWidth=parent.WOMT_nTableWidth;
+   WOMT_nTexte=parent.WOMT_nTexte;
+   WOMT_aParteienLogos=parent.WOMT_aParteienLogos;
+   WOMT_nParteien=parent.WOMT_nParteien;
+   WOMT_aBilder=parent.WOMT_aBilder;
+   WOMT_aTexte=parent.WOMT_aTexte;
+
+   bgcolor_0065CE=' bgcolor="#0065CE" ';
+   bgcolor_FFFFFF=' bgcolor="#FFFFFF" ';
+   bgcolor_000000=' bgcolor="#000000" ';
+
+     
+function write_0_intro(){
+
+rw="";
+rw+='<table width="622" height=338 border=0 cellspacing=0 cellpadding=0>';
+rw+='<tr>';
+	rw+='<td width=622 height=1 colspan=5 '+bgcolor_000000+'><img src="images/b.gif" width="622" height="1"></td>';
+rw+='</tr>';
+rw+='<tr>';
+	rw+='<td width=1 height=10 colspan=1 '+bgcolor_000000+'><img src="images/b.gif" width="1" height="10"></td>';
+	rw+='<td width=620 height=10 colspan=3 '+bgcolor_FFFFFF+'><img src="images/b.gif" width="620" height="10"></td>	';
+	rw+='<td width=1 height=10 colspan=1 '+bgcolor_000000+'><img src="images/b.gif" width="1" height="10"></td>';
+rw+='</tr>';
+
+rw+='<tr>';
+	rw+='<td width=1 height=316 colspan=1 '+bgcolor_000000+'><img src="images/b.gif" width="1" height="316"></td>';	
+	rw+='<td width=10 height=316 colspan=1 '+bgcolor_FFFFFF+'><img src="images/b.gif" width="10" height="316"></td>';
+	rw+='<td width=600 height=220 colspan=1 valign=top><table width="600" height=316 border=0 cellspacing=0 cellpadding=0 valign=top>';
+	     rw+=' <tr>';
+  		rw+='<td width=150 height=220 colspan=1 '+bgcolor_FFFFFF+' valign=middle>';
+  		   rw+='<img src="images/logo.gif" width=120 height=100>';
+  		   rw+='<br><br>';
+  		   rw+='<img src="images/land.gif" width=120 height=100>';
+  		rw+='</td>';
+  		rw+='<td width=300 height=220 colspan=1 '+bgcolor_0065CE+'><table width="300" height=220 border=0 cellspacing=0 cellpadding=0 valign=top>';
+		    rw+='<tr>';
+  		       rw+='<td width=10 height=200 colspan=1 '+bgcolor_0065CE+'><img src="images/b.gif" width="10" height="10"></td>';
+  		       rw+='<td valign=top height=200>';
+  		          rw+='<img src="images/b.gif" width="1" height="10"><br>';
+  		             rw+='<font class="intro-titel">';
+  		                rw+=WOMT_aTexte["intro_titel"][S_nSprache];
+  		             rw+='</font>';
+  		          rw+='<br><br>';
+  		          rw+='<font class="intro-text"> ';
+  		               rw+=WOMT_aTexte["intro_text"][S_nSprache];
+  		          rw+='</font><br>';
+  		       rw+='</td>';
+  		       rw+='<td width=10 height=10 colspan=1 '+bgcolor_0065CE+'><img src="images/b.gif" width="10" height="10"></td>';
+  		    rw+='</tr>';
+  		    rw+='<tr>';
+  		       rw+='<td width=10 height=10 colspan=1 '+bgcolor_0065CE+'><img src="images/b.gif" width="10" height="10"></td>';
+  		       rw+='<td valign=top height=116>';
+  		          rw+='<a href="javascript:parent.change_frage(0);"><img src="';
+  		            rw+=WOMT_aBilder["intro_start_button"][S_nSprache][0];
+  		            rw+='" border=0 width='+WOMT_aBilder["intro_start_button"][S_nSprache][1]+' height='+WOMT_aBilder["intro_start_button"][S_nSprache][2]+'></a>';
+  		            rw+='<br>';
+  		          rw+='<br>';
+  		          rw+='<a href="http://www.bpb.de" target=extern><img src="';
+  		          rw+=WOMT_aBilder['intro_download'][S_nSprache][0]+'" border=0 width='
+  		              +WOMT_aBilder['intro_download'][S_nSprache][1]
+  		              +' height='
+  		              +WOMT_aBilder["intro_download"][S_nSprache][2]
+  		              +'></a><a href="faq_'+S_nSprache+'.html" target=extern><img src="'
+  		              +WOMT_aBilder["intro_faq"][S_nSprache][0]+'" border=0 width='
+  		              +WOMT_aBilder["intro_faq"][S_nSprache][1]+' height='
+  		              +WOMT_aBilder["intro_faq"][S_nSprache][2]+'</a>'
+  		              +'<a href="kontakt_'+S_nSprache+'.html" target=extern><img src="'
+  		              +WOMT_aBilder["intro_kontakt"][S_nSprache][0]
+  		              +'" border=0 width='+WOMT_aBilder["intro_kontakt"][S_nSprache][1]+' height='
+  		              +WOMT_aBilder["intro_kontakt"][S_nSprache][2]+'></a>';
+  		       rw+='</td>';
+  		       rw+='<td width=10 height=10 colspan=1 '+bgcolor_0065CE+'></td>';
+  		    rw+='</tr>';
+  		rw+='</table></td>';	
+  		rw+='<td width=150 height=220 colspan=1 '+bgcolor_FFFFFF+' align=middle>';
+  		   /*if (WOMT_aBilder["intro_parteien_collage"][0]!=""){
+		       rw+='<img src="'+WOMT_aBilder["intro_parteien_collage"][0]+'" width="'+
+		            Math.floor(WOMT_aBilder["intro_parteien_collage"][1]/2)+' height="'+
+		            Math.floor(WOMT_aBilder["intro_parteien_collage"][2]/2)+'"><br>';
+		   }*/		      
+  		rw+='</td>';	
+	      rw+='</tr>';
+	   rw+='</table></td>';
+	rw+='<td width=10 height=220 colspan=1 '+bgcolor_FFFFFF+'><img src="images/b.gif" width="10" height="220"></td>';	
+	rw+='<td width=1 height=220 colspan=1 '+bgcolor_000000+'><img src="images/b.gif" width="1" height="220"></td>';
+rw+='</tr>';	
+rw+='<tr>';
+	rw+='<td width=1 height=10 colspan=1 '+bgcolor_000000+'><img src="images/b.gif" width="1" height="10"></td>';
+	rw+='<td width=620 height=10 colspan=3 '+bgcolor_FFFFFF+'><img src="images/b.gif" width="620" height="10"></td>	';
+	rw+='<td width=1 height=10 colspan=1 '+bgcolor_000000+'><img src="images/b.gif" width="1" height="10"></td>';
+rw+='</tr>';	
+rw+='<tr>';
+	rw+='<td width=622 height=1 colspan=5 '+bgcolor_000000+'><img src="images/b.gif" width="622" height="1"></td>';
+rw+='</tr>';
+rw+='</table>';
+return rw;
+}
+
+document.writeln(write_0_intro());
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+html {font-size:0.5em;}
+
+#leftnav_fixed_sub div a:link, #leftnav_fixed_sub div a:visited, #leftnav_fixed_sub div a:active {font-size:0.5em;}
+
+#content_center_start div.b1_start h4 {font-size:100%;}
+
+#content_choice_b {left:450px;}
+
+#content_center_w .intro .text {float:left;}
+#content_center_w .intro .legende {position:static; float:left; margin:0 0 0 17px; font-size:1.5em;}
+#content_center_w_breit .intro .legende {font-size:1.5em;}

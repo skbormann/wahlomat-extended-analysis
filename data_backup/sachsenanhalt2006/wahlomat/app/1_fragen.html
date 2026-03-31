@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">			
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+<head>	
+    <script type="text/javascript" type="text/javascript">
+         	//alert (parent.print_meta());
+        	document.writeln(parent.print_meta());
+	</script>
+</head>
+<body id="wahlomat2006">
+<script language="javascript" type="text/javascript">
+            if (parent.TOPPY != 1) {
+   	            location.href = "main_app.html";
+            }
+
+            function beantworteFrage(img_name,src,src2,value){
+                //zw=src.split("_selected.gif");
+                //alert(zw[0]);
+                //alert(src2);
+                document.images[img_name].src=src2;
+                window.setTimeout("beantworteFrage2('"+img_name+"','"+src+"',"+value+")",80);
+            }
+
+            function beantworteFrage2(img_name,src,value) {
+                //alert(src);
+                document.images[img_name].src = src;
+                window.setTimeout("parent.beantworteFrage("+value+")",150);
+            }
+
+
+            S_nSprache=parent.S_nSprache;
+            S_nTheseAktuell=parent.S_nTheseAktuell;
+            S_nTheseMax=parent.S_nTheseMax;
+            S_aThesen=parent.S_aThesen;
+
+            WOMT_aThesenBilder=parent.WOMT_aThesenBilder;
+            WOMT_aThesen=parent.WOMT_aThesen;
+            WOMT_nThesen=parent.WOMT_nThesen;
+            WOMT_nTableWidth=parent.WOMT_nTableWidth;
+            WOMT_nTexte=parent.WOMT_nTexte;
+            WOMT_aParteienLogos=parent.WOMT_aParteienLogos;
+            WOMT_nParteien=parent.WOMT_nParteien;
+            WOMT_aBilder=parent.WOMT_aBilder;
+            WOMT_aTexte=parent.WOMT_aTexte;
+
+            b=S_nTheseAktuell+1;
+
+            function write_1_fragen(){
+                rw  =   '';
+				rw += '<div id="main">';
+				rw += '<!-- Blindennavigation: Anfang -->';
+				rw += '<div class="unsichtbar">';
+				rw += '<ul>';
+				rw += '<li><a href="#content_center_wahl" tabindex="10" title="">'+parent.wom_html(WOMT_aTexte["1_bn_zurthese_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#steps" tabindex="11" title="">'+parent.wom_html(WOMT_aTexte["1_bn_thesennavigation_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#leftnav_normal" tabindex="12" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'</a></li>';
+				rw += '</ul>';
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Ende -->';
+
+				rw += parent.print_main_head();
+
+				rw += '<div id="main_wm">';
+
+				rw += '<div id="main_wm_sub">';
+
+				rw += '<div id="content">';
+
+				rw += '<div id="content_head_start">';
+				rw += '<h2>'+parent.wom_html(WOMT_aTexte["wahlomat_content_head"][S_nSprache])+'</h2>';
+				rw += '</div>';
+
+				rw += '<div id="content_center_wahl">';
+				rw += '<h4 class="wahl">'+WOMT_aTexte["1_fragen_these"][S_nSprache]+' '+(S_nTheseAktuell+1)+' '+WOMT_aTexte["1_fragen_von"][S_nSprache]+' '+WOMT_nThesen+'</h4>';
+				rw += '<div class="b1">';
+						if (WOMT_aThesen[S_nTheseAktuell][S_nSprache][1]!=""){ // lange Version nehmen falls vorhanden!
+							rw += WOMT_aThesen[S_nTheseAktuell][S_nSprache][1];
+						} else {
+							rw += WOMT_aThesen[S_nTheseAktuell][S_nSprache][0];
+						}
+					rw += '</div>';
+		                if (parent.is_bogus()==1) {
+		                    rw +=  '<div class="b2">'+WOMT_aTexte["1_fragen_bogus"][S_nSprache]+'</div>';
+		                    parent.reset_bogus();
+		                }
+								    
+				rw += '</div>';
+				rw += '<div id="content_center_b">&nbsp;</div>';
+
+				rw += '<div id="content_choice">';
+				rw += '<div class="b1"><a class="';
+				if (S_aThesen[S_nTheseAktuell]==1){
+					rw += 'selected';
+				} else {
+					rw += 'normal';
+				} 
+				rw += '" href="javascript:parent.beantworteFrage(1)" accesskey="j" tabindex="14" title="'+parent.wom_titletag(WOMT_aTexte["1_these_stimmezu_taste_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["a_button_stimmezu_text"][S_nSprache])+'</a></div>';
+				rw += '<div class="b2"><a class="';
+				if (S_aThesen[S_nTheseAktuell]==0){
+					rw += 'selected';
+				} else {
+					rw += 'normal';
+				}
+				rw += '" href="javascript:parent.beantworteFrage(0)" accesskey="x" tabindex="15" title="'+parent.wom_titletag(WOMT_aTexte["1_these_neutral_taste_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["a_button_neutral_text"][S_nSprache])+'</a></div>';
+				rw += '<div class="b3"><a class="';
+				if (S_aThesen[S_nTheseAktuell]==-1){
+					rw += 'selected';
+				} else {
+					rw += 'normal';
+				}
+				rw += '" href="javascript:parent.beantworteFrage(-1)" accesskey="n" tabindex="16" title="'+parent.wom_titletag(WOMT_aTexte["1_these_stimmenichtzu_taste_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["a_button_stimmenichtzu_text"][S_nSprache])+'</a></div>';
+				rw += '<div class="b4"><a class="';
+				if (S_aThesen[S_nTheseAktuell]==-2){
+					rw += 'selected';
+				} else {
+					rw += 'normal';
+				}
+				rw += '" href="javascript:parent.beantworteFrage(-2)" accesskey="w" tabindex="17" title="'+parent.wom_titletag(WOMT_aTexte["1_these_ueberspringen_taste_title"][S_nSprache])+'">'+parent.wom_html(WOMT_aTexte["a_button_theseueberspringen_text"][S_nSprache])+'</a></div>';
+				rw += '<div class="b5">&nbsp;</div>';
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Anfang -->';
+				rw += '<div class="unsichtbar">';
+				rw += '<ul>';
+				rw += '<li><a href="#main" tabindex="18" title="">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#content_center_wahl" tabindex="19" title="">'+WOMT_aTexte["1_bn_zurthese_text"][S_nSprache]+'</a></li>';
+				rw += '<li><a href="#leftnav_normal" tabindex="20" title="">'+parent.wom_html(WOMT_aTexte["a_bn_menue_text"][S_nSprache])+'</a></li>';
+				rw += '</ul>';
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Ende -->';
+				rw += '<div id="content_choice_b">&copy;'+parent.wom_html(WOMT_aTexte["a_copyright_text"][S_nSprache])+'</div>';
+				rw += '</div>';
+				rw += '<div id="steps">';
+				rw += '<ul>';
+						if (S_nTheseAktuell>0){
+							href	= "javascript:parent.change_frage("+(S_nTheseAktuell-1)+")";
+							title 	= parent.wom_titletag(WOMT_aTexte["1_leiste_zurueck_these"][S_nSprache]);
+							title 	= title.replace(/\[NR\]/,S_nTheseAktuell);
+						} else {
+							href	= "javascript:parent.replaceIFrame('0')";
+							title 	= parent.wom_titletag(WOMT_aTexte["1_leiste_zurueck_start"][S_nSprache]);
+						}
+				rw += '<li class="b_bv"><a href="'+href+'" tabindex="21" title="'+title+'"><span>';
+				rw += parent.wom_html(WOMT_aTexte["1_leiste_zurueck_text"][S_nSprache])
+				rw += '</span></a></li>';
+					for (a=0;a<WOMT_nThesen;a++){
+						b=a+1;
+						if (a==S_nTheseAktuell){	
+							rw += '<li class="b_ma"><a ';
+							if (a==0){
+								rw +='class="first"';
+							}
+							rw += ' href="javascript:parent.change_frage('+a+');" tabindex="'+(b+21)+'" title="'+parent.wom_titletag(WOMT_aTexte["1_leiste_thesenochmal_title"][S_nSprache])+'">'+b+'</a></li>';
+						} else if (a<=S_nTheseMax){
+							rw +='<li class="b_mv"><a ';
+							if (a==0){
+								rw += 'class="first"';
+							}
+							rw += ' href="javascript:parent.change_frage('+a+');" tabindex="'+(b+21)+'" title="';
+								text = parent.wom_titletag(WOMT_aTexte["1_leiste_thesenochmal_these_title"][S_nSprache]);
+								text = text.replace(/\[NR\]/,(a+1));
+								rw += text+'">'+b+'</a></li>';
+						} else {
+							rw += '<li class="b_mn"><span>'+b+'</span></li>';
+						}
+					}
+						if ((S_nTheseAktuell<=S_nTheseMax-1)||(S_nTheseMax>=WOMT_nThesen)){
+							rw += '<li class="b_en"><a href="javascript:parent.change_frage('+(S_nTheseAktuell+1)+')" tabindex="106" title="';
+							if (S_nTheseAktuell+1<S_nTheseMax){
+								text = parent.wom_titletag(WOMT_aTexte["1_leiste_vor_these"][S_nSprache]);
+								text  = text.replace(/\[NR\]/,S_nTheseAktuell+2);
+								//text = str_replace("[NR]",S_nTheseAktuell+2,text);
+							} else {
+								text = WOMT_aTexte["1_leiste_vor_zwischenauswertung"][S_nSprache];
+							}
+							rw += parent.wom_titletag(text);
+							rw += '"><span>'+parent.wom_html(text)+'</span></a></li>';
+						}
+				rw += '</ul>';
+				rw += '</div>';
+
+				rw += '<div id="leftnav_normal">';
+				rw += parent.print_left_nav();
+				rw += '</div>';
+
+				rw += '<!-- Blindennavigation: Anfang -->';
+				rw += '<div class="unsichtbar">';
+				rw += '<ul>';
+				rw += '<li><a href="#main" tabindex="107" title="">'+parent.wom_html(WOMT_aTexte["a_bn_seitenstart_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#content_center_wahl" tabindex="108" title="">'+parent.wom_html(WOMT_aTexte["1_bn_zurthese_text"][S_nSprache])+'</a></li>';
+				rw += '<li><a href="#steps" tabindex="108" title="">'+parent.wom_html(WOMT_aTexte["1_bn_thesennavigation_text"][S_nSprache])+'</a></li>';
+				rw += '</ul>';
+				rw += '</div>';
+				rw += '<!-- Blindennavigation: Ende -->';
+				rw += '</div>';
+		
+				rw += parent.print_main_foot();
+
+				rw += '</div>';
+
+				rw += '</div>';
+				
+                
+                return rw;
+            }
+
+            function change_image(name,src) {
+                document.images[name].src = src;
+            }
+
+			document.open();
+            document.writeln(write_1_fragen());
+            document.close();
+        </script>
+    </body>
+</html>
