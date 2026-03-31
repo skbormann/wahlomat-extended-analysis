@@ -2,6 +2,8 @@
 
 Back to landing page: [`../README.md`](../README.md)
 
+**CSV schema reference:** for the canonical column definitions and a quick join example, see [`DATASET.md`](DATASET.md).
+
 This guide explains what the dataset is, what questions it can and cannot answer, which analytical methods are appropriate, and how to get started. It is written for two audiences: curious people with no statistical background, and data analysts who want to do rigorous work.
 
 ---

@@ -2,6 +2,8 @@
 
 Zurück zur Startseite: [`../README.md`](../README.md)
 
+**CSV-Schema-Referenz:** für die Spaltendefinitionen und ein kurzes Join-Beispiel siehe [`DATASET.md`](DATASET.md).
+
 Dieser Leitfaden erklärt, was der Datensatz enthält, welche Fragen damit beantwortet werden können und welche nicht, welche analytischen Methoden geeignet sind, und wie man damit loslegen kann. Er richtet sich an zwei Zielgruppen: interessierte Menschen ohne statistischen Hintergrund und Datenanalystinnen und -analysten, die fundierte Auswertungen durchführen möchten.
 
 ---

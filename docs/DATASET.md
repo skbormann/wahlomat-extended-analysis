@@ -4,6 +4,8 @@ Back to landing page: [`../README.md`](../README.md)
 
 This document describes the generated dataset files and how to use them for your own analysis.
 
+**See also:** for interpretation, recommended methods, and analysis examples, see [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md) / [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md).
+
 ## Files
 
 - `all_wahlomat_answers.csv` — long table (one row per election × party × question)
