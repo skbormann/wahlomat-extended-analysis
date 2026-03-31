@@ -16,6 +16,7 @@ https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/
 from __future__ import annotations
 
 import argparse
+import hashlib
 import pathlib
 import re
 from dataclasses import dataclass
@@ -237,6 +238,115 @@ def fetch_datensaetze_bundle_url() -> str:
     return pick_datensaetze_bundle_url(html)
 
 
+def _parse_stand_date_iso_from_text(text: str) -> str | None:
+    """
+    Extract Stand date from text like 'Stand: 30.03.2026' and return YYYY-MM-DD.
+    Returns None if not found.
+    """
+    m = re.search(r"Stand:\s*(\d{2})\.(\d{2})\.(\d{4})", text)
+    if not m:
+        return None
+    dd, mm, yyyy = m.group(1), m.group(2), m.group(3)
+    return f"{yyyy}-{mm}-{dd}"
+
+
+def pick_datensaetze_bundle_stand_date(html: str, *, bundle_url: str) -> str | None:
+    """
+    Best-effort Stand date (YYYY-MM-DD) for the chosen bundle URL from the page HTML.
+    Prefers matching <a ...>text</a> for this URL (or its basename); falls back to
+    the newest Stand date found anywhere on the page.
+    """
+    base = pathlib.Path(urlparse(bundle_url).path).name
+    for href, inner in re.findall(
+        r'<a[^>]+href\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)</a>',
+        html,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        resolved = resolve_internal_bpb_zip(href.strip())
+        if resolved == bundle_url or base and base in resolved:
+            stand = _parse_stand_date_iso_from_text(inner)
+            if stand:
+                return stand
+
+    # Fallback: pick latest Stand date on page.
+    stands = [
+        _parse_stand_date_iso_from_text(t)
+        for t in re.findall(r"Stand:\s*\d{2}\.\d{2}\.\d{4}", html)
+    ]
+    stands = [s for s in stands if s]
+    return max(stands) if stands else None
+
+
+def fetch_datensaetze_bundle_info() -> tuple[str, str | None]:
+    """Return (bundle_url, stand_date_iso) from the Datensätze page HTML."""
+    html = fetch_html(DATENSAETZE_PAGE_URL)
+    url = pick_datensaetze_bundle_url(html)
+    stand = pick_datensaetze_bundle_stand_date(html, bundle_url=url)
+    return url, stand
+
+
+@dataclass(frozen=True)
+class DatensaetzeBundleRunState:
+    bundle_url: str
+    bundle_filename: str
+    stand_date: str | None
+    zip_sha256: str
+
+
+def _sha256_file(path: pathlib.Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def download_and_extract_datensaetze_bundle_with_state(
+    repo_root: pathlib.Path,
+    *,
+    bundle_url: str | None = None,
+    stand_date: str | None = None,
+) -> tuple[int, DatensaetzeBundleRunState | None]:
+    """
+    Like download_and_extract_datensaetze_bundle, but also returns a run state
+    (Stand date best-effort, URL, and zip sha256) for persisted refresh-excel reporting.
+    """
+    repo_root = repo_root.resolve()
+    data_dir = repo_root / "data"
+    graphs_dir = repo_root / "graphs"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    graphs_dir.mkdir(parents=True, exist_ok=True)
+
+    # For pure download/extract callers (and tests), allow passing bundle_url directly
+    # so we don't have to fetch HTML. refresh-excel can call fetch_datensaetze_bundle_info().
+    url = bundle_url or fetch_datensaetze_bundle_url()
+    stand = stand_date
+    zip_name = pathlib.Path(urlparse(url).path).name
+    if not zip_name.lower().endswith(".zip"):
+        zip_name = f"{zip_name}.zip"
+    zip_path = data_dir / zip_name
+    stem = zip_path.stem
+    extract_dir = data_dir / stem
+
+    print(f"Downloading {zip_name} …")
+    download_to_file(url, str(zip_path))
+    zip_sha256 = _sha256_file(zip_path)
+
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with _zipfile_for_extract(zip_path) as zf:
+        zf.extractall(path=str(extract_dir))
+    zip_path.unlink(missing_ok=True)
+    print(f"Extracted to: {extract_dir.resolve()}")
+
+    _print_workbook_discovery_status(data_dir, repo_root)
+    return 0, DatensaetzeBundleRunState(
+        bundle_url=url,
+        bundle_filename=zip_name,
+        stand_date=stand,
+        zip_sha256=zip_sha256,
+    )
+
+
 def _zipfile_for_extract(path: str | os.PathLike[str]) -> zipfile.ZipFile:
     """ZipFile for extract; use metadata_encoding on Python 3.11+ for bpb archives."""
     if sys.version_info >= (3, 11):
@@ -354,31 +464,8 @@ def download_and_extract_datensaetze_bundle(repo_root: pathlib.Path) -> int:
     Download only the Datensätze bundle ZIP and extract that archive into data/<stem>/.
     Does not scan or extract other ZIPs under data/.
     """
-    repo_root = repo_root.resolve()
-    data_dir = repo_root / "data"
-    graphs_dir = repo_root / "graphs"
-    data_dir.mkdir(parents=True, exist_ok=True)
-    graphs_dir.mkdir(parents=True, exist_ok=True)
-
-    url = fetch_datensaetze_bundle_url()
-    zip_name = pathlib.Path(urlparse(url).path).name
-    if not zip_name.lower().endswith(".zip"):
-        zip_name = f"{zip_name}.zip"
-    zip_path = data_dir / zip_name
-    stem = zip_path.stem
-    extract_dir = data_dir / stem
-
-    print(f"Downloading {zip_name} …")
-    download_to_file(url, str(zip_path))
-
-    extract_dir.mkdir(parents=True, exist_ok=True)
-    with _zipfile_for_extract(zip_path) as zf:
-        zf.extractall(path=str(extract_dir))
-    zip_path.unlink(missing_ok=True)
-    print(f"Extracted to: {extract_dir.resolve()}")
-
-    _print_workbook_discovery_status(data_dir, repo_root)
-    return 0
+    rc, _state = download_and_extract_datensaetze_bundle_with_state(repo_root)
+    return rc
 
 
 def download_all_election_zips_plus_datensaetze(repo_root: pathlib.Path) -> int:

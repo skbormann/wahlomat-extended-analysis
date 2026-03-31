@@ -5,11 +5,59 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import pathlib
 import sys
+from datetime import datetime, timezone
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent
+_REFRESH_STATE_PATH = REPO_ROOT / "data" / ".wahlomat_refresh_state.json"
+
+
+def _load_refresh_state() -> dict | None:
+    try:
+        with open(_REFRESH_STATE_PATH, "r", encoding="utf-8") as f:
+            obj = json.load(f)
+        return obj if isinstance(obj, dict) else None
+    except FileNotFoundError:
+        return None
+
+
+def _write_refresh_state(state: dict) -> None:
+    _REFRESH_STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(_REFRESH_STATE_PATH, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2, sort_keys=True)
+        f.write("\n")
+
+
+def _summarize_bundle_change(prev: dict | None, cur: dict) -> list[str]:
+    """
+    Human-facing lines about Datensätze bundle change since last run.
+    cur must include: stand_date (optional), zip_sha256, bundle_filename.
+    """
+    stand = cur.get("stand_date") or "unknown"
+    sha = cur.get("zip_sha256")
+    fname = cur.get("bundle_filename") or "unknown.zip"
+    if not isinstance(sha, str) or not sha:
+        return [f"Datensätze bundle: Stand {stand} (hash unavailable)"]
+
+    if not prev or prev.get("zip_sha256") is None:
+        return [f"Datensätze bundle: Stand {stand} (first run; {fname}; sha256 {sha[:12]}…)"]
+
+    prev_sha = prev.get("zip_sha256")
+    prev_stand = prev.get("stand_date") or "unknown"
+    if prev_sha == sha:
+        return [f"Datensätze bundle unchanged since last run: Stand {stand} ({fname}; sha256 {sha[:12]}…)"]
+
+    lines = [
+        f"Datensätze bundle changed since last run: was Stand {prev_stand}, now Stand {stand} ({fname})"
+    ]
+    if prev_stand == stand:
+        lines.append(
+            "WARNING: Stand date unchanged but content hash changed; bpb may have replaced the file without updating the label."
+        )
+    return lines
 
 
 def main() -> int:
@@ -175,9 +223,27 @@ def main() -> int:
         import get_zip_files
         import update_excel_csv
 
-        r = get_zip_files.main(["--datensaetze-only"])
-        if r != 0:
-            return r
+        prev = _load_refresh_state()
+        url, stand = get_zip_files.fetch_datensaetze_bundle_info()
+        rc, st = get_zip_files.download_and_extract_datensaetze_bundle_with_state(
+            args.repo_root or REPO_ROOT,
+            bundle_url=url,
+            stand_date=stand,
+        )
+        if rc != 0 or st is None:
+            return rc
+
+        cur = {
+            "saved_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "bundle_url": st.bundle_url,
+            "bundle_filename": st.bundle_filename,
+            "stand_date": st.stand_date,
+            "zip_sha256": st.zip_sha256,
+        }
+        for line in _summarize_bundle_change(prev, cur):
+            print(line)
+        _write_refresh_state(cur)
+
         uc_args = argparse.Namespace(
             dry_run=False,
             yes=True,
