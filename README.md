@@ -13,13 +13,15 @@ This repo can build the combined CSV from two sources:
 
 ## Quickstart (first-time users)
 
+Requires **Python 3.10+**.
+
 From the repository root:
 
 ### Step 1 — Get the code
 
 ```bash
 git clone https://github.com/skbormann/wahlomat-extended-analysis.git
-cd <REPO_FOLDER>
+cd wahlomat-extended-analysis
 ```
 
 Alternatively, use GitHub’s “Download ZIP”, unzip it, then `cd` into the extracted folder.
@@ -49,11 +51,15 @@ python wahlomat.py build-csv
 
 `build-csv` converts the extracted sources in `data/` (Excel sheets and any legacy JS exports you downloaded) into the analysis-ready CSV files at the repo root: **`all_wahlomat_answers.csv`** and **`election_metadata.csv`**. The built-in graphs are generated from the CSV, so you need this step before `graphs`.
 
+Sanity check: you should now see `all_wahlomat_answers.csv` and `election_metadata.csv` in the repo root.
+
 If you later download a newer Datensätze bundle and want to merge workbook-only updates into an existing CSV, use:
 
 ```bash
 python wahlomat.py refresh-excel
 ```
+
+For the simplest first run, use `download --datensaetze-only` + `build-csv`. For later incremental workbook updates, use `refresh-excel`.
 
 ### Optional — Download older elections (archived ZIPs / JS exports)
 
@@ -77,6 +83,8 @@ Then rebuild the analysis CSV from what is now under `data/`:
 python wahlomat.py build-csv
 ```
 
+More download modes and examples: [`docs/USAGE.md`](docs/USAGE.md).
+
 ### Step 5 — List elections (`election_id`) and build graphs
 
 The `--election` flag expects an exact `election_id` from the built CSV. Use `--list-elections` to print valid ids you can copy/paste **after** `--election` (for example: `--election BT21_v1.02`).
@@ -88,6 +96,17 @@ python wahlomat.py graphs --election BT21_v1.02 --graph pca_map
 ```
 
 If you also downloaded older elections (archived JS ZIPs), `build-csv` will include them in the rebuild.
+
+### Help / command reference
+
+To see all commands and flags:
+
+```bash
+python wahlomat.py -h
+python wahlomat.py download -h
+python wahlomat.py update-csv -h
+python wahlomat.py graphs -h
+```
 
 ## What you get (outputs)
 
