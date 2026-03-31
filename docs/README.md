@@ -4,10 +4,12 @@ This folder contains the longer-form documentation. If you’re new, start with 
 
 ## Start here
 
-- **Usage & CLI**: [`USAGE.md`](USAGE.md)
-- **Pipeline reference (detailed flags / edge cases)**: [`PIPELINE_REFERENCE.md`](PIPELINE_REFERENCE.md)
-- **Dataset / CSV schema**: [`DATASET.md`](DATASET.md)
-- **Analysis guide (EN)**: [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md)
-- **Analysis guide (DE)**: [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md)
-- **Troubleshooting**: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
-- **Development**: [`DEVELOPMENT.md`](DEVELOPMENT.md)
+| Document | What it’s for |
+| --- | --- |
+| [`USAGE.md`](USAGE.md) | Copy/paste commands and common workflows |
+| [`PIPELINE_REFERENCE.md`](PIPELINE_REFERENCE.md) | Exact behaviors, flags, outputs, and edge cases |
+| [`DATASET.md`](DATASET.md) | CSV schema / column definitions and joins |
+| [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md) | How to analyze the dataset (English) |
+| [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md) | How to analyze the dataset (Deutsch) |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common problems and fixes |
+| [`DEVELOPMENT.md`](DEVELOPMENT.md) | Tests, dependency updates, and maintainer notes |
