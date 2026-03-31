@@ -66,7 +66,7 @@ If the download succeeds but this run writes nothing to the answers CSV or metad
 
 **`build_graphs_from_csv.py`** (run from the **repository root**) reads `all_wahlomat_answers.csv`, rebuilds each election’s matrices, and writes PNGs to `graphs/` (correlation clustermap, PCA party map, PCA question influences). After each file, the CLI prints `Saved: <absolute path>`.
 
-- List valid `election_id` values (and row counts): `python build_graphs_from_csv.py --list-elections` (or `python wahlomat.py graphs --list-elections`; optional `--csv` path).
+- List valid `election_id` values: `python build_graphs_from_csv.py --list-elections` (or `python wahlomat.py graphs --list-elections`; optional `--csv` path). Add `--with-rows` to also print aligned row counts.
 - All elections: `python build_graphs_from_csv.py`
 - Subset: `python build_graphs_from_csv.py --election bundestagswahl2021 --election berlin2021` or comma-separated `--election a,b`
 - Plot types: `--graph` (repeatable): `c_matrix`, `pca_map`, `pca_influences` (default is all three)

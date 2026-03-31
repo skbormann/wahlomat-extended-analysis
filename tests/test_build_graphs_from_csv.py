@@ -26,7 +26,7 @@ class ListElectionsTableTests(unittest.TestCase):
             buf = io.StringIO()
             with contextlib.redirect_stdout(buf):
                 code = build_graphs_from_csv.main(
-                    ["--list-elections", "--csv", path]
+                    ["--list-elections", "--with-rows", "--csv", path]
                 )
             self.assertEqual(code, 0)
             lines = buf.getvalue().strip().splitlines()

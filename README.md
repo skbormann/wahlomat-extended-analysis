@@ -79,6 +79,8 @@ python wahlomat.py build-csv
 
 ### Step 5 — List elections (`election_id`) and build graphs
 
+The `--election` flag expects an exact `election_id` from the built CSV. Use `--list-elections` to print valid ids you can copy/paste.
+
 ```bash
 python wahlomat.py graphs --list-elections
 python wahlomat.py graphs --election BT21_v1.02 --graph pca_map

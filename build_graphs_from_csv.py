@@ -121,9 +121,14 @@ def main(argv: list[str] | None = None) -> int:
         "--list-elections",
         action="store_true",
         help=(
-            "Print election_id values and row counts from the CSV, then exit "
-            "(no graphs). Not with --election or ELECTION_IDS."
+            "Print election_id values from the CSV, then exit (no graphs). "
+            "Not with --election or ELECTION_IDS."
         ),
+    )
+    parser.add_argument(
+        "--with-rows",
+        action="store_true",
+        help="With --list-elections, also print row counts (aligned columns).",
     )
     parser.add_argument(
         "--graph",
@@ -157,7 +162,11 @@ def main(argv: list[str] | None = None) -> int:
             print("CSV missing election_id column.", file=sys.stderr)
             return 1
         counts = list_df["election_id"].astype(str).value_counts().sort_index()
-        _print_election_counts_table(counts)
+        if args.with_rows:
+            _print_election_counts_table(counts)
+        else:
+            for eid in counts.index.tolist():
+                print(eid)
         return 0
 
     if not csv_path.is_file():
