@@ -1,0 +1,59 @@
+# Byte-compiled / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Scratch / local-only files (do not track)
+/untitled.py
+/mito-starter-notebook.ipynb
+
+# Generated / downloaded artifacts that should not be committed
+/.~lock.*.xlsx#
+/*.zip
+
+# Generated analysis CSVs (build with `python wahlomat.py build-csv`)
+/all_wahlomat_answers*.csv
+/election_metadata*.csv
+
+# Generated single-election plots / exports (keep outputs in `graphs/` if desired)
+/*.png
+/*.svg
+
+# Interactive/scratch session files
+/*.ipy
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# This project: downloaded ZIPs, extracted elections, generated plots
+data/
+graphs/
+graphs_backup/
+graphs_backup_*/
+
+# Built long table (regenerate with build_dataframe.py)
+all_wahlomat_answers.csv
+
+# Large bpb workbooks often kept next to the repo; use data/ for tracked small samples
+/*.xlsx

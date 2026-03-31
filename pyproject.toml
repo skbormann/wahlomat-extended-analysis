@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["wahlomat_extended_analysis*"]
+
+[project]
+name = "wahlomat-extended-analysis"
+version = "0.1.0"
+description = "Batch Wahl-O-Mat questionnaires: correlation matrices, PCA, CSV bundle."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib==3.10.8",
+    "seaborn==0.13.2",
+    "numpy==2.4.2",
+    "pandas==3.0.1",
+    "scikit-learn==1.8.0",
+    "openpyxl==3.1.5",
+]
