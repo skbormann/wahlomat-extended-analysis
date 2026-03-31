@@ -91,11 +91,11 @@ Use this when **only** the bpb workbook changed (new sheets, new parties, update
 
 `python wahlomat.py update-csv` compares each qualifying workbook sheet to the current `all_wahlomat_answers.csv` by `election_id` (sheet name with spaces → underscores). New ids or changed row counts trigger a replace for those elections only; JS-sourced elections are left unchanged; removed sheets do not delete CSV rows.
 
-Important limitation: detection uses **row-count equality only** (same count but edited cells is not detected). See “CSV structure and known caveats”.
+Change detection: `update-csv` treats a sheet as unchanged only if its **content matches** the existing CSV block (not just the row count). If bpb edits answers or wording without changing the row count, `update-csv` will still replace that `election_id` block.
 
 ## Download options
 
-`python wahlomat.py download` / `python get_zip_files.py` downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into `data/`, and also resolves the current bundled Datensätze ZIP from the bpb Datensätze page (the exact file URL is read from the page HTML, not hardcoded). Creates `graphs/` if missing.
+`python wahlomat.py download` / `python get_zip_files.py` downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into `data/`, and also resolves the current bundled Datensätze ZIP from the bpb Datensätze page (the exact file URL is read from the page HTML, not hardcoded). Creates `graphs/` if missing. Full `download` extracts **only** the ZIPs fetched in that invocation and does not scan `data/` for other `.zip` files.
 
 ### Datensätze only
 
@@ -116,7 +116,7 @@ After a full download, `--datensaetze-only`, or a selective download that includ
 
 - **No `.xlsx` found / wrong `.xlsx` picked**: discovery checks `data/` and the repository root. If several matching `.xlsx` exist, `discover_bpb_excel_path` chooses the newest by filesystem mtime, then breaks ties by filename descending. Rename or move stale copies (e.g. `*.xlsx.old`) if the wrong file wins.
 - **No network / firewall**: metadata generation fetches the bpb archive page by default. Use `WAHLOMAT_ARCHIVE_HTML=/path/to/saved.html` before `build-csv`, or run `python build_metadata.py --archive-html PATH` after building the answers CSV.
-- **`update-csv` didn’t detect edits**: `update-csv` treats a sheet as changed only when the row count differs.
+- **`update-csv` didn’t detect edits**: `update-csv` compares **sheet content** to the existing CSV block. If you still see no changes, verify you’re reading the intended workbook (see `.xlsx` discovery rules above) and that the sheet/tab corresponds to the `election_id` you expect.
 
 ## Analysis steps (detailed reference)
 
@@ -133,7 +133,7 @@ After a full download, `--datensaetze-only`, or a selective download that includ
 
 3. **`update_excel_csv.py`** / **`python wahlomat.py update-csv`** (repository root) — **recommended when only the bpb Excel workbook changed** (e.g. new sheets or extra parties on existing sheets). Compares each qualifying workbook sheet to the current **`all_wahlomat_answers.csv`** by **`election_id`** (sheet name with spaces → underscores): **new** ids or **changed** row counts trigger a replace for those elections only; rows for elections not in the workbook (including all JS-sourced **`election_id`s**) are left unchanged; removed sheets do not delete CSV rows. **`election_metadata.csv`** is regenerated in the **same run** when the answers CSV is written ([build_metadata.py](build_metadata.py)). If **`update-csv`** errors **after** **`Wrote … rows`** (metadata build failed), the CSV is already updated—run **`python build_metadata.py`** (and **`--answers`** if you use a non-default path). **`--prune-superseded-excel`** drops older **versioned** bpb `election_id`s left in the CSV when the workbook has another tab with the same land+year prefix (e.g. remove `BW26_v1.01` / `RP26_v1.00` when `BW26_v1.02` / `RP26_v1.01` are sheets), so **`election_metadata.csv`** matches current workbook tabs. Without pruning, superseded ids stay in both files until a full **`build-csv`**. **`build_metadata`** can still attach display rows for orphaned versioned ids if they remain in the answers CSV. Flags: **`--dry-run`** (print summary, exit), **`-y` / `--yes`** (apply without prompt; default asks **`Proceed? [y/N]`**). Non-interactive terminals must use **`--dry-run`** or **`--yes`**. Detection uses row-count equality only (same count but edited cells is not detected).
 
-   **`python wahlomat.py refresh-excel`** runs **`download --datensaetze-only`** and then **`update-csv`** with **`-y`** and **`--prune-superseded-excel`** by default (use **`refresh-excel --no-prune`** to skip pruning). Optional **`--answers`** matches **`update-csv`**. There is no combined dry-run on this subcommand: preview with **`download --datensaetze-only`** then **`update-csv --dry-run`**. If the download succeeds but **this run** writes nothing to the answers CSV or metadata, **`refresh-excel`** prints a short **no updates needed** line (that refers to the current invocation, not “since last time” unless you add your own bookkeeping).
+   **`python wahlomat.py refresh-excel`** runs **`download --datensaetze-only`** and then **`update-csv`** with **`-y`** and **`--prune-superseded-excel`** by default (use **`refresh-excel --no-prune`** to skip pruning). Optional **`--answers`** matches **`update-csv`**. There is no combined dry-run on this subcommand: preview with **`download --datensaetze-only`** then **`update-csv --dry-run`**. \n+\n+   **Persisted state:** `refresh-excel` stores a small state record under **`data/.wahlomat_refresh_state.json`** containing the resolved bundle URL/filename, best-effort **Stand date** (from the bpb link label), and a **SHA-256** of the downloaded ZIP. On subsequent runs it prints whether the bundle is **unchanged/changed since last run** using the hash as the truth (the Stand date is a human label; if it stays the same but the hash changes, a warning is printed).\n+\n+   If the download succeeds but **this run** writes nothing to the answers CSV or metadata, **`refresh-excel`** still prints a short **no updates needed** line (that refers to the current invocation, not necessarily “since last time”).
 
 4. **`build_graphs_from_csv.py`** (run from the **repository root**)  
    Reads **`all_wahlomat_answers.csv`**, rebuilds each election’s matrices, and writes PNGs to **`graphs/`** (correlation clustermap, PCA party map, PCA question influences). After each file, the CLI prints **`Saved: <absolute path>`**.  
@@ -215,7 +215,7 @@ federal = answers[answers['election_id'].isin(
 - **Schleswig-Holstein 2005 and 2017** include multilingual theses (e.g. German, Danish, North Frisian). After deduplication in the JS parser, **`title`** and **`these_text`** keep the **first** language variant encountered per thesis.
 - **Folder names `wahlomat_0` and `wahlomat_1`** in the original ZIPs correspond to **`hamburg2011`** and **`berlin2011`** in the CSV (`election_id`); see [election_id_policy.py](election_id_policy.py).
 - **Party names are not normalised** across elections; the same grouping may appear under different strings (e.g. `GRÜNE`, `BÜNDNIS 90/DIE GRÜNEN`, `GRÜNE/B 90`).
-- **`update-csv`** only treats a sheet as changed when the **row count** for that `election_id` differs from the workbook; same row count with edited cells is not detected.
+- **`update-csv`** detects changes even when the row count is unchanged (content comparison). If you need perfect reproducibility/provenance, treat the workbook as the source of truth and prefer a full rebuild (`build-csv`) when in doubt.
 - **Sheets removed from the Excel bundle** are not removed from **`all_wahlomat_answers.csv`** by **`update-csv`**; run a full **`build-csv`** if you need the CSV to match the workbook exactly.
 
 ### When questionnaires fail
@@ -265,7 +265,7 @@ This continues the intent of the older **“Things to add/change”** list on [s
 | Full **`download`**: extract **only ZIPs from this run** | **Done** — Full `download` now extracts only the ZIPs it fetched in the current invocation and does not scan `data/` for other `.zip` files. |
 | **`update-csv`**: detect workbook edits when **row count unchanged** | **Done** — `update-csv` now detects same-row-count sheet edits by hashing the canonical long block (including `title` / `these_text`) and replaces the CSV block when content differs; schema mismatches raise a clear error. |
 | **Tests** for **`get_zip_files --datensaetze-only`** | **Done** — [`tests/test_get_zip_files_datensaetze_only.py`](tests/test_get_zip_files_datensaetze_only.py): mocked fetch/download and ZIP extract layout under **`data/<stem>/`**; HTML parsing for **`pick_datensaetze_bundle_url`**. |
-| **`refresh-excel`**: “unchanged since last run” using **persisted state** | **Later** — Convenience: persist a small state record (bundle URL, `ETag` / `Last-Modified`, ZIP hash, etc.) so `refresh-excel` can say “unchanged since last run” across invocations (not just “no updates needed for this run”). Likely requires a local state file (and `.gitignore` guidance). |
+| **`refresh-excel`**: “unchanged since last run” using **persisted state** | **Done** — `refresh-excel` persists **`data/.wahlomat_refresh_state.json`** with bundle URL/filename, Stand date label, and ZIP SHA-256; prints unchanged/changed since last run based on the hash. |
 | **`wahlomat.py`**: register **`graphs`** as a normal subcommand | **Done** — **`graphs`** appears next to other commands in **`wahlomat.py -h`**; **`python wahlomat.py graphs -h`** shows **`build_graphs_from_csv`** options. |
 
 ## Dependencies
