@@ -38,6 +38,19 @@ python -m pip install -r requirements.txt
 python wahlomat.py refresh-excel
 ```
 
+### Optional — Download older elections (archived ZIPs / JS exports)
+
+This fetches and extracts the “Weitere Wahlen” ZIP archives into `data/` (used on a full rebuild via `build-csv`).
+
+```bash
+# Download and extract all archived election ZIPs (plus the Datensätze bundle)
+python wahlomat.py download
+
+# Or: download/extract only specific elections (substring match on URL/stem/slug)
+python wahlomat.py download --list-election-zips
+python wahlomat.py download --election-zip berlin2021 --election-zip bundestagswahl2021
+```
+
 ### Step 4 — List elections (`election_id`) and build graphs
 
 ```bash
