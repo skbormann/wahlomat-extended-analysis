@@ -113,12 +113,14 @@ Start here for the longer-form documentation index: `[docs/README.md](docs/READM
 
 `wahlomat.py` is the recommended entry point (all commands are run from the repository root):
 
-- `python wahlomat.py download`
-- `python wahlomat.py refresh-excel`
-- `python wahlomat.py build-csv`
-- `python wahlomat.py update-csv`
-- `python wahlomat.py graphs ...`
-- `python wahlomat.py run-all`
+```bash
+python wahlomat.py download
+python wahlomat.py refresh-excel
+python wahlomat.py build-csv
+python wahlomat.py update-csv
+python wahlomat.py graphs ...
+python wahlomat.py run-all
+```
 
 Detailed usage and options:
 
