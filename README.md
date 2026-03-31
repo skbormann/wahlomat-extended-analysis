@@ -1,14 +1,115 @@
 # wahlomat-extended-analysis
 
-This is an extension of the analysis by Reddit user [/u/microraptor](https://www.reddit.com/user/microraptor/) of the questionnaires from [wahl-o-mat.de](https://www.wahl-o-mat.de). See [his repo](https://github.com/microraptor/wahlomat_analysis) for the original approach. That work was inspired by Reddit users [/u/d_loose](https://www.reddit.com/user/d_loose/) and [/u/askLubich](https://www.reddit.com/user/askLubich/).
+This repo analyzes questionnaires from [wahl-o-mat.de](https://www.wahl-o-mat.de) (Bundeszentrale für politische Bildung / bpb). It builds, per election, a **correlation matrix** and a **PCA “party map”** (plus **PCA question influences**), with cluster markings.
 
-The analysis script builds a correlation matrix and a PCA map of parties, with clusters marked.
+It is an extension of the analysis by Reddit user [/u/microraptor](https://www.reddit.com/user/microraptor/) (see [microraptor/wahlomat_analysis](https://github.com/microraptor/wahlomat_analysis)), inspired by [/u/d_loose](https://www.reddit.com/user/d_loose/) and [/u/askLubich](https://www.reddit.com/user/askLubich/) (see [askLubich/Wahl-O-Mat-EU-2019](https://github.com/askLubich/Wahl-O-Mat-EU-2019)). Unlike many single-election notebooks (e.g. [uioreanu/german-elections](https://github.com/uioreanu/german-elections)), this project can process **many elections at once** via a shared CSV.
 
-Unlike single-election tutorials (e.g. [microraptor/wahlomat_analysis](https://github.com/microraptor/wahlomat_analysis), [uioreanu/german-elections](https://github.com/uioreanu/german-elections), [askLubich/Wahl-O-Mat-EU-2019](https://github.com/askLubich/Wahl-O-Mat-EU-2019)), this project can process **many elections** at once. Graphs are driven from **`all_wahlomat_answers.csv`** so you can optionally restrict runs to selected `election_id` values (similar to changing one dataset in those projects).
+## Data sources
 
-Data sources: classic **`module_definition.js`** exports under **`data/`** and the **bpb Wahl-O-Mat-Datensätze Excel** bundle. Further notes are in [Changes](#changes).
+- **JS exports**: classic `module_definition.js` exports under `data/`
+- **bpb Excel bundle**: “Wahl-O-Mat-Datensätze” workbook
 
-## Analysis steps
+## Quickstart (first-time users)
+
+From the repository root:
+
+1. Install dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+1. Download the current bpb “Datensätze” bundle and update the CSV from the workbook (fast path for “new sheets/parties”):
+
+```bash
+python wahlomat.py refresh-excel
+```
+
+1. List elections (`election_id`) and build graphs for one of them:
+
+```bash
+python wahlomat.py graphs --list-elections
+python wahlomat.py graphs --election BT21_v1.02 --graph pca_map
+```
+
+If you want to (re)build the full CSV from **all extracted JS modules + Excel sheets**, run:
+
+```bash
+python wahlomat.py build-csv
+```
+
+## What you get (outputs)
+
+- **`graphs/`**: PNGs per election (correlation clustermap, PCA party map, PCA question influences). The CLI prints `Saved: <absolute path>` after writing each file.
+- **`all_wahlomat_answers.csv`** (repo root): long table of answers used to generate graphs.
+- **`election_metadata.csv`** (repo root): one row per `election_id` with display names + year + level.
+- **`data/`**: extracted Wahl-O-Mat datasets (JS exports) and/or extracted Datensätze bundle contents.
+
+## Usage (recommended entry point)
+
+`wahlomat.py` is the recommended entry point (all commands are run from the repository root):
+
+- `python wahlomat.py download` — same as `get_zip_files.py` (see “Download options” below)
+- `python wahlomat.py refresh-excel` — Datensätze-only download, then `update-csv -y --prune-superseded-excel` by default
+- `python wahlomat.py build-csv` — same as `build_dataframe.py`
+- `python wahlomat.py update-csv` — same as `update_excel_csv.py` (see details below; use `update-csv -h`)
+- `python wahlomat.py graphs ...` — same as `build_graphs_from_csv.py` (use `python wahlomat.py graphs -h`)
+- `python wahlomat.py run-all` — download → build-csv → graphs with defaults (stops on first non-zero exit)
+
+The individual scripts remain supported.
+
+## Common workflows
+
+### “I just want graphs for one election”
+
+```bash
+python wahlomat.py refresh-excel
+python wahlomat.py graphs --list-elections
+python wahlomat.py graphs --election <ID_FROM_LIST>
+```
+
+### “I pulled fresh data and want a clean rebuild”
+
+```bash
+python wahlomat.py download
+python wahlomat.py build-csv
+python wahlomat.py graphs
+```
+
+### Updating only from the Excel workbook
+
+Use this when **only** the bpb workbook changed (new sheets, new parties, updated positions).
+
+`python wahlomat.py update-csv` compares each qualifying workbook sheet to the current `all_wahlomat_answers.csv` by `election_id` (sheet name with spaces → underscores). New ids or changed row counts trigger a replace for those elections only; JS-sourced elections are left unchanged; removed sheets do not delete CSV rows.
+
+Important limitation: detection uses **row-count equality only** (same count but edited cells is not detected). See “CSV structure and known caveats”.
+
+## Download options
+
+`python wahlomat.py download` / `python get_zip_files.py` downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into `data/`, and also resolves the current bundled Datensätze ZIP from the bpb Datensätze page (the exact file URL is read from the page HTML, not hardcoded). Creates `graphs/` if missing.
+
+### Datensätze only
+
+- `python get_zip_files.py --datensaetze-only` (or `python wahlomat.py download --datensaetze-only`) downloads only that Datensätze bundle, extracts into `data/<zip-stem>/`, and does not fetch election ZIPs or scan other ZIPs in `data/` for extraction.
+
+### Selective election ZIPs
+
+- `--list-election-zips` prints `local_stem`, metadata slug (from `build_metadata.py` `election_slug_from_zip_href`), and URL for each ZIP on the weitere-Wahlen page (no download).
+- `--election-zip TOKEN` (repeatable) downloads and extracts only archives where TOKEN matches (case-insensitive substring) the URL, `local_stem`, or that slug; only those ZIPs are extracted (other `.zip` files already in `data/` are left alone).
+- Add `--with-datensaetze` to include the Datensätze bundle in the same run.
+- `--datensaetze-only` cannot be combined with these flags.
+
+### Workbook line
+
+After a full download, `--datensaetze-only`, or a selective download that included `--with-datensaetze`, the script prints `Datensätze workbook OK` with the path to the `.xlsx` if `discover_bpb_excel_path` finds one under `data/` or the repository root; otherwise a WARNING. Selective `--election-zip` only (no bundle in that run) skips this check.
+
+## Troubleshooting (first-time pain points)
+
+- **No `.xlsx` found / wrong `.xlsx` picked**: discovery checks `data/` and the repository root. If several matching `.xlsx` exist, `discover_bpb_excel_path` chooses the newest by filesystem mtime, then breaks ties by filename descending. Rename or move stale copies (e.g. `*.xlsx.old`) if the wrong file wins.
+- **No network / firewall**: metadata generation fetches the bpb archive page by default. Use `WAHLOMAT_ARCHIVE_HTML=/path/to/saved.html` before `build-csv`, or run `python build_metadata.py --archive-html PATH` after building the answers CSV.
+- **`update-csv` didn’t detect edits**: `update-csv` treats a sheet as changed only when the row count differs.
+
+## Analysis steps (detailed reference)
 
 1. **`get_zip_files.py`** (run from the **repository root**)  
    Downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and also resolves the current **bundled Datensätze** ZIP from the [Datensätze article](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/) (the exact file URL is read from the page HTML, not hardcoded). Creates **`graphs/`** if missing.  
@@ -66,7 +167,7 @@ Use of bpb data is subject to their [terms on the Datensätze page](https://www.
 **`all_wahlomat_answers.csv`** (written by **`build_dataframe.py`** / **`python wahlomat.py build-csv`**) is a long table: one row per thesis index, party, and answer.
 
 | Column | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `election_id` | string | Stable identifier for one Wahl-O-Mat instance (versioned Excel sheet id or legacy JS folder id). |
 | `question` | integer | Zero-based thesis index within that election. |
 | `party` | string | Party label as in the source (abbreviation / short name). |
@@ -98,7 +199,7 @@ federal = answers[answers['election_id'].isin(
 
 **Offline metadata build:** If the archive page cannot be fetched (no network, firewall), save that page as HTML and set **`WAHLOMAT_ARCHIVE_HTML=/path/to/saved.html`** before **`build-csv`**, or run **`python build_metadata.py --archive-html PATH`** after building the answers CSV.
 
-**Caveats for analysts**
+### Caveats for analysts
 
 - **Questions are not comparable across elections.** Each election has its own questionnaire (often on the order of 38 theses; older elections may have fewer).
 - **Some elections have very few parties** (as few as 2–3), which limits or breaks multivariate analyses (correlation, PCA, etc.).
@@ -148,14 +249,14 @@ For how to read the plots, see [askLubich's repo](https://github.com/askLubich/W
 This continues the intent of the older **“Things to add/change”** list on [skbormann/wahlomat-extended-analysis](https://github.com/skbormann/wahlomat-extended-analysis) **main**, updated for the CSV-first pipeline. Rows below are a **backlog** (features, behaviour changes, tests, polish) you may tackle before merging or keep for later. **Open** and **Later** items are **not** release blockers for publishing or using the repository—they are optional follow-ups.
 
 | Idea | Status |
-|------|--------|
+| ---- | ------ |
 | Select and download **individual** elections (index / menu / by name) | **Done (CLI)** — **`download --list-election-zips`**, **`--election-zip TOKEN`** (repeat), optional **`--with-datensaetze`**. Substring match on URL, **`local_stem`**, or metadata slug; extract **only** matched ZIPs. Interactive menu / numeric index not implemented. |
-| Run analysis for an **individual** election | **Mostly done** — After **`build-csv`**, use **`python wahlomat.py graphs --list-elections`** or [build_graphs_from_csv.py](build_graphs_from_csv.py) **`--list-elections`** to list valid **`election_id`** values, then **`--election ID`** (repeat or comma-separated) or **`ELECTION_IDS`**; optional **`--graph`** limits plot types (`c_matrix`, `pca_map`, `pca_influences`). Same flags work via **`python wahlomat.py graphs …`** (passthrough). You must pass the **exact** CSV **`election_id`** (no interactive menu, no selection by display name from **`election_metadata.csv`**). See [Analysis steps](#analysis-steps). |
-| **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today the script **rebuilds the full CSV** from all JS modules and Excel sheets. A future mode could append or merge rows for new **`election_id`** values only; until then, a full rebuild is usually fine. |
-| Full **`download`**: extract **only ZIPs from this run** | **Open** — After a full fetch, the extract loop still processes **every** `.zip` under **`data/`**, not only the archives just downloaded. Narrowing that is a **behaviour change** (stray ZIPs in **`data/`** would no longer be auto-extracted); document if implemented. |
-| **`update-csv`**: detect workbook edits when **row count unchanged** | **Open** — Today a sheet counts as unchanged only if row counts match; same count with different cell values is not detected. A future approach could use content hashes or a cell-level diff per **`election_id`** block. |
+| Run analysis for an **individual** election | **Mostly done** — After **`build-csv`**, use **`python wahlomat.py graphs --list-elections`** or [build_graphs_from_csv.py](build_graphs_from_csv.py) **`--list-elections`** to list valid **`election_id`** values, then **`--election ID`** (repeat or comma-separated) or **`ELECTION_IDS`**; optional **`--graph`** limits plot types (`c_matrix`, `pca_map`, `pca_influences`). Same flags work via **`python wahlomat.py graphs …`** (passthrough). You must pass the **exact** CSV **`election_id`** (no interactive menu, no selection by display name from **`election_metadata.csv`**). See [Analysis steps (detailed reference)](#analysis-steps-detailed-reference). |
+| **Update** **`build_dataframe.py`** when new elections appear | **Open** — Today **`build_dataframe.py`** rebuilds the full **`all_wahlomat_answers.csv`** from all JS modules and Excel sheets every time. For most first-time users this is fine; a future incremental mode would speed up repeated runs by appending/merging only new **`election_id`** values (lower compute, same outputs). |
+| Full **`download`**: extract **only ZIPs from this run** | **Open** — New-user quality-of-life: a full `download` currently extracts **every** `.zip` already in **`data/`**, not just the ZIPs downloaded in this invocation. That can be surprising if you have old or stray ZIPs lying around. Improvement: extract **only** the archives fetched “this run” (more predictable reruns). This is a **behaviour change** and should be documented if implemented. |
+| **`update-csv`**: detect workbook edits when **row count unchanged** | **Open** — Trust/correctness: today `update-csv` treats a workbook sheet as unchanged if its row count matches the existing CSV block. If the bpb workbook edits existing cells without changing row count, updates can be **missed silently**. Improvement: detect changes via hashes or cell-level diff per **`election_id`** and update when content differs. |
 | **Tests** for **`get_zip_files --datensaetze-only`** | **Done** — [`tests/test_get_zip_files_datensaetze_only.py`](tests/test_get_zip_files_datensaetze_only.py): mocked fetch/download and ZIP extract layout under **`data/<stem>/`**; HTML parsing for **`pick_datensaetze_bundle_url`**. |
-| **`refresh-excel`**: “unchanged since last run” using **persisted state** | **Later** — Optional: store bundle URL, `ETag` / `Last-Modified`, or ZIP hash (e.g. a small local state file; consider **`.gitignore`**) to report stability across runs. Distinct from the current **this run only** noop message after a successful update. |
+| **`refresh-excel`**: “unchanged since last run” using **persisted state** | **Later** — Convenience: persist a small state record (bundle URL, `ETag` / `Last-Modified`, ZIP hash, etc.) so `refresh-excel` can say “unchanged since last run” across invocations (not just “no updates needed for this run”). Likely requires a local state file (and `.gitignore` guidance). |
 | **`wahlomat.py`**: register **`graphs`** as a normal subcommand | **Done** — **`graphs`** appears next to other commands in **`wahlomat.py -h`**; **`python wahlomat.py graphs -h`** shows **`build_graphs_from_csv`** options. |
 
 ## Dependencies
@@ -165,3 +266,11 @@ This continues the intent of the older **“Things to add/change”** list on [s
 - Install: `pip install -r requirements.txt` from the repository root, or `pip install .` for the same pins via [pyproject.toml](pyproject.toml) (the latter installs a minimal **`wahlomat_extended_analysis`** package so the build is unambiguous next to **`data/`** and **`graphs/`**).
 
 [requirements.txt](requirements.txt) pins **matplotlib**, **seaborn**, **numpy**, **pandas**, **scikit-learn**, and **openpyxl** for reproducible installs. After upgrading packages, re-run **`build_dataframe.py`** and **`build_graphs_from_csv.py`** on at least one election before committing new pins.
+
+### Running tests
+
+From the repository root:
+
+```bash
+python -m unittest discover -s tests -p "test*.py"
+```
