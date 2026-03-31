@@ -6,18 +6,33 @@ This is the detailed reference for the end-to-end pipeline (download → build/u
 
 ## Analysis steps (detailed reference)
 
+## When to use which command (quick decision guide)
+
+- **I want the latest bpb workbook and to update my CSV**: `python wahlomat.py refresh-excel`
+- **First run from the workbook only**: `python wahlomat.py download --datensaetze-only` → `python wahlomat.py build-csv`
+- **I want older archived elections too (JS ZIPs)**: `python wahlomat.py download` (or `--election-zips-only` / selective) → `python wahlomat.py build-csv`
+- **The workbook changed and I want to merge updates without a full rebuild**: `python wahlomat.py update-csv` (use `--dry-run` first)
+
 ### 1) Download datasets
 
-**`get_zip_files.py`** (run from the **repository root**) downloads Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and also resolves the current **bundled Datensätze** ZIP from the [Datensätze article](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/) (the exact file URL is read from the page HTML, not hardcoded). It creates **`graphs/`** if missing.
+Use `python wahlomat.py download ...` (recommended). The underlying implementation is in `get_zip_files.py`.
+
+`download` fetches Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and can also resolve the current **bundled Datensätze** ZIP from the bpb Datensätze page (the exact file URL is read from the page HTML, not hardcoded). It creates **`graphs/`** if missing.
 
 - **Datensätze only**: `python get_zip_files.py --datensaetze-only` (or `python wahlomat.py download --datensaetze-only`) downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.
+- **Election ZIPs only**: `python get_zip_files.py --election-zips-only` (or `python wahlomat.py download --election-zips-only`) downloads and extracts **only** the archived election ZIPs (no Datensätze bundle).
 - **Selective election ZIPs**:
-  - `--list-election-zips` prints **`election_id`** and **URL** for each ZIP on the weitere-Wahlen page (no download). (For bpb `/system/files/…` ZIPs with opaque names like `wahlomat_0`, the `election_id` is canonicalized via `election_id_policy.JS_FOLDER_CANONICAL_ELECTION_ID`.)
-  - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL, the derived **`election_id`**, or other internal identifiers.
+  - `--list-election-zips` prints `local_stem`, metadata slug, and URL for each ZIP on the weitere-Wahlen page (no download).
+  - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL, `local_stem`, or the metadata slug.
   - Add `--with-datensaetze` to include the Datensätze bundle in the same run.
   - `--datensaetze-only` cannot be combined with these flags.
 
 **Workbook line:** After a full download, `--datensaetze-only`, or a selective download that included `--with-datensaetze`, the script prints **`Datensätze workbook OK`** with the path to the `.xlsx` if `discover_bpb_excel_path` finds one under `data/` or the repository root; otherwise a WARNING. Selective `--election-zip` only (no bundle in that run) skips this check.
+
+**Outputs:**
+
+- extracted datasets under `data/<stem>/...`
+- optionally a workbook discovery line when the run included the Datensätze bundle
 
 ### 2) Build the combined CSV
 
@@ -54,6 +69,11 @@ Flags:
 
 Non-interactive terminals must use `--dry-run` or `--yes`.
 
+**Outputs:**
+
+- updates `all_wahlomat_answers.csv` in-place
+- regenerates `election_metadata.csv` when the answers CSV is written
+
 ### 4) Refresh from the bpb bundle and update CSV
 
 `python wahlomat.py refresh-excel` runs `download --datensaetze-only` and then `update-csv -y` with `--prune-superseded-excel` by default (use `refresh-excel --no-prune` to skip pruning). Optional `--answers` matches `update-csv`.
@@ -61,6 +81,12 @@ Non-interactive terminals must use `--dry-run` or `--yes`.
 **Persisted state:** `refresh-excel` stores a small state record under `data/.wahlomat_refresh_state.json` containing the resolved bundle URL/filename, best-effort **Stand date** (from the bpb link label), and a **SHA-256** of the downloaded ZIP. On subsequent runs it prints whether the bundle is unchanged/changed since last run using the hash as the truth (the Stand date is a human label; if it stays the same but the hash changes, a warning is printed).
 
 If the download succeeds but this run writes nothing to the answers CSV or metadata, `refresh-excel` prints a short “no updates needed” line (this refers to the current invocation).
+
+**Outputs:**
+
+- updates `data/` with the extracted workbook bundle
+- writes `data/.wahlomat_refresh_state.json` (persisted state for “unchanged since last run” reporting)
+- may update `all_wahlomat_answers.csv` and `election_metadata.csv` (via `update-csv`)
 
 ### 5) Build graphs from the CSV
 
@@ -72,6 +98,10 @@ If the download succeeds but this run writes nothing to the answers CSV or metad
 - Plot types: `--graph` (repeatable): `c_matrix`, `pca_map`, `pca_influences` (default is all three)
 - Environment: `ELECTION_IDS=bundestagswahl2021,berlin2021 python build_graphs_from_csv.py` (CLI wins if both are set)
 - `--list-elections` cannot be combined with `--election` or `ELECTION_IDS`.
+
+**Outputs:**
+
+- PNG files under `graphs/` and `Saved: ...` lines on stdout
 
 ## Unified CLI (`wahlomat.py`)
 
@@ -103,3 +133,9 @@ Use of bpb data is subject to their terms on the bpb Datensätze page: <https://
 If a specific election under `data/` keeps breaking the pipeline, add its top-level folder name to `OMIT_FROM_BUILD_DATAFRAME` in `skipped_elections.py` until it is fixed.
 
 `failed_analysis.py` runs `parse_module_js` and then `run_analysis` for each slug in `OMIT_FROM_BUILD_DATAFRAME` (if any), printing parse/plot outcomes. Debug plots use names like `debug_<folder>_*.png` under `graphs/`.
+
+## See also
+
+- Usage & examples: [`USAGE.md`](USAGE.md)
+- Troubleshooting: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
+- Dataset schema: [`DATASET.md`](DATASET.md)
