@@ -126,7 +126,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--with-rows",
         action="store_true",
-        help="With --list-elections, also print row counts (aligned columns).",
+        help=(
+            "With --list-elections, also print row counts (aligned columns). "
+            "Rows = how many CSV rows belong to each election_id (sanity check)."
+        ),
     )
     parser.add_argument(
         "--graph",
@@ -135,7 +138,9 @@ def main(argv: list[str] | None = None) -> int:
         metavar="KIND",
         help=(
             "Only write these plot files per election (repeat for several): "
-            "c_matrix (correlation clustermap), pca_map, pca_influences. "
+            "c_matrix (correlation clustermap), "
+            "pca_map (PCA party map), "
+            "pca_influences (PCA question influence bar chart). "
             "Default: all three. Combine with --election to limit elections."
         ),
     )
