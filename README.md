@@ -83,7 +83,7 @@ Then rebuild the analysis CSV from what is now under `data/`:
 python wahlomat.py build-csv
 ```
 
-More download modes and examples: [`docs/USAGE.md`](docs/USAGE.md).
+More download modes and examples: [docs/USAGE.md](docs/USAGE.md).
 
 ### Step 5 — List elections (`election_id`) and build graphs
 
@@ -119,14 +119,14 @@ python wahlomat.py graphs -h
 
 If you want to work directly with the generated CSV files (beyond the built-in graphs), see the analysis guides:
 
-- **English**: `[docs/ANALYSIS_GUIDE_EN.md](docs/ANALYSIS_GUIDE_EN.md)`
-- **Deutsch**: `[docs/ANALYSIS_GUIDE_DE.md](docs/ANALYSIS_GUIDE_DE.md)`
+- **English**: [docs/ANALYSIS_GUIDE_EN.md](docs/ANALYSIS_GUIDE_EN.md)
+- **Deutsch**: [docs/ANALYSIS_GUIDE_DE.md](docs/ANALYSIS_GUIDE_DE.md)
 
-They explain the dataset structure, how to join `all_wahlomat_answers.csv` with `election_metadata.csv`, which questions the data can and cannot answer, and recommended analysis approaches. For a concise CSV schema reference, see `[docs/DATASET.md](docs/DATASET.md)`.
+They explain the dataset structure, how to join `all_wahlomat_answers.csv` with `election_metadata.csv`, which questions the data can and cannot answer, and recommended analysis approaches. For a concise CSV schema reference, see [docs/DATASET.md](docs/DATASET.md).
 
 ## Docs (recommended)
 
-Start here for the longer-form documentation index: `[docs/README.md](docs/README.md)`.
+Start here for the longer-form documentation index: [docs/README.md](docs/README.md).
 
 ## Usage (recommended entry point)
 
@@ -143,8 +143,8 @@ python wahlomat.py run-all
 
 Detailed usage and options:
 
-- **Usage & CLI**: `[docs/USAGE.md](docs/USAGE.md)`
-- **Pipeline reference**: `[docs/PIPELINE_REFERENCE.md](docs/PIPELINE_REFERENCE.md)`
+- **Usage & CLI**: [docs/USAGE.md](docs/USAGE.md)
+- **Pipeline reference**: [docs/PIPELINE_REFERENCE.md](docs/PIPELINE_REFERENCE.md)
 
 ## Common workflows
 
@@ -175,13 +175,13 @@ Change detection: `update-csv` treats a sheet as unchanged only if its **content
 
 ## Troubleshooting
 
-See `[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)`.
+See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 
 ## Development
 
-See `[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)`.
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## License
 
-- **Code**: MIT License (see `[LICENSE](LICENSE)`).
+- **Code**: MIT License (see [LICENSE](LICENSE)).
 - **Data**: the bpb “Wahl-O-Mat-Datensätze” are subject to the terms on the bpb Datensätze page: [https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/).
