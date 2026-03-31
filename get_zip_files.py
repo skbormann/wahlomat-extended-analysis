@@ -419,25 +419,26 @@ def download_all_election_zips_plus_datensaetze(repo_root: pathlib.Path) -> int:
             print("Folder 'graphs' already exists.")
 
         os.chdir(repo_root / "data")
+        data_dir = pathlib.Path(os.getcwd())
+        downloaded_zip_paths: list[pathlib.Path] = []
 
         for i, f in enumerate(zip_files_links):
-            dest = f"{os.getcwd()}/{zip_files_names[i]}.zip"
+            dest = data_dir / f"{zip_files_names[i]}.zip"
             print(f"Downloading {zip_files_names[i]}.zip …")
-            download_to_file(f, dest)
+            download_to_file(f, str(dest))
             time.sleep(0.8)
+            downloaded_zip_paths.append(dest)
 
-        for file in os.listdir():
-            if zipfile.is_zipfile(file):
-                file_name = os.path.abspath(file)
-                extract_dir = pathlib.Path(os.getcwd()) / file.split(sep=".")[0]
-                try:
-                    os.mkdir(str(extract_dir))
-                except FileExistsError:
-                    pass
-                with _zipfile_for_extract(file_name) as zf:
-                    zf.extractall(path=str(extract_dir))
-                os.remove(file_name)
-                print(f"Extracted to: {extract_dir.resolve()}")
+        # Extract only archives downloaded in this run; do not scan data/ for stray ZIPs.
+        for zpath in downloaded_zip_paths:
+            if not zpath.is_file() or not zipfile.is_zipfile(str(zpath)):
+                continue
+            extract_dir = data_dir / zpath.stem
+            extract_dir.mkdir(parents=True, exist_ok=True)
+            with _zipfile_for_extract(str(zpath)) as zf:
+                zf.extractall(path=str(extract_dir))
+            zpath.unlink(missing_ok=True)
+            print(f"Extracted to: {extract_dir.resolve()}")
 
         _print_workbook_discovery_status(repo_root / "data", repo_root)
     finally:

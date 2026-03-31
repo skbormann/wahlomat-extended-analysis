@@ -73,6 +73,39 @@ def _sort_election_block(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+_CANONICAL_COMPARE_COLS: tuple[str, ...] = (
+    "election_id",
+    "question",
+    "party",
+    "answer",
+    "title",
+    "these_text",
+)
+
+
+def _canonicalize_for_compare(df: pd.DataFrame, *, sheet_id: str, where: str) -> pd.DataFrame:
+    missing = [c for c in _CANONICAL_COMPARE_COLS if c not in df.columns]
+    if missing:
+        raise ValueError(
+            f"Excel sheet {sheet_id!r}: cannot compare/update because {where} is missing "
+            f"required column(s): {missing}. The bpb workbook format may have changed."
+        )
+    out = df.loc[:, list(_CANONICAL_COMPARE_COLS)].copy()
+    # Normalize dtypes for stable hashing across pandas versions.
+    out["election_id"] = out["election_id"].astype(str)
+    out["party"] = out["party"].astype(str)
+    out["title"] = out["title"].astype(str)
+    out["these_text"] = out["these_text"].astype(str)
+    out["question"] = pd.to_numeric(out["question"], errors="raise")
+    out["answer"] = pd.to_numeric(out["answer"], errors="raise")
+    return _sort_election_block(out)
+
+
+def _block_fingerprint(df: pd.DataFrame) -> int:
+    h = pd.util.hash_pandas_object(df, index=False)
+    return int(h.sum())
+
+
 def run(args: argparse.Namespace) -> tuple[int, bool]:
     """
     Apply update-csv logic. Returns (exit_code, wrote_files).
@@ -119,10 +152,26 @@ def run(args: argparse.Namespace) -> tuple[int, bool]:
             continue
 
         if old_n == new_n:
-            unchanged_count += 1
+            if old_n == 0:
+                unchanged_count += 1
+                continue
+            new_block = _canonicalize_for_compare(
+                long_df, sheet_id=safe_id, where="workbook sheet output"
+            )
+            old_block = _canonicalize_for_compare(
+                answers.loc[mask], sheet_id=safe_id, where="existing answers CSV block"
+            )
+            if _block_fingerprint(new_block) == _block_fingerprint(old_block):
+                unchanged_count += 1
+                continue
+            # Same row count but different content: treat as changed (Option A).
+            changed_items.append((safe_id, f"   {safe_id}: changed (content differs)"))
+            to_replace[safe_id] = new_block
             continue
 
-        sorted_block = _sort_election_block(long_df)
+        sorted_block = _canonicalize_for_compare(
+            long_df, sheet_id=safe_id, where="workbook sheet output"
+        )
         if old_n == 0:
             new_items.append(
                 (safe_id, f"   {safe_id}: new election ({new_n} rows)")
