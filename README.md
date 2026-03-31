@@ -45,6 +45,15 @@ python wahlomat.py build-csv
 - **`election_metadata.csv`** (repo root): one row per `election_id` with display names + year + level.
 - **`data/`**: extracted Wahl-O-Mat datasets (JS exports) and/or extracted Datensätze bundle contents.
 
+## Using the CSV for your own analysis
+
+If you want to work directly with the generated CSV files (beyond the built-in graphs), see the analysis guides:
+
+- **English**: [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md)
+- **Deutsch**: [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md)
+
+They explain the dataset structure, how to join `all_wahlomat_answers.csv` with `election_metadata.csv`, which questions the data can and cannot answer, and recommended analysis approaches.
+
 ## Usage (recommended entry point)
 
 `wahlomat.py` is the recommended entry point (all commands are run from the repository root):
