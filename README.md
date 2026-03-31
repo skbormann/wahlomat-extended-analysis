@@ -15,28 +15,30 @@ This repo can build the combined CSV from two sources:
 
 From the repository root:
 
-1. Get the code:
+### Step 1 — Get the code
 
 ```bash
-git clone <REPO_URL>
+git clone https://github.com/skbormann/wahlomat-extended-analysis.git
 cd <REPO_FOLDER>
 ```
 
 Alternatively, use GitHub’s “Download ZIP”, unzip it, then `cd` into the extracted folder.
 
-1. Install dependencies:
+### Step 2 — Install dependencies
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-1. Download the current bpb “Datensätze” bundle and update the CSV from the workbook (fast path for “new sheets/parties”):
+### Step 3 — Download the current bpb “Datensätze” bundle and update the CSV
+
+(Fast path for “new sheets/parties”.)
 
 ```bash
 python wahlomat.py refresh-excel
 ```
 
-1. List elections (`election_id`) and build graphs for one of them:
+### Step 4 — List elections (`election_id`) and build graphs
 
 ```bash
 python wahlomat.py graphs --list-elections
@@ -123,4 +125,3 @@ See `[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)`.
 
 - **Code**: MIT License (see `[LICENSE](LICENSE)`).
 - **Data**: the bpb “Wahl-O-Mat-Datensätze” are subject to the terms on the bpb Datensätze page: [https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/](https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/).
-
