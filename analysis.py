@@ -33,7 +33,8 @@ import seaborn as sns
 
 # %% Settings
 N_CLUSTERS: int = 6
-GRAPH_KIND_CHOICES: tuple[str, ...] = ("c_matrix", "pca_map", "pca_influences")
+from graph_kinds import GRAPH_KIND_CHOICES
+
 GRAPH_KINDS_ALL: frozenset[str] = frozenset(GRAPH_KIND_CHOICES)
 EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
     "die linke",

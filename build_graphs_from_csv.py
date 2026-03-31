@@ -15,9 +15,7 @@ import os
 import pathlib
 import sys
 
-import pandas as pd
-
-from analysis import GRAPH_KIND_CHOICES, long_rows_to_run_analysis, run_analysis
+from graph_kinds import GRAPH_KIND_CHOICES
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent
 _DEFAULT_CSV = REPO_ROOT / "all_wahlomat_answers.csv"
@@ -79,7 +77,7 @@ def _parse_election_cli(values: list[str] | None) -> list[str]:
     return out
 
 
-def _print_election_counts_table(counts: pd.Series) -> None:
+def _print_election_counts_table(counts) -> None:
     """Fixed-width columns for terminal readability (not strict TSV)."""
     rows: list[tuple[str, int]] = [(str(eid), int(n)) for eid, n in counts.items()]
     col1_h, col2_h = "election_id", "rows"
@@ -147,6 +145,8 @@ def main(argv: list[str] | None = None) -> int:
         csv_path = (pathlib.Path.cwd() / csv_path).resolve()
 
     if args.list_elections:
+        import pandas as pd
+
         if _parse_election_cli(args.elections) or _parse_election_ids_from_env():
             print(
                 "--list-elections cannot be combined with --election or ELECTION_IDS.",
@@ -172,6 +172,8 @@ def main(argv: list[str] | None = None) -> int:
     if not csv_path.is_file():
         _stderr_csv_missing(csv_path)
         return 1
+
+    import pandas as pd
 
     df = pd.read_csv(csv_path)
     if "election_id" not in df.columns:
@@ -203,6 +205,8 @@ def main(argv: list[str] | None = None) -> int:
         sub = df.loc[df["election_id"].astype(str) == str(eid)]
         print(f"Running analysis for {eid}")
         try:
+            from analysis import long_rows_to_run_analysis, run_analysis
+
             qdf, pivot = long_rows_to_run_analysis(sub)
             run_analysis(qdf, pivot, stem, graphs=graph_kinds)
         except Exception as ex:

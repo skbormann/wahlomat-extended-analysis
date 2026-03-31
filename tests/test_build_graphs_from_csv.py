@@ -41,6 +41,16 @@ class ListElectionsTableTests(unittest.TestCase):
         finally:
             os.unlink(path)
 
+    def test_help_runs_without_importing_analysis(self) -> None:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            with self.assertRaises(SystemExit) as ex:
+                build_graphs_from_csv.main(["-h"])
+        self.assertEqual(int(ex.exception.code or 0), 0)
+        out = buf.getvalue()
+        self.assertIn("--list-elections", out)
+        self.assertIn("--graph", out)
+
 
 if __name__ == "__main__":
     unittest.main()
