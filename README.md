@@ -49,8 +49,8 @@ python wahlomat.py build-csv
 
 If you want to work directly with the generated CSV files (beyond the built-in graphs), see the analysis guides:
 
-- **English**: [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md)
-- **Deutsch**: [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md)
+- **English**: [`docs/ANALYSIS_GUIDE_EN.md`](docs/ANALYSIS_GUIDE_EN.md)
+- **Deutsch**: [`docs/ANALYSIS_GUIDE_DE.md`](docs/ANALYSIS_GUIDE_DE.md)
 
 They explain the dataset structure, how to join `all_wahlomat_answers.csv` with `election_metadata.csv`, which questions the data can and cannot answer, and recommended analysis approaches. For a concise CSV schema reference, see [`docs/DATASET.md`](docs/DATASET.md).
 

@@ -12,7 +12,7 @@ This document describes the generated dataset files and how to use them for your
 ## `all_wahlomat_answers.csv` columns
 
 | Column | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `election_id` | string | Stable identifier for one Wahl-O-Mat instance (versioned Excel sheet id or legacy JS folder id). |
 | `question` | integer | Zero-based thesis index within that election. |
 | `party` | string | Party label as in the source (abbreviation / short name). |
@@ -23,7 +23,7 @@ This document describes the generated dataset files and how to use them for your
 ## `election_metadata.csv` columns
 
 | Column | Description |
-|---|---|
+| --- | --- |
 | `election_id` | Join key into `all_wahlomat_answers.csv`. |
 | `display_name_de` | German election name (e.g. `Bundestagswahl 2021`). |
 | `display_name_en` | English label (e.g. `Federal election 2021`). |
@@ -33,8 +33,8 @@ This document describes the generated dataset files and how to use them for your
 
 ## Analysis guides (recommended)
 
-- **English**: [`../ANALYSIS_GUIDE_EN.md`](../ANALYSIS_GUIDE_EN.md)
-- **Deutsch**: [`../ANALYSIS_GUIDE_DE.md`](../ANALYSIS_GUIDE_DE.md)
+- **English**: [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md)
+- **Deutsch**: [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md)
 
 ## Joining the files (example)
 

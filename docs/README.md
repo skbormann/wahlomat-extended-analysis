@@ -7,5 +7,7 @@ This folder contains the longer-form documentation. If you’re new, start with 
 - **Usage & CLI**: [`USAGE.md`](USAGE.md)
 - **Pipeline reference (detailed flags / edge cases)**: [`PIPELINE_REFERENCE.md`](PIPELINE_REFERENCE.md)
 - **Dataset / CSV schema**: [`DATASET.md`](DATASET.md)
+- **Analysis guide (EN)**: [`ANALYSIS_GUIDE_EN.md`](ANALYSIS_GUIDE_EN.md)
+- **Analysis guide (DE)**: [`ANALYSIS_GUIDE_DE.md`](ANALYSIS_GUIDE_DE.md)
 - **Troubleshooting**: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 - **Development**: [`DEVELOPMENT.md`](DEVELOPMENT.md)
