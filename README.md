@@ -128,6 +128,8 @@ They explain the dataset structure, how to join `all_wahlomat_answers.csv` with 
 
 Start here for the longer-form documentation index: [docs/README.md](docs/README.md).
 
+Architecture/code map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Usage (recommended entry point)
 
 `wahlomat.py` is the recommended entry point (all commands are run from the repository root):
