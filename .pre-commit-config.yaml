@@ -13,3 +13,9 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: cli-contracts-up-to-date
+        name: CLI help snapshots + doc snippets are up to date
+        entry: python tools/gen_cli_contracts.py --check
+        language: system
+        pass_filenames: false
+

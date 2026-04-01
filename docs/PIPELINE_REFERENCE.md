@@ -27,6 +27,19 @@ Use `python wahlomat.py download ...` (recommended). The underlying implementati
   - Add `--with-datensaetze` to include the Datensätze bundle in the same run.
   - `--datensaetze-only` cannot be combined with these flags.
 
+<!-- AUTOGEN:CLI_SNIPPET:PIPELINE_DOWNLOAD_SELECTIVE:START -->
+```text
+  --list-election-zips  List ZIPs from the weitere-Wahlen page (election_id, URL); no download.
+                        Same as get_zip_files.py --list-election-zips. See docs/DATASET.md for
+                        what election_id means.
+  --election-zip TOKEN  Download only election ZIPs whose URL or derived election_id contains
+                        TOKEN (case-insensitive); repeat for multiple tokens. See --list-election-
+                        zips.
+  --with-datensaetze    Only with one or more --election-zip: also download and extract the
+                        Datensätze bundle in the same run.
+```
+<!-- AUTOGEN:CLI_SNIPPET:PIPELINE_DOWNLOAD_SELECTIVE:END -->
+
 **Workbook line:** After a full download, `--datensaetze-only`, or a selective download that included `--with-datensaetze`, the script prints **`Datensätze workbook OK`** with the path to the `.xlsx` if `discover_bpb_excel_path` finds one under `data/` or the repository root; otherwise a WARNING. Selective `--election-zip` only (no bundle in that run) skips this check.
 
 **Outputs:**

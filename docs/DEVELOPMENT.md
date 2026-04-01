@@ -49,6 +49,13 @@ pre-commit install
 
 After that, `git commit` will run checks like “is `docs/ARCHITECTURE.md` up to date?”. If a hook fails, run the suggested command (e.g. `python tools/gen_architecture.py`), stage the resulting changes, and retry the commit.
 
+### Keeping CLI help and docs in sync
+
+This repo also checks that user-facing CLI help text and a few key doc snippets are up to date.
+
+- **Update snapshots/snippets** (after changing CLI flags/help): `python tools/gen_cli_contracts.py`
+- **Verify only** (what CI runs): `python tools/gen_cli_contracts.py --check`
+
 ## Dependency upgrades
 
 After upgrading packages, re-run `build-csv` and `graphs` for at least one election before committing new pins.
