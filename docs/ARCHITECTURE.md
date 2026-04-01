@@ -69,21 +69,25 @@ flowchart LR
   m_skipped_elections["skipped_elections.py"]
   m_update_excel_csv["update_excel_csv.py"]
   m_wahlomat["wahlomat.py"]
-  m_build_dataframe --> m_analysis
+  m_wahlomat_extended_analysis_bpb_urls["wahlomat_extended_analysis/bpb_urls.py"]
+  m_wahlomat_extended_analysis_election_id_policy["wahlomat_extended_analysis/election_id_policy.py"]
+  m_wahlomat_extended_analysis_graph_kinds["wahlomat_extended_analysis/graph_kinds.py"]
+  m_wahlomat_extended_analysis_repo_paths["wahlomat_extended_analysis/repo_paths.py"]
+  m_wahlomat_extended_analysis_skipped_elections["wahlomat_extended_analysis/skipped_elections.py"]
+  m_analysis --> m_wahlomat_extended_analysis_graph_kinds
+  m_bpb_urls --> m_wahlomat_extended_analysis_bpb_urls
   m_build_dataframe --> m_build_metadata
-  m_build_dataframe --> m_skipped_elections
-  m_build_graphs_from_csv --> m_analysis
-  m_build_metadata --> m_analysis
-  m_build_metadata --> m_bpb_urls
-  m_build_metadata --> m_get_zip_files
-  m_failed_analysis --> m_analysis
-  m_failed_analysis --> m_skipped_elections
-  m_get_zip_files --> m_analysis
-  m_get_zip_files --> m_bpb_urls
-  m_get_zip_files --> m_build_metadata
-  m_load_modules --> m_analysis
-  m_update_excel_csv --> m_analysis
-  m_update_excel_csv --> m_build_dataframe
+  m_build_dataframe --> m_wahlomat_extended_analysis_election_id_policy
+  m_build_dataframe --> m_wahlomat_extended_analysis_skipped_elections
+  m_build_graphs_from_csv --> m_wahlomat_extended_analysis_graph_kinds
+  m_build_metadata --> m_wahlomat_extended_analysis_bpb_urls
+  m_build_metadata --> m_wahlomat_extended_analysis_election_id_policy
+  m_election_id_policy --> m_wahlomat_extended_analysis_election_id_policy
+  m_failed_analysis --> m_wahlomat_extended_analysis_skipped_elections
+  m_get_zip_files --> m_wahlomat_extended_analysis_bpb_urls
+  m_get_zip_files --> m_wahlomat_extended_analysis_election_id_policy
+  m_graph_kinds --> m_wahlomat_extended_analysis_graph_kinds
+  m_skipped_elections --> m_wahlomat_extended_analysis_skipped_elections
   m_update_excel_csv --> m_build_metadata
   m_wahlomat --> m_build_dataframe
   m_wahlomat --> m_build_graphs_from_csv
