@@ -278,7 +278,7 @@ def run(args: argparse.Namespace) -> tuple[int, bool]:
     out.to_csv(answers_path, index=False)
     print(f"Wrote {len(out)} rows to {answers_path}")
 
-    import build_metadata
+    from wahlomat_extended_analysis import build_metadata
 
     meta_rc = build_metadata.main(
         [

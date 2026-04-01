@@ -67,7 +67,7 @@ def main() -> int:
     # Delegate before parse_args: a graphs subparser with REMAINDER does not reliably
     # forward flags like --election / --graph (parent reports "unrecognized arguments").
     if argv and argv[0] == "graphs":
-        import build_graphs_from_csv
+        from wahlomat_extended_analysis import build_graphs_from_csv
 
         return build_graphs_from_csv.main(argv[1:])
 
@@ -204,7 +204,7 @@ def main() -> int:
         return 0
 
     if args.command == "download":
-        import get_zip_files
+        from wahlomat_extended_analysis import get_zip_files
 
         gargv: list[str] = []
         if args.datensaetze_only:
@@ -220,17 +220,16 @@ def main() -> int:
             gargv.append("--with-datensaetze")
         return get_zip_files.main(gargv)
     if args.command == "build-csv":
-        import build_dataframe
+        from wahlomat_extended_analysis import build_dataframe
 
         return build_dataframe.main()
     if args.command == "update-csv":
-        import update_excel_csv
+        from wahlomat_extended_analysis import update_excel_csv
 
         code, _ = update_excel_csv.run(args)
         return code
     if args.command == "refresh-excel":
-        import get_zip_files
-        import update_excel_csv
+        from wahlomat_extended_analysis import get_zip_files, update_excel_csv
 
         prev = _load_refresh_state()
         url, stand = get_zip_files.fetch_datensaetze_bundle_info()
@@ -281,9 +280,11 @@ def main() -> int:
             )
         return 0
     if args.command == "run-all":
-        import build_dataframe
-        import build_graphs_from_csv
-        import get_zip_files
+        from wahlomat_extended_analysis import (
+            build_dataframe,
+            build_graphs_from_csv,
+            get_zip_files,
+        )
 
         r = get_zip_files.main([])
         if r != 0:

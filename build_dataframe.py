@@ -113,7 +113,7 @@ def read_module_definition_js(module: pathlib.Path) -> str:
 def run_build(repo_root: pathlib.Path) -> int:
     import pandas as pd
 
-    import build_metadata
+    from wahlomat_extended_analysis import build_metadata
     from wahlomat_extended_analysis.analysis import (
         discover_bpb_excel_path,
         election_to_long_rows,

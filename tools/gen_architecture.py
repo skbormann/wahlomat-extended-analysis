@@ -26,16 +26,6 @@ class DepGraph:
 
 
 _PKG_DIR = REPO_ROOT / "wahlomat_extended_analysis"
-_PKG_FACADE_MODULES = {
-    "analysis",
-    "build_dataframe",
-    "build_metadata",
-    "get_zip_files",
-    "update_excel_csv",
-    "build_graphs_from_csv",
-}
-
-
 def _repo_modules() -> dict[str, Path]:
     """
     Repo-local top-level modules (root/*.py), excluding private helpers.
@@ -52,8 +42,6 @@ def _repo_modules() -> dict[str, Path]:
     if _PKG_DIR.is_dir():
         for p in sorted(_PKG_DIR.glob("*.py")):
             if p.stem == "__init__":
-                continue
-            if p.stem in _PKG_FACADE_MODULES:
                 continue
             out[f"wahlomat_extended_analysis.{p.stem}"] = p
     return out
