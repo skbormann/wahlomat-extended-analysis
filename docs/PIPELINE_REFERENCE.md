@@ -128,6 +128,46 @@ When several matching `.xlsx` files exist under those roots, `discover_bpb_excel
 
 Use of bpb data is subject to their terms on the bpb Datensätze page: <https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/>.
 
+## `build_metadata.py` (metadata-only rebuild)
+
+Normally you do not need to run this manually because `build-csv` and `update-csv` regenerate `election_metadata.csv` when they write `all_wahlomat_answers.csv`.
+
+Run it manually if:
+
+- `update-csv` wrote `all_wahlomat_answers.csv` but then failed while rebuilding metadata (you’ll see an error after a `Wrote … rows` line), or
+- you want to regenerate metadata after editing/moving the answers CSV.
+
+### Usage
+
+From the repository root:
+
+```bash
+python build_metadata.py -h
+python build_metadata.py
+```
+
+### Options
+
+- **`--repo-root PATH`**: repository root (default: parent of `build_metadata.py`)
+- **`--answers PATH`**: path to `all_wahlomat_answers.csv` (default: `<repo-root>/all_wahlomat_answers.csv`)
+- **`--out PATH`**: output path for `election_metadata.csv` (default: `<repo-root>/election_metadata.csv`)
+- **`--archive-html PATH`**: use a saved bpb archive HTML file and skip network access
+
+### Offline mode
+
+If the bpb archive page can’t be fetched (no network/firewall), save the “Weitere Wahlen” archive page HTML and provide it via either:
+
+- `--archive-html /path/to/saved.html`, or
+- environment variable `WAHLOMAT_ARCHIVE_HTML=/path/to/saved.html`
+
+The page to save is: <https://www.bpb.de/themen/wahl-o-mat/45817/wahl-o-mat-archiv-weitere-wahlen/>
+
+### Output
+
+Writes `election_metadata.csv` and prints:
+
+- `Wrote <N> rows to <path>`
+
 ## Failure diagnosis helpers
 
 If a specific election under `data/` keeps breaking the pipeline, add its top-level folder name to `OMIT_FROM_BUILD_DATAFRAME` in `skipped_elections.py` until it is fixed.
