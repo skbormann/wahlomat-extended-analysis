@@ -86,10 +86,6 @@ flowchart LR
   m_build_dataframe --> m_wahlomat_extended_analysis_election_id_policy
   m_build_dataframe --> m_wahlomat_extended_analysis_skipped_elections
   m_build_graphs_from_csv --> m_wahlomat_extended_analysis_build_graphs_from_csv
-  m_build_metadata --> m_wahlomat_extended_analysis_analysis
-  m_build_metadata --> m_wahlomat_extended_analysis_bpb_urls
-  m_build_metadata --> m_wahlomat_extended_analysis_election_id_policy
-  m_build_metadata --> m_wahlomat_extended_analysis_get_zip_files
   m_election_id_policy --> m_wahlomat_extended_analysis_election_id_policy
   m_failed_analysis --> m_wahlomat_extended_analysis_analysis
   m_failed_analysis --> m_wahlomat_extended_analysis_skipped_elections
@@ -103,7 +99,10 @@ flowchart LR
   m_wahlomat_extended_analysis_build_dataframe --> m_build_dataframe
   m_wahlomat_extended_analysis_build_graphs_from_csv --> m_wahlomat_extended_analysis_analysis
   m_wahlomat_extended_analysis_build_graphs_from_csv --> m_wahlomat_extended_analysis_graph_kinds
-  m_wahlomat_extended_analysis_build_metadata --> m_build_metadata
+  m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_analysis
+  m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_bpb_urls
+  m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_election_id_policy
+  m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_get_zip_files
   m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_analysis
   m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_bpb_urls
   m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_build_metadata
