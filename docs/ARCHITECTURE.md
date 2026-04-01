@@ -93,10 +93,6 @@ flowchart LR
   m_election_id_policy --> m_wahlomat_extended_analysis_election_id_policy
   m_failed_analysis --> m_wahlomat_extended_analysis_analysis
   m_failed_analysis --> m_wahlomat_extended_analysis_skipped_elections
-  m_get_zip_files --> m_wahlomat_extended_analysis_analysis
-  m_get_zip_files --> m_wahlomat_extended_analysis_bpb_urls
-  m_get_zip_files --> m_wahlomat_extended_analysis_build_metadata
-  m_get_zip_files --> m_wahlomat_extended_analysis_election_id_policy
   m_graph_kinds --> m_wahlomat_extended_analysis_graph_kinds
   m_load_modules --> m_wahlomat_extended_analysis_analysis
   m_skipped_elections --> m_wahlomat_extended_analysis_skipped_elections
@@ -108,7 +104,10 @@ flowchart LR
   m_wahlomat_extended_analysis_build_graphs_from_csv --> m_wahlomat_extended_analysis_analysis
   m_wahlomat_extended_analysis_build_graphs_from_csv --> m_wahlomat_extended_analysis_graph_kinds
   m_wahlomat_extended_analysis_build_metadata --> m_build_metadata
-  m_wahlomat_extended_analysis_get_zip_files --> m_get_zip_files
+  m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_analysis
+  m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_bpb_urls
+  m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_build_metadata
+  m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_election_id_policy
   m_wahlomat_extended_analysis_update_excel_csv --> m_update_excel_csv
 ```
 <!-- AUTOGEN:ARCHITECTURE_DEPS:END -->
