@@ -28,6 +28,19 @@ From the repository root:
 python -m unittest discover -s tests -p "test*.py"
 ```
 
+## Pre-commit hooks (recommended)
+
+This repo uses optional local hooks to prevent documentation drift.
+
+One-time setup (from the repository root):
+
+```bash
+python -m pip install pre-commit
+pre-commit install
+```
+
+After that, `git commit` will run checks like “is `docs/ARCHITECTURE.md` up to date?”. If a hook fails, run the suggested command (e.g. `python tools/gen_architecture.py`), stage the resulting changes, and retry the commit.
+
 ## Dependency upgrades
 
 After upgrading packages, re-run `build-csv` and `graphs` for at least one election before committing new pins.

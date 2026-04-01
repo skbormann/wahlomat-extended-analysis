@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: architecture-doc-up-to-date
+        name: docs/ARCHITECTURE.md auto-generated deps block is up to date
+        entry: python tools/gen_architecture.py --check
+        language: system
+        pass_filenames: false
+
