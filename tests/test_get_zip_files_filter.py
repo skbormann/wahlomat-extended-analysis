@@ -5,7 +5,11 @@ from __future__ import annotations
 import unittest
 from unittest.mock import patch
 
-from get_zip_files import ZipJob, filter_zip_jobs, local_stem_from_election_zip_url
+from wahlomat_extended_analysis.get_zip_files import (
+    ZipJob,
+    filter_zip_jobs,
+    local_stem_from_election_zip_url,
+)
 
 
 class LocalStemFromUrlTests(unittest.TestCase):
@@ -61,7 +65,10 @@ class FilterZipJobsTests(unittest.TestCase):
         self.assertEqual(fail, [])
         self.assertEqual(len(sel), 1)
 
-    @patch("get_zip_files._election_slug_for_href", return_value="bundestag2017")
+    @patch(
+        "wahlomat_extended_analysis.get_zip_files._election_slug_for_href",
+        return_value="bundestag2017",
+    )
     def test_match_metadata_slug(self, _mock: object) -> None:
         j = [ZipJob("https://x/y/z.zip", "zzz", "/raw")]
         sel, fail = filter_zip_jobs(j, ["2017"])

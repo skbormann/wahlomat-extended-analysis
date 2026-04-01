@@ -6,7 +6,7 @@ This document focuses on “how to run the tooling” (commands, options, exampl
 
 ## Recommended entry point
 
-Use `wahlomat.py` from the repository root.
+Use `wahlomat.py` from the repository root (the primary supported entrypoint).
 
 To see available commands and flags:
 

@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import build_dataframe
+from wahlomat_extended_analysis import build_dataframe
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -26,8 +26,8 @@ class CliHelpPathTests(unittest.TestCase):
                 "python",
                 "-c",
                 (
-                    "import sys; import get_zip_files; "
-                    "print(int('analysis' in sys.modules))"
+                    "import sys; import wahlomat_extended_analysis.get_zip_files; "
+                    "print(int('wahlomat_extended_analysis.analysis' in sys.modules))"
                 ),
             ],
             cwd=REPO_ROOT,
@@ -44,8 +44,8 @@ class CliHelpPathTests(unittest.TestCase):
                 "python",
                 "-c",
                 (
-                    "import sys; import update_excel_csv; "
-                    "print(int('analysis' in sys.modules))"
+                    "import sys; import wahlomat_extended_analysis.update_excel_csv; "
+                    "print(int('wahlomat_extended_analysis.analysis' in sys.modules))"
                 ),
             ],
             cwd=REPO_ROOT,

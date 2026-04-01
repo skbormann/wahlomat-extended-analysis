@@ -176,11 +176,6 @@ def main(argv: list[str] | None = None) -> int:
             argv=[sys.executable, "wahlomat.py", "download", "-h"],
             snapshot_path=SNAPSHOT_DIR / "wahlomat_download_help.txt",
         ),
-        CommandSpec(
-            name="get_zip_files_help",
-            argv=[sys.executable, "get_zip_files.py", "-h"],
-            snapshot_path=SNAPSHOT_DIR / "get_zip_files_help.txt",
-        ),
     ]
 
     # 1) Golden snapshots

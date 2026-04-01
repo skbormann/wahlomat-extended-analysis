@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-import update_excel_csv
+from wahlomat_extended_analysis import update_excel_csv
 
 
 def _answers_block(eid: str, these_text: str) -> pd.DataFrame:

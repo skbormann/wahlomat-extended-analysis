@@ -13,14 +13,17 @@ matplotlib.use("Agg")
 
 import pandas as pd
 
-from analysis import parse_module_js, run_analysis
-from build_dataframe import read_module_definition_js
-from build_metadata import (
+from wahlomat_extended_analysis.analysis import parse_module_js, run_analysis
+from wahlomat_extended_analysis.build_dataframe import read_module_definition_js
+from wahlomat_extended_analysis.build_metadata import (
     display_name_de,
     election_slug_from_zip_href,
     excel_row_from_election_id,
 )
-from update_excel_csv import _changed_detail, superseded_excel_election_ids
+from wahlomat_extended_analysis.update_excel_csv import (
+    _changed_detail,
+    superseded_excel_election_ids,
+)
 
 # Minimal module_definition.js-shaped text (documents regex contract for legacy JS).
 _MINIMAL_JS = """

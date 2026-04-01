@@ -15,7 +15,7 @@ This is the detailed reference for the end-to-end pipeline (download → build/u
 
 ### 1) Download datasets
 
-Use `python wahlomat.py download ...` (recommended). The underlying implementation is in `get_zip_files.py`.
+Use `python wahlomat.py download ...` (recommended). The underlying implementation is in `wahlomat_extended_analysis/get_zip_files.py`.
 
 `download` fetches Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and can also resolve the current **bundled Datensätze** ZIP from the bpb Datensätze page (the exact file URL is read from the page HTML, not hardcoded). It creates **`graphs/`** if missing.
 

@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import build_graphs_from_csv
+from wahlomat_extended_analysis import build_graphs_from_csv
 
 
 class ListElectionsTableTests(unittest.TestCase):

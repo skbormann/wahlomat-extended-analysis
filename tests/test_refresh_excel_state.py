@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-import get_zip_files
-import wahlomat
+from wahlomat_extended_analysis import get_zip_files, wahlomat
 
 
 class StandDateParseTests(unittest.TestCase):

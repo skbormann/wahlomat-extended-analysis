@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from analysis import discover_bpb_excel_path
+from wahlomat_extended_analysis.analysis import discover_bpb_excel_path
 
 
 class DiscoverBpbExcelMtimeTests(unittest.TestCase):
