@@ -113,4 +113,5 @@ python wahlomat.py graphs --election BT21_v1.02 --graph pca_map
 ## See also
 
 - Pipeline details: [`PIPELINE_REFERENCE.md`](PIPELINE_REFERENCE.md)
+- Codebase map (entrypoints & responsibilities): [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - CSV schema and analysis guides: [`DATASET.md`](DATASET.md)

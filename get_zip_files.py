@@ -623,8 +623,8 @@ def main(argv: list[str] | None = None) -> int:
         "--list-election-zips",
         action="store_true",
         help=(
-            "Print local_stem, metadata slug, and URL for each ZIP on the weitere-Wahlen page, "
-            "then exit (no download)."
+            "Print election_id and URL for each ZIP on the weitere-Wahlen page, then exit "
+            "(no download). See docs/DATASET.md for what election_id means."
         ),
     )
     parser.add_argument(
@@ -633,8 +633,8 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         metavar="TOKEN",
         help=(
-            "Substring to match against URL, local folder stem, or metadata slug "
-            "(repeat for several tokens). Only matched archives are downloaded and extracted."
+            "Substring to match against URL or election_id (repeat for several tokens). "
+            "Only matched archives are downloaded and extracted."
         ),
     )
     parser.add_argument(

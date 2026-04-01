@@ -96,7 +96,7 @@ def main() -> int:
         action="store_true",
         help=(
             "List ZIPs from the weitere-Wahlen page (election_id, URL); no download. "
-            "Same as get_zip_files.py --list-election-zips."
+            "Same as get_zip_files.py --list-election-zips. See docs/DATASET.md for what election_id means."
         ),
     )
     dl.add_argument(
@@ -105,8 +105,8 @@ def main() -> int:
         default=None,
         metavar="TOKEN",
         help=(
-            "Download only election ZIPs whose URL, derived election_id, or internal folder name contains "
-            "TOKEN (case-insensitive); repeat for multiple tokens. See --list-election-zips."
+            "Download only election ZIPs whose URL or derived election_id contains TOKEN "
+            "(case-insensitive); repeat for multiple tokens. See --list-election-zips."
         ),
     )
     dl.add_argument(

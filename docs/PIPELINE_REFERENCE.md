@@ -22,8 +22,8 @@ Use `python wahlomat.py download ...` (recommended). The underlying implementati
 - **Datensätze only**: `python get_zip_files.py --datensaetze-only` (or `python wahlomat.py download --datensaetze-only`) downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.
 - **Election ZIPs only**: `python get_zip_files.py --election-zips-only` (or `python wahlomat.py download --election-zips-only`) downloads and extracts **only** the archived election ZIPs (no Datensätze bundle).
 - **Selective election ZIPs**:
-  - `--list-election-zips` prints `local_stem`, metadata slug, and URL for each ZIP on the weitere-Wahlen page (no download).
-  - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL, `local_stem`, or the metadata slug.
+  - `--list-election-zips` prints `election_id` and URL for each ZIP on the weitere-Wahlen page (no download). See [`DATASET.md`](DATASET.md) for what `election_id` means.
+  - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL or derived `election_id`.
   - Add `--with-datensaetze` to include the Datensätze bundle in the same run.
   - `--datensaetze-only` cannot be combined with these flags.
 
@@ -177,5 +177,6 @@ If a specific election under `data/` keeps breaking the pipeline, add its top-le
 ## See also
 
 - Usage & examples: [`USAGE.md`](USAGE.md)
+- Codebase map (entrypoints & responsibilities): [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - Troubleshooting: [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
 - Dataset schema: [`DATASET.md`](DATASET.md)
