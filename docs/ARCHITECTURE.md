@@ -65,7 +65,6 @@ flowchart LR
   m_failed_analysis["failed_analysis.py"]
   m_get_zip_files["get_zip_files.py"]
   m_graph_kinds["graph_kinds.py"]
-  m_load_modules["load_modules.py"]
   m_skipped_elections["skipped_elections.py"]
   m_update_excel_csv["update_excel_csv.py"]
   m_wahlomat["wahlomat.py"]
@@ -86,7 +85,6 @@ flowchart LR
   m_build_graphs_from_csv --> m_wahlomat_extended_analysis_build_graphs_from_csv
   m_election_id_policy --> m_wahlomat_extended_analysis_election_id_policy
   m_graph_kinds --> m_wahlomat_extended_analysis_graph_kinds
-  m_load_modules --> m_wahlomat_extended_analysis_analysis
   m_skipped_elections --> m_wahlomat_extended_analysis_skipped_elections
   m_wahlomat_extended_analysis_analysis --> m_wahlomat_extended_analysis_graph_kinds
   m_wahlomat_extended_analysis_build_dataframe --> m_wahlomat_extended_analysis_analysis

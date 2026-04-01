@@ -129,7 +129,7 @@ From the repository root you can run the same pipeline with one entry point:
 
 ## Legacy JS-only path
 
-`load_modules.py` is deprecated and exits with instructions unless you set `WAHLOMAT_LEGACY_LOAD_MODULES=1`. That legacy mode only reads `module_definition.js` files and does not include Excel-only elections.
+`legacy/load_modules.py` is deprecated and exits with instructions unless you set `WAHLOMAT_LEGACY_LOAD_MODULES=1`. That legacy mode only reads `module_definition.js` files and does not include Excel-only elections.
 
 ## Excel bundle (bpb)
 
