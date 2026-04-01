@@ -16,36 +16,32 @@ modules and the bpb Wahl-O-Mat-Datensätze Excel bundle under data/.
 # %% Setup
 from __future__ import annotations
 
-import os
+import argparse
 import pathlib
 from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
-import pandas as pd
-
-from analysis import (
-    discover_bpb_excel_path,
-    election_to_long_rows,
-    excel_sheet_has_data_columns,
-    parse_excel_election,
-    parse_module_js,
-)
-from election_id_policy import (
-    JS_FOLDER_CANONICAL_ELECTION_ID,
-    JS_FOLDER_SUPERSEDED_BY_EXCEL_SHEET,
-    excel_sheet_safe_ids,
-)
-from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def iter_excel_long_dataframes(
     xlsx_path: pathlib.Path,
     *,
     verbose: bool = True,
-) -> Iterator[tuple[str, pd.DataFrame]]:
+) -> Iterator[tuple[str, "pd.DataFrame"]]:
     """
     Yield (election_id, long_df) for each workbook sheet that has bpb data columns.
     election_id is the sheet name with spaces replaced by underscores.
     """
+    import pandas as pd
+
+    from analysis import (
+        election_to_long_rows,
+        excel_sheet_has_data_columns,
+        parse_excel_election,
+    )
+
     xl = pd.ExcelFile(xlsx_path, engine="openpyxl")
     for sheet_name in xl.sheet_names:
         df = pd.read_excel(
@@ -59,7 +55,7 @@ def iter_excel_long_dataframes(
         try:
             qdf, pivot = parse_excel_election(df)
             yield safe_id, election_to_long_rows(qdf, pivot, safe_id)
-        except Exception as e:
+        except (ValueError, KeyError, TypeError, IndexError) as e:
             if verbose:
                 print(f"  skip {sheet_name}: {e}")
 
@@ -114,88 +110,104 @@ def read_module_definition_js(module: pathlib.Path) -> str:
         return _decode_utf8_latin1_hybrid(raw)
 
 
-def main() -> int:
-    repo_root = pathlib.Path(__file__).resolve().parent
-    os.chdir(repo_root / "data")
-    try:
-        p = pathlib.Path(".")
-        module_list = list(p.glob("**/module_definition.js"))
+def run_build(repo_root: pathlib.Path) -> int:
+    import pandas as pd
 
-        all_parts: list[pd.DataFrame] = []
+    import build_metadata
+    from analysis import discover_bpb_excel_path, election_to_long_rows, parse_module_js
+    from wahlomat_extended_analysis.election_id_policy import (
+        JS_FOLDER_CANONICAL_ELECTION_ID,
+        JS_FOLDER_SUPERSEDED_BY_EXCEL_SHEET,
+        excel_sheet_safe_ids,
+    )
+    from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
 
-        xlsx_path = discover_bpb_excel_path(p, pathlib.Path(".."))
-        excel_safe_ids: set[str] = set()
-        if xlsx_path is not None:
-            xl_preview = pd.ExcelFile(xlsx_path, engine="openpyxl")
-            excel_safe_ids = excel_sheet_safe_ids(list(xl_preview.sheet_names))
+    data_dir = repo_root / "data"
+    module_list = list(data_dir.glob("**/module_definition.js"))
+    all_parts: list[pd.DataFrame] = []
 
-        for module in module_list:
-            module_stem_folder = module.parts[0]
-            if module_stem_folder in OMIT_FROM_BUILD_DATAFRAME:
-                continue
-            try:
-                module_content = read_module_definition_js(module)
-            except OSError as e:
-                print(f"Unexpected error reading {module}: {e}")
-                continue
-            canonical = JS_FOLDER_SUPERSEDED_BY_EXCEL_SHEET.get(module_stem_folder)
-            if canonical is not None and canonical in excel_safe_ids:
-                print(
-                    f"Skipping JS module {module_stem_folder} "
-                    f"(superseded by Excel election_id {canonical})"
-                )
-                continue
-            election_id = JS_FOLDER_CANONICAL_ELECTION_ID.get(
-                module_stem_folder, module_stem_folder
+    xlsx_path = discover_bpb_excel_path(data_dir, repo_root)
+    excel_safe_ids: set[str] = set()
+    if xlsx_path is not None:
+        xl_preview = pd.ExcelFile(xlsx_path, engine="openpyxl")
+        excel_safe_ids = excel_sheet_safe_ids(list(xl_preview.sheet_names))
+
+    for module in module_list:
+        module_stem_folder = module.relative_to(data_dir).parts[0]
+        if module_stem_folder in OMIT_FROM_BUILD_DATAFRAME:
+            continue
+        try:
+            module_content = read_module_definition_js(module)
+        except OSError as e:
+            print(f"Unexpected error reading {module}: {e}")
+            continue
+        canonical = JS_FOLDER_SUPERSEDED_BY_EXCEL_SHEET.get(module_stem_folder)
+        if canonical is not None and canonical in excel_safe_ids:
+            print(
+                f"Skipping JS module {module_stem_folder} "
+                f"(superseded by Excel election_id {canonical})"
             )
-            if election_id != module_stem_folder:
-                print(
-                    f"Parsing JS module {module_stem_folder} "
-                    f"(election_id {election_id})"
-                )
-            else:
-                print(f"Parsing JS module {module_stem_folder}")
-            try:
-                qdf, pivot = parse_module_js(module_content)
-                all_parts.append(
-                    election_to_long_rows(qdf, pivot, election_id)
-                )
-            except Exception as e:
-                print(
-                    f"Problem {e} occurred while parsing JS module {module_stem_folder}"
-                )
-
-        if xlsx_path is not None:
-            print(f"Reading Excel bundle {xlsx_path.resolve()}")
-            for _, long_df in iter_excel_long_dataframes(
-                xlsx_path, verbose=True
-            ):
-                all_parts.append(long_df)
+            continue
+        election_id = JS_FOLDER_CANONICAL_ELECTION_ID.get(
+            module_stem_folder, module_stem_folder
+        )
+        if election_id != module_stem_folder:
+            print(
+                f"Parsing JS module {module_stem_folder} "
+                f"(election_id {election_id})"
+            )
         else:
-            print("No Wahl-O-Mat Excel bundle found under data/ (optional).")
+            print(f"Parsing JS module {module_stem_folder}")
+        try:
+            qdf, pivot = parse_module_js(module_content)
+            all_parts.append(election_to_long_rows(qdf, pivot, election_id))
+        except (ValueError, KeyError, TypeError, IndexError) as e:
+            print(f"Problem {e} occurred while parsing JS module {module_stem_folder}")
 
-        if all_parts:
-            out = pd.concat(all_parts, ignore_index=True)
-            out_path = pathlib.Path("..") / "all_wahlomat_answers.csv"
-            out.to_csv(out_path, index=False)
-            print(f"Wrote {len(out)} rows to {out_path.resolve()}")
-            import build_metadata
+    if xlsx_path is not None:
+        print(f"Reading Excel bundle {xlsx_path.resolve()}")
+        for _, long_df in iter_excel_long_dataframes(xlsx_path, verbose=True):
+            all_parts.append(long_df)
+    else:
+        print("No Wahl-O-Mat Excel bundle found under data/ (optional).")
 
-            meta_rc = build_metadata.main(
-                [
-                    "--repo-root",
-                    str(repo_root),
-                    "--answers",
-                    str((repo_root / "all_wahlomat_answers.csv").resolve()),
-                ]
-            )
-            if meta_rc != 0:
-                return meta_rc
-            return 0
+    if not all_parts:
         print("No data collected; CSV not written.")
         return 1
-    finally:
-        os.chdir(repo_root)
+
+    out = pd.concat(all_parts, ignore_index=True)
+    out_path = repo_root / "all_wahlomat_answers.csv"
+    out.to_csv(out_path, index=False)
+    print(f"Wrote {len(out)} rows to {out_path.resolve()}")
+
+    meta_rc = build_metadata.main(
+        [
+            "--repo-root",
+            str(repo_root),
+            "--answers",
+            str(out_path.resolve()),
+        ]
+    )
+    if meta_rc != 0:
+        return meta_rc
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Build all_wahlomat_answers.csv from datasets under data/ and rebuild "
+            "election_metadata.csv."
+        )
+    )
+    parser.add_argument(
+        "--repo-root",
+        type=pathlib.Path,
+        default=pathlib.Path(__file__).resolve().parent,
+        help="Repository root (default: directory of this script)",
+    )
+    args = parser.parse_args(argv)
+    return run_build(args.repo_root.resolve())
 
 
 if __name__ == "__main__":

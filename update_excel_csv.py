@@ -8,14 +8,30 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
-
-from analysis import discover_bpb_excel_path
-from build_dataframe import iter_excel_long_dataframes
-from build_metadata import data_sheet_safe_ids
+if TYPE_CHECKING:
+    import pandas as pd
 
 _LAND_YEAR_PREFIX_RE = re.compile(r"^([A-Z]{2}\d{2})_")
+
+
+def discover_bpb_excel_path(*args, **kwargs):
+    from analysis import discover_bpb_excel_path as _impl
+
+    return _impl(*args, **kwargs)
+
+
+def iter_excel_long_dataframes(*args, **kwargs):
+    from build_dataframe import iter_excel_long_dataframes as _impl
+
+    return _impl(*args, **kwargs)
+
+
+def data_sheet_safe_ids(*args, **kwargs):
+    from build_metadata import data_sheet_safe_ids as _impl
+
+    return _impl(*args, **kwargs)
 
 
 def _land_year_prefix(eid: str) -> str | None:
@@ -84,6 +100,8 @@ _CANONICAL_COMPARE_COLS: tuple[str, ...] = (
 
 
 def _canonicalize_for_compare(df: pd.DataFrame, *, sheet_id: str, where: str) -> pd.DataFrame:
+    import pandas as pd
+
     missing = [c for c in _CANONICAL_COMPARE_COLS if c not in df.columns]
     if missing:
         raise ValueError(
@@ -102,11 +120,15 @@ def _canonicalize_for_compare(df: pd.DataFrame, *, sheet_id: str, where: str) ->
 
 
 def _block_fingerprint(df: pd.DataFrame) -> int:
+    import pandas as pd
+
     h = pd.util.hash_pandas_object(df, index=False)
     return int(h.sum())
 
 
 def run(args: argparse.Namespace) -> tuple[int, bool]:
+    import pandas as pd
+
     """
     Apply update-csv logic. Returns (exit_code, wrote_files).
     wrote_files is True only after a successful answers CSV write (metadata rebuild attempted).

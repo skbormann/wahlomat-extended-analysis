@@ -15,7 +15,7 @@ import os
 import pathlib
 import sys
 
-from graph_kinds import GRAPH_KIND_CHOICES
+from wahlomat_extended_analysis.graph_kinds import GRAPH_KIND_CHOICES
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent
 _DEFAULT_CSV = REPO_ROOT / "all_wahlomat_answers.csv"
@@ -194,7 +194,8 @@ def main(argv: list[str] | None = None) -> int:
     else:
         want = sorted(df["election_id"].astype(str).unique())
 
-    missing = [e for e in want if e not in set(df["election_id"].astype(str))]
+    known_ids = set(df["election_id"].astype(str))
+    missing = [e for e in want if e not in known_ids]
     if missing:
         print(f"Unknown election_id (not in CSV): {missing}", file=sys.stderr)
         return 1
@@ -203,8 +204,8 @@ def main(argv: list[str] | None = None) -> int:
         frozenset(args.graph) if args.graph else None
     )
 
-    os.chdir(REPO_ROOT / "data")
     fail: dict[str, str] = {}
+    output_dir = REPO_ROOT / "graphs"
     for eid in want:
         stem = str(eid).replace(" ", "_")
         sub = df.loc[df["election_id"].astype(str) == str(eid)]
@@ -213,8 +214,14 @@ def main(argv: list[str] | None = None) -> int:
             from analysis import long_rows_to_run_analysis, run_analysis
 
             qdf, pivot = long_rows_to_run_analysis(sub)
-            run_analysis(qdf, pivot, stem, graphs=graph_kinds)
-        except Exception as ex:
+            run_analysis(
+                qdf,
+                pivot,
+                stem,
+                graphs=graph_kinds,
+                output_dir=output_dir,
+            )
+        except (ValueError, KeyError, TypeError, RuntimeError, OSError) as ex:
             print(f"Problem {ex} occurred while running analysis for {eid}")
             fail[str(eid)] = str(ex)
 

@@ -28,6 +28,14 @@ From the repository root:
 python -m unittest discover -s tests -p "test*.py"
 ```
 
+## Static checks
+
+Run the lightweight static gate used in CI:
+
+```bash
+ruff check . --select E9,F821
+```
+
 ## Pre-commit hooks (recommended)
 
 This repo uses optional local hooks to prevent documentation drift.

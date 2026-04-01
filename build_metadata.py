@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 from bpb_urls import WEITERE_WAHLEN_URL, fetch_bpb_html
-from election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
+from wahlomat_extended_analysis.election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
 
 if TYPE_CHECKING:
     import pandas as pd
