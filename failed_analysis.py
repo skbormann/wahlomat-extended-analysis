@@ -21,8 +21,8 @@ from __future__ import annotations
 import os
 import pathlib
 
-from analysis import parse_module_js, run_analysis
-from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
+from wahlomat_extended_analysis.analysis import parse_module_js, run_analysis
+from wahlomat_extended_analysis.skipped_elections import OMIT_FROM_BUILD_DATAFRAME
 
 
 def _read_module(path: pathlib.Path) -> str | None:

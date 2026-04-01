@@ -25,6 +25,17 @@ class DepGraph:
     edges: set[tuple[str, str]]  # (src_module, dst_module)
 
 
+_PKG_DIR = REPO_ROOT / "wahlomat_extended_analysis"
+_PKG_FACADE_MODULES = {
+    "analysis",
+    "build_dataframe",
+    "build_metadata",
+    "get_zip_files",
+    "update_excel_csv",
+    "build_graphs_from_csv",
+}
+
+
 def _repo_modules() -> dict[str, Path]:
     """
     Repo-local top-level modules (root/*.py), excluding private helpers.
@@ -38,6 +49,13 @@ def _repo_modules() -> dict[str, Path]:
         if p.name == "untitled.py":
             continue
         out[p.stem] = p
+    if _PKG_DIR.is_dir():
+        for p in sorted(_PKG_DIR.glob("*.py")):
+            if p.stem == "__init__":
+                continue
+            if p.stem in _PKG_FACADE_MODULES:
+                continue
+            out[f"wahlomat_extended_analysis.{p.stem}"] = p
     return out
 
 
@@ -51,18 +69,21 @@ def _parse_imports(py_path: Path) -> set[str]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                name = (alias.name or "").split(".", 1)[0]
-                if name:
-                    imported.add(name)
+                raw = (alias.name or "").strip()
+                if not raw:
+                    continue
+                imported.add(raw)
+                imported.add(raw.split(".", 1)[0])
         elif isinstance(node, ast.ImportFrom):
             if node.level and node.level > 0:
                 # Relative imports aren't relevant for the repo-root scripts map.
                 continue
             if not node.module:
                 continue
-            name = node.module.split(".", 1)[0]
-            if name:
-                imported.add(name)
+            raw = node.module.strip()
+            if raw:
+                imported.add(raw)
+                imported.add(raw.split(".", 1)[0])
     return imported
 
 
@@ -70,7 +91,8 @@ def build_dep_graph() -> DepGraph:
     mods = _repo_modules()
     edges: set[tuple[str, str]] = set()
     for src_mod, path in mods.items():
-        for imp in _parse_imports(path):
+        imports = _parse_imports(path)
+        for imp in imports:
             if imp in mods and imp != src_mod:
                 edges.add((src_mod, imp))
     return DepGraph(modules=mods, edges=edges)
@@ -91,7 +113,7 @@ def render_mermaid(g: DepGraph) -> str:
     # Nodes (stable order)
     for mod in sorted(g.modules.keys()):
         nid = _node_id(mod)
-        label = g.modules[mod].name
+        label = str(g.modules[mod].relative_to(REPO_ROOT))
         lines.append(f'  {nid}["{label}"]')
 
     # Edges (stable order)

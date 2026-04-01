@@ -28,7 +28,11 @@ import os
 import zipfile
 from urllib.parse import urlsplit, urlunsplit, urlparse
 
-from bpb_urls import BPB_HTML_HEADERS, WEITERE_WAHLEN_URL, fetch_bpb_html
+from wahlomat_extended_analysis.bpb_urls import (
+    BPB_HTML_HEADERS,
+    WEITERE_WAHLEN_URL,
+    fetch_bpb_html,
+)
 
 INTERNAL_LINK_START = "https://www.bpb.de"
 DATENSAETZE_PAGE_URL = (
@@ -78,7 +82,7 @@ def build_weitere_wahlen_zip_jobs(election_html: str) -> list[ZipJob]:
 
 
 def _election_slug_for_href(href: str) -> str:
-    from build_metadata import election_slug_from_zip_href
+    from wahlomat_extended_analysis.build_metadata import election_slug_from_zip_href
 
     return election_slug_from_zip_href(href)
 
@@ -184,7 +188,7 @@ def download_and_extract_zip_jobs(
 
 
 def _print_workbook_discovery_status(data_dir: pathlib.Path, repo_root: pathlib.Path) -> None:
-    from analysis import discover_bpb_excel_path
+    from wahlomat_extended_analysis.analysis import discover_bpb_excel_path
 
     _xlsx = discover_bpb_excel_path(data_dir, repo_root)
     if _xlsx is None or (not _xlsx.is_file()) or _xlsx.stat().st_size <= 0:

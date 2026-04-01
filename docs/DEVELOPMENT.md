@@ -36,6 +36,21 @@ Run the lightweight static gate used in CI:
 ruff check . --select E9,F821
 ```
 
+## Restructure compatibility policy
+
+During folder restructuring, keep root-level module filenames importable as
+compatibility shims until all imports, tools, and docs are migrated.
+
+- Package namespace is the long-term home (`wahlomat_extended_analysis.*`).
+- Root modules should re-export package symbols (and preserve `main()` where applicable).
+- Avoid mixing behavior changes with move-only PRs.
+
+### Optional src-layout switch
+
+The project can switch to `src/` layout later, after package namespace migration
+is stable and compatibility shims have been exercised in CI. This is optional
+for now and should be done in a dedicated follow-up PR.
+
 ## Pre-commit hooks (recommended)
 
 This repo uses optional local hooks to prevent documentation drift.

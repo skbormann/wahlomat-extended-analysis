@@ -29,7 +29,7 @@ if os.environ.get("WAHLOMAT_LEGACY_LOAD_MODULES", "").strip().lower() not in (
     )
     sys.exit(2)
 
-from analysis import analysis
+from wahlomat_extended_analysis.analysis import analysis
 
 os.chdir("data")
 p = pathlib.Path(".")

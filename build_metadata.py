@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
-from bpb_urls import WEITERE_WAHLEN_URL, fetch_bpb_html
+from wahlomat_extended_analysis.bpb_urls import WEITERE_WAHLEN_URL, fetch_bpb_html
 from wahlomat_extended_analysis.election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
 
 if TYPE_CHECKING:
@@ -32,7 +32,10 @@ def _strip_tags(html_fragment: str) -> str:
 def election_slug_from_zip_href(href: str) -> str:
     """Map a ZIP href to folder-style election slug (matches CSV JS election_id)."""
     # Local import to keep `python build_metadata.py -h` fast (avoid importing analysis/matplotlib).
-    from get_zip_files import resolve_internal_bpb_zip, upgrade_wahl_o_mat_zip_url
+    from wahlomat_extended_analysis.get_zip_files import (
+        resolve_internal_bpb_zip,
+        upgrade_wahl_o_mat_zip_url,
+    )
 
     url = upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(href.strip()))
     path = url.split("?")[0]
@@ -222,7 +225,7 @@ def excel_row_from_election_id(safe_id: str) -> dict | None:
 
 def data_sheet_safe_ids(xlsx_path: Path) -> set[str]:
     import pandas as pd
-    from analysis import excel_sheet_has_data_columns
+    from wahlomat_extended_analysis.analysis import excel_sheet_has_data_columns
 
     xl = pd.ExcelFile(xlsx_path, engine="openpyxl")
     ids: set[str] = set()
@@ -241,7 +244,7 @@ def build_election_metadata(
     archive_html_path: Path | None = None,
 ) -> "pd.DataFrame":
     import pandas as pd
-    from analysis import discover_bpb_excel_path
+    from wahlomat_extended_analysis.analysis import discover_bpb_excel_path
 
     answers = pd.read_csv(answers_path)
     csv_ids = sorted(answers["election_id"].astype(str).unique())

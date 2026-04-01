@@ -17,19 +17,21 @@ _LAND_YEAR_PREFIX_RE = re.compile(r"^([A-Z]{2}\d{2})_")
 
 
 def discover_bpb_excel_path(*args, **kwargs):
-    from analysis import discover_bpb_excel_path as _impl
+    from wahlomat_extended_analysis.analysis import discover_bpb_excel_path as _impl
 
     return _impl(*args, **kwargs)
 
 
 def iter_excel_long_dataframes(*args, **kwargs):
-    from build_dataframe import iter_excel_long_dataframes as _impl
+    from wahlomat_extended_analysis.build_dataframe import (
+        iter_excel_long_dataframes as _impl,
+    )
 
     return _impl(*args, **kwargs)
 
 
 def data_sheet_safe_ids(*args, **kwargs):
-    from build_metadata import data_sheet_safe_ids as _impl
+    from wahlomat_extended_analysis.build_metadata import data_sheet_safe_ids as _impl
 
     return _impl(*args, **kwargs)
 

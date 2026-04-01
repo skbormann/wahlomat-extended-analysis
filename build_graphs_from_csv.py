@@ -211,7 +211,10 @@ def main(argv: list[str] | None = None) -> int:
         sub = df.loc[df["election_id"].astype(str) == str(eid)]
         print(f"Running analysis for {eid}")
         try:
-            from analysis import long_rows_to_run_analysis, run_analysis
+            from wahlomat_extended_analysis.analysis import (
+                long_rows_to_run_analysis,
+                run_analysis,
+            )
 
             qdf, pivot = long_rows_to_run_analysis(sub)
             run_analysis(

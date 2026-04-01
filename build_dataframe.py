@@ -36,7 +36,7 @@ def iter_excel_long_dataframes(
     """
     import pandas as pd
 
-    from analysis import (
+    from wahlomat_extended_analysis.analysis import (
         election_to_long_rows,
         excel_sheet_has_data_columns,
         parse_excel_election,
@@ -114,13 +114,17 @@ def run_build(repo_root: pathlib.Path) -> int:
     import pandas as pd
 
     import build_metadata
-    from analysis import discover_bpb_excel_path, election_to_long_rows, parse_module_js
+    from wahlomat_extended_analysis.analysis import (
+        discover_bpb_excel_path,
+        election_to_long_rows,
+        parse_module_js,
+    )
     from wahlomat_extended_analysis.election_id_policy import (
         JS_FOLDER_CANONICAL_ELECTION_ID,
         JS_FOLDER_SUPERSEDED_BY_EXCEL_SHEET,
         excel_sheet_safe_ids,
     )
-    from skipped_elections import OMIT_FROM_BUILD_DATAFRAME
+    from wahlomat_extended_analysis.skipped_elections import OMIT_FROM_BUILD_DATAFRAME
 
     data_dir = repo_root / "data"
     module_list = list(data_dir.glob("**/module_definition.js"))
