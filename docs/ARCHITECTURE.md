@@ -80,6 +80,7 @@ flowchart LR
   m_wahlomat_extended_analysis_repo_paths["wahlomat_extended_analysis/repo_paths.py"]
   m_wahlomat_extended_analysis_skipped_elections["wahlomat_extended_analysis/skipped_elections.py"]
   m_wahlomat_extended_analysis_update_excel_csv["wahlomat_extended_analysis/update_excel_csv.py"]
+  m_wahlomat_extended_analysis_wahlomat["wahlomat_extended_analysis/wahlomat.py"]
   m_bpb_urls --> m_wahlomat_extended_analysis_bpb_urls
   m_build_graphs_from_csv --> m_wahlomat_extended_analysis_build_graphs_from_csv
   m_election_id_policy --> m_wahlomat_extended_analysis_election_id_policy
