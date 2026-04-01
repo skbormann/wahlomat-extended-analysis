@@ -75,6 +75,7 @@ flowchart LR
   m_wahlomat_extended_analysis_build_graphs_from_csv["wahlomat_extended_analysis/build_graphs_from_csv.py"]
   m_wahlomat_extended_analysis_build_metadata["wahlomat_extended_analysis/build_metadata.py"]
   m_wahlomat_extended_analysis_election_id_policy["wahlomat_extended_analysis/election_id_policy.py"]
+  m_wahlomat_extended_analysis_failed_analysis["wahlomat_extended_analysis/failed_analysis.py"]
   m_wahlomat_extended_analysis_get_zip_files["wahlomat_extended_analysis/get_zip_files.py"]
   m_wahlomat_extended_analysis_graph_kinds["wahlomat_extended_analysis/graph_kinds.py"]
   m_wahlomat_extended_analysis_repo_paths["wahlomat_extended_analysis/repo_paths.py"]
@@ -84,8 +85,6 @@ flowchart LR
   m_bpb_urls --> m_wahlomat_extended_analysis_bpb_urls
   m_build_graphs_from_csv --> m_wahlomat_extended_analysis_build_graphs_from_csv
   m_election_id_policy --> m_wahlomat_extended_analysis_election_id_policy
-  m_failed_analysis --> m_wahlomat_extended_analysis_analysis
-  m_failed_analysis --> m_wahlomat_extended_analysis_skipped_elections
   m_graph_kinds --> m_wahlomat_extended_analysis_graph_kinds
   m_load_modules --> m_wahlomat_extended_analysis_analysis
   m_skipped_elections --> m_wahlomat_extended_analysis_skipped_elections
@@ -99,6 +98,8 @@ flowchart LR
   m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_bpb_urls
   m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_election_id_policy
   m_wahlomat_extended_analysis_build_metadata --> m_wahlomat_extended_analysis_get_zip_files
+  m_wahlomat_extended_analysis_failed_analysis --> m_wahlomat_extended_analysis_analysis
+  m_wahlomat_extended_analysis_failed_analysis --> m_wahlomat_extended_analysis_skipped_elections
   m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_analysis
   m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_bpb_urls
   m_wahlomat_extended_analysis_get_zip_files --> m_wahlomat_extended_analysis_build_metadata
