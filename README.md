@@ -13,7 +13,7 @@ This repo can build the combined CSV from two sources:
 
 ## Quickstart (first-time users)
 
-Requires **Python 3.10+**.
+Requires **Python 3.12+**.
 
 From the repository root:
 

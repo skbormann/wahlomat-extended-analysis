@@ -349,10 +349,8 @@ def download_and_extract_datensaetze_bundle_with_state(
 
 
 def _zipfile_for_extract(path: str | os.PathLike[str]) -> zipfile.ZipFile:
-    """ZipFile for extract; use metadata_encoding on Python 3.11+ for bpb archives."""
-    if sys.version_info >= (3, 11):
-        return zipfile.ZipFile(path, "r", metadata_encoding="cp437")
-    return zipfile.ZipFile(path, "r")
+    """ZipFile for extract; bpb archives expect cp437 for entry metadata."""
+    return zipfile.ZipFile(path, "r", metadata_encoding="cp437")
 
 
 def _download_request_headers(url: str) -> dict:

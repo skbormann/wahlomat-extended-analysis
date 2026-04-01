@@ -1,7 +1,7 @@
 # Pinned for reproducible installs (bump after testing: build_dataframe + build_graphs_from_csv).
 matplotlib==3.10.8
 seaborn==0.13.2
-numpy==2.2.6
+numpy==2.4.2
 pandas==3.0.1
 scikit-learn==1.8.0
 openpyxl==3.1.5
