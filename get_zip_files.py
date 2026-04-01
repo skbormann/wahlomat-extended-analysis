@@ -26,7 +26,7 @@ import urllib.error
 import urllib.request
 import os
 import zipfile
-from urllib.parse import urlparse
+from urllib.parse import urlsplit, urlunsplit, urlparse
 
 from analysis import discover_bpb_excel_path
 from bpb_urls import BPB_HTML_HEADERS, WEITERE_WAHLEN_URL, fetch_bpb_html
@@ -438,12 +438,18 @@ def upgrade_wahl_o_mat_zip_url(url: str) -> str:
     """
     Listing pages still link http://www.wahl-o-mat.de/.../wahlomat.zip .
     That host returns 403 on HTTP; HTTPS works (verified 2026-03).
+
+    Uses parsed host (not substring checks) so URL handling is explicit for CodeQL.
     """
-    if url.startswith("http://www.wahl-o-mat.de"):
-        return "https://www.wahl-o-mat.de" + url[len("http://www.wahl-o-mat.de") :]
-    if url.startswith("http://wahl-o-mat.de"):
-        return "https://wahl-o-mat.de" + url[len("http://wahl-o-mat.de") :]
-    return url
+    parts = urlsplit(url)
+    if parts.scheme != "http":
+        return url
+    host = parts.netloc.split(":", 1)[0].casefold()
+    if host not in ("www.wahl-o-mat.de", "wahl-o-mat.de"):
+        return url
+    return urlunsplit(
+        ("https", parts.netloc, parts.path, parts.query, parts.fragment)
+    )
 
 
 def pick_datensaetze_bundle_url(html: str) -> str:
