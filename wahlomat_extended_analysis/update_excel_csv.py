@@ -8,14 +8,32 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pandas as pd
-
-from analysis import discover_bpb_excel_path
-from build_dataframe import iter_excel_long_dataframes
-from build_metadata import data_sheet_safe_ids
+if TYPE_CHECKING:
+    import pandas as pd
 
 _LAND_YEAR_PREFIX_RE = re.compile(r"^([A-Z]{2}\d{2})_")
+
+
+def discover_bpb_excel_path(*args, **kwargs):
+    from wahlomat_extended_analysis.analysis import discover_bpb_excel_path as _impl
+
+    return _impl(*args, **kwargs)
+
+
+def iter_excel_long_dataframes(*args, **kwargs):
+    from wahlomat_extended_analysis.build_dataframe import (
+        iter_excel_long_dataframes as _impl,
+    )
+
+    return _impl(*args, **kwargs)
+
+
+def data_sheet_safe_ids(*args, **kwargs):
+    from wahlomat_extended_analysis.build_metadata import data_sheet_safe_ids as _impl
+
+    return _impl(*args, **kwargs)
 
 
 def _land_year_prefix(eid: str) -> str | None:
@@ -23,9 +41,7 @@ def _land_year_prefix(eid: str) -> str | None:
     return m.group(1) if m else None
 
 
-def superseded_excel_election_ids(
-    answers: pd.DataFrame, excel_ids: set[str]
-) -> set[str]:
+def superseded_excel_election_ids(answers: pd.DataFrame, excel_ids: set[str]) -> set[str]:
     """
     election_ids in the CSV that look like versioned bpb sheets (XXyy_v…) and
     share a land+year prefix with some current workbook tab, but are not
@@ -83,7 +99,11 @@ _CANONICAL_COMPARE_COLS: tuple[str, ...] = (
 )
 
 
-def _canonicalize_for_compare(df: pd.DataFrame, *, sheet_id: str, where: str) -> pd.DataFrame:
+def _canonicalize_for_compare(
+    df: pd.DataFrame, *, sheet_id: str, where: str
+) -> pd.DataFrame:
+    import pandas as pd
+
     missing = [c for c in _CANONICAL_COMPARE_COLS if c not in df.columns]
     if missing:
         raise ValueError(
@@ -102,16 +122,20 @@ def _canonicalize_for_compare(df: pd.DataFrame, *, sheet_id: str, where: str) ->
 
 
 def _block_fingerprint(df: pd.DataFrame) -> int:
+    import pandas as pd
+
     h = pd.util.hash_pandas_object(df, index=False)
     return int(h.sum())
 
 
 def run(args: argparse.Namespace) -> tuple[int, bool]:
+    import pandas as pd
+
     """
     Apply update-csv logic. Returns (exit_code, wrote_files).
     wrote_files is True only after a successful answers CSV write (metadata rebuild attempted).
     """
-    repo_root = (args.repo_root or Path(__file__).resolve().parent).resolve()
+    repo_root = (args.repo_root or Path(__file__).resolve().parents[1]).resolve()
     answers_path = (args.answers or repo_root / "all_wahlomat_answers.csv").resolve()
     if not answers_path.is_file():
         print(f"Answers CSV not found: {answers_path}", file=sys.stderr)
@@ -173,9 +197,7 @@ def run(args: argparse.Namespace) -> tuple[int, bool]:
             long_df, sheet_id=safe_id, where="workbook sheet output"
         )
         if old_n == 0:
-            new_items.append(
-                (safe_id, f"   {safe_id}: new election ({new_n} rows)")
-            )
+            new_items.append((safe_id, f"   {safe_id}: new election ({new_n} rows)"))
             to_replace[safe_id] = sorted_block
             continue
 
@@ -184,9 +206,7 @@ def run(args: argparse.Namespace) -> tuple[int, bool]:
         delta_rows = new_n - old_n
         delta_p = new_parties - old_parties
         detail = _changed_detail(delta_p, delta_rows)
-        changed_items.append(
-            (safe_id, f"   {safe_id}: changed ({detail})")
-        )
+        changed_items.append((safe_id, f"   {safe_id}: changed ({detail})"))
         to_replace[safe_id] = sorted_block
 
     to_replace_ids = set(to_replace.keys())
@@ -203,9 +223,7 @@ def run(args: argparse.Namespace) -> tuple[int, bool]:
             print(f"   {eid}: superseded (remove {n} rows; not in workbook)")
 
     if not to_replace_ids and not pruned_ids:
-        print(
-            "No Excel updates needed (row counts match for all qualifying sheets)."
-        )
+        print("No Excel updates needed (row counts match for all qualifying sheets).")
         return 0, False
 
     if dry_run:
@@ -254,7 +272,7 @@ def run(args: argparse.Namespace) -> tuple[int, bool]:
     out.to_csv(answers_path, index=False)
     print(f"Wrote {len(out)} rows to {answers_path}")
 
-    import build_metadata
+    from wahlomat_extended_analysis import build_metadata
 
     meta_rc = build_metadata.main(
         [

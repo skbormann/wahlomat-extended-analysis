@@ -16,24 +16,25 @@ Supports legacy module_definition.js and bpb Excel bundle sheets (see parse_exce
 
 from __future__ import annotations
 
-import pathlib
-from typing import Any, cast
-import re
-import os
 import math
+import pathlib
+import re
+from typing import Any, cast
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from pandas.core.frame import DataFrame
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
+import seaborn as sns
 from matplotlib import ticker
 from matplotlib.patches import Rectangle
-import seaborn as sns
+from pandas.core.frame import DataFrame
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+
+from wahlomat_extended_analysis.graph_kinds import GRAPH_KIND_CHOICES
 
 # %% Settings
 N_CLUSTERS: int = 6
-from graph_kinds import GRAPH_KIND_CHOICES
 
 GRAPH_KINDS_ALL: frozenset[str] = frozenset(GRAPH_KIND_CHOICES)
 EMPHASIZED_PARTIES: list = [  # only lowercase (casefold)
@@ -172,9 +173,7 @@ def parse_module_js(module_content: str) -> tuple[DataFrame, DataFrame]:
     )
     # Duplicate (question, party) rows (e.g. multi-language blocks) would be
     # averaged by pivot_table's default aggfunc="mean", producing non-integer codes.
-    answer_df = answer_df.drop_duplicates(
-        subset=["question", "party"], keep="first"
-    )
+    answer_df = answer_df.drop_duplicates(subset=["question", "party"], keep="first")
     answer_pivot = pd.pivot_table(
         answer_df,
         values="answer",
@@ -259,9 +258,7 @@ def parse_excel_election(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     abbrevs = sorted(work["abbr"].unique())
     party_df = pd.DataFrame(
         {
-            "full_name": [
-                work.loc[work["abbr"] == a, "pname"].iloc[0] for a in abbrevs
-            ],
+            "full_name": [work.loc[work["abbr"] == a, "pname"].iloc[0] for a in abbrevs],
             "party": abbrevs,
         }
     )
@@ -291,8 +288,7 @@ def excel_sheet_has_data_columns(df_columns) -> bool:
 
 def _bpb_xlsx_candidates_under(root: pathlib.Path) -> list[pathlib.Path]:
     matches = sorted(
-        set(root.glob("**/*Wahl-O-Mat*.xlsx"))
-        | set(root.glob("**/*Wahl-o-mat*.xlsx")),
+        set(root.glob("**/*Wahl-O-Mat*.xlsx")) | set(root.glob("**/*Wahl-o-mat*.xlsx")),
         key=lambda p: p.name,
         reverse=True,
     )
@@ -319,8 +315,8 @@ def discover_bpb_excel_path(*roots: pathlib.Path) -> pathlib.Path | None:
     then tie-break by **filename** descending (lexicographic), same as the old
     basename-only ordering when mtimes tie.
 
-    Pass e.g. ``Path("data")`` and ``Path(".")`` (repo root) so a workbook
-    placed next to the project root is still found after ``chdir("data")``.
+    Pass e.g. ``Path(\"data\")`` and ``Path(\".\")`` (repo root) so a workbook
+    placed next to the project root is still found after ``chdir(\"data\")``.
     """
     if not roots:
         roots = (pathlib.Path("."),)
@@ -353,6 +349,7 @@ def run_analysis(
     module_stem_folder: str,
     *,
     graphs: frozenset[str] | None = None,
+    output_dir: pathlib.Path | None = None,
 ) -> None:
     """
     Correlation / PCA / KMeans plots. answer_df is pivoted (question x party).
@@ -372,28 +369,19 @@ def run_analysis(
     need_pca_map = "pca_map" in want
     need_infl = "pca_influences" in want
     need_pca = need_pca_map or need_infl
-    in_graphs = False
-
-    def _ensure_graphs_dir() -> None:
-        nonlocal in_graphs
-        if not in_graphs:
-            os.chdir("../graphs")
-            in_graphs = True
-
-    def _leave_graphs_if_needed() -> None:
-        nonlocal in_graphs
-        if in_graphs:
-            os.chdir("../data")
-            in_graphs = False
+    graph_dir = (
+        output_dir.resolve()
+        if output_dir is not None
+        else (pathlib.Path.cwd() / ".." / "graphs").resolve()
+    )
+    graph_dir.mkdir(parents=True, exist_ok=True)
 
     if need_cm:
         answer_corr = answer_df.corr()
         answer_corr = answer_corr.fillna(0.0)
         ac = answer_corr.to_numpy(dtype=float, copy=True)
         np.fill_diagonal(ac, 1.0)
-        answer_corr = pd.DataFrame(
-            ac, index=answer_corr.index, columns=answer_corr.columns
-        )
+        answer_corr = pd.DataFrame(ac, index=answer_corr.index, columns=answer_corr.columns)
 
         def _corr_overlay_cell(x: Any) -> str:
             v = float(x)
@@ -464,10 +452,9 @@ def run_analysis(
                         clip_on=False,
                     )
                 )
-        _ensure_graphs_dir()
-        cm_name = f"{module_stem_folder}_c_matrix.png"
+        cm_name = graph_dir / f"{module_stem_folder}_c_matrix.png"
         c_matrix.figure.savefig(cm_name, bbox_inches="tight")
-        _print_saved_graph_png(cm_name)
+        _print_saved_graph_png(str(cm_name))
         plt.close(c_matrix.figure)
 
     party_pca: DataFrame | None = None
@@ -525,7 +512,6 @@ def run_analysis(
 
     if need_pca_map:
         assert party_pca is not None
-        _ensure_graphs_dir()
         plt.figure(figsize=(10, 10))
         pca_map = sns.scatterplot(
             data=party_pca,
@@ -574,14 +560,13 @@ def run_analysis(
                 fontweight=fontweight,
                 fontsize="small",
             )
-        pm_name = f"{module_stem_folder}_pca_map.png"
+        pm_name = graph_dir / f"{module_stem_folder}_pca_map.png"
         plt.savefig(pm_name, bbox_inches="tight")
-        _print_saved_graph_png(pm_name)
+        _print_saved_graph_png(str(pm_name))
         plt.close()
 
     if need_infl:
         assert pca_influences is not None
-        _ensure_graphs_dir()
         infl_prep = pca_influences.copy()
         denom = float(np.nanmax(infl_prep["answers_sum"].abs().to_numpy()))
         numer = float(np.nanmax(infl_prep[["pca_x", "pca_y"]].abs().to_numpy()))
@@ -621,19 +606,15 @@ def run_analysis(
             facecolor="white",
             shadow=True,
         )
-        inf_barplot.set_yticks(
-            [x - 0.5 for x in inf_barplot.get_yticks()], minor=True
-        )
+        inf_barplot.set_yticks([x - 0.5 for x in inf_barplot.get_yticks()], minor=True)
         inf_barplot.grid(False, axis="x")
         inf_barplot.grid(True, which="minor", axis="y", linewidth=1)
         inf_barplot.xaxis.set_label_position("top")
         plt.suptitle("Einfluss der Fragen", y=0.95)
-        infl_name = f"{module_stem_folder}_pca_influences.png"
+        infl_name = graph_dir / f"{module_stem_folder}_pca_influences.png"
         plt.savefig(infl_name, bbox_inches="tight")
-        _print_saved_graph_png(infl_name)
+        _print_saved_graph_png(str(infl_name))
         plt.close()
-
-    _leave_graphs_if_needed()
 
 
 def analysis(module_content: str, module_stem_folder: str) -> None:

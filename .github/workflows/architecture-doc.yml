@@ -1,0 +1,23 @@
+name: architecture-doc
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  architecture_doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify docs/ARCHITECTURE.md is up to date
+        run: python tools/gen_architecture.py --check
+

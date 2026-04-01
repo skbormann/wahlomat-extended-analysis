@@ -13,23 +13,27 @@ article (URL discovered from HTML so it survives filename updates). Use of the
 data is subject to the terms on that page:
 https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/
 """
+
 from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import pathlib
 import re
-from dataclasses import dataclass
 import sys
 import time
 import urllib.error
 import urllib.request
-import os
 import zipfile
-from urllib.parse import urlsplit, urlunsplit, urlparse
+from dataclasses import dataclass
+from urllib.parse import urlparse, urlsplit, urlunsplit
 
-from analysis import discover_bpb_excel_path
-from bpb_urls import BPB_HTML_HEADERS, WEITERE_WAHLEN_URL, fetch_bpb_html
+from wahlomat_extended_analysis.bpb_urls import (
+    BPB_HTML_HEADERS,
+    WEITERE_WAHLEN_URL,
+    fetch_bpb_html,
+)
 
 INTERNAL_LINK_START = "https://www.bpb.de"
 DATENSAETZE_PAGE_URL = (
@@ -59,10 +63,12 @@ def local_stem_from_election_zip_url(url: str) -> str:
     # Some bpb /system/files/ ZIPs use opaque names (wahlomat_0 / wahlomat_1).
     # Canonicalize them to election-style ids (used across CSV + metadata).
     try:
-        from election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
+        from wahlomat_extended_analysis.election_id_policy import (
+            JS_FOLDER_CANONICAL_ELECTION_ID,
+        )
 
         return JS_FOLDER_CANONICAL_ELECTION_ID.get(stem, stem)
-    except Exception:
+    except ImportError:
         return stem
 
 
@@ -77,7 +83,7 @@ def build_weitere_wahlen_zip_jobs(election_html: str) -> list[ZipJob]:
 
 
 def _election_slug_for_href(href: str) -> str:
-    from build_metadata import election_slug_from_zip_href
+    from wahlomat_extended_analysis.build_metadata import election_slug_from_zip_href
 
     return election_slug_from_zip_href(href)
 
@@ -159,49 +165,41 @@ def download_and_extract_zip_jobs(
     graphs_dir.mkdir(parents=True, exist_ok=True)
 
     zip_paths: list[pathlib.Path] = []
-    prev = os.getcwd()
-    try:
-        os.chdir(data_dir)
-        for j in jobs:
-            dest = data_dir / f"{j.local_stem}.zip"
-            print(f"Downloading {j.local_stem}.zip …")
-            download_to_file(j.url, str(dest))
-            zip_paths.append(dest)
-            time.sleep(0.8)
+    for j in jobs:
+        dest = data_dir / f"{j.local_stem}.zip"
+        print(f"Downloading {j.local_stem}.zip …")
+        download_to_file(j.url, str(dest))
+        zip_paths.append(dest)
+        time.sleep(0.8)
 
-        for zpath in zip_paths:
-            if not zpath.is_file():
-                continue
-            stem = zpath.stem
-            extract_dir = data_dir / stem
-            extract_dir.mkdir(parents=True, exist_ok=True)
-            with _zipfile_for_extract(zpath) as zf:
-                zf.extractall(path=str(extract_dir))
-            zpath.unlink(missing_ok=True)
-            print(f"Extracted to: {extract_dir.resolve()}")
+    for zpath in zip_paths:
+        if not zpath.is_file():
+            continue
+        stem = zpath.stem
+        extract_dir = data_dir / stem
+        extract_dir.mkdir(parents=True, exist_ok=True)
+        with _zipfile_for_extract(zpath) as zf:
+            zf.extractall(path=str(extract_dir))
+        zpath.unlink(missing_ok=True)
+        print(f"Extracted to: {extract_dir.resolve()}")
 
-        if workbook_check:
-            _print_workbook_discovery_status(data_dir, repo_root)
-    finally:
-        os.chdir(prev)
+    if workbook_check:
+        _print_workbook_discovery_status(data_dir, repo_root)
     return 0
 
 
 def _print_workbook_discovery_status(data_dir: pathlib.Path, repo_root: pathlib.Path) -> None:
-    prev = os.getcwd()
-    try:
-        os.chdir(data_dir)
-        _xlsx = discover_bpb_excel_path(pathlib.Path("."), pathlib.Path(".."))
-        if _xlsx is None or (not _xlsx.is_file()) or _xlsx.stat().st_size <= 0:
-            print(
-                "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
-                "with 'wahl' in the name) was found after extraction. "
-                "The bundle from the Datensätze page may have changed its inner layout; "
-                "see analysis.discover_bpb_excel_path(..., repo root) and "
-                "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
-            )
-    finally:
-        os.chdir(prev)
+    from wahlomat_extended_analysis.analysis import discover_bpb_excel_path
+
+    _xlsx = discover_bpb_excel_path(data_dir, repo_root)
+    if _xlsx is None or (not _xlsx.is_file()) or _xlsx.stat().st_size <= 0:
+        print(
+            "WARNING: Under data/, no non-empty *Wahl-O-Mat*.xlsx (or *Datens*.xlsx "
+            "with 'wahl' in the name) was found after extraction. "
+            "The bundle from the Datensätze page may have changed its inner layout; "
+            "see analysis.discover_bpb_excel_path(..., repo root) and "
+            "https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/"
+        )
 
 
 def download_selective_election_zips(
@@ -351,10 +349,8 @@ def download_and_extract_datensaetze_bundle_with_state(
 
 
 def _zipfile_for_extract(path: str | os.PathLike[str]) -> zipfile.ZipFile:
-    """ZipFile for extract; use metadata_encoding on Python 3.11+ for bpb archives."""
-    if sys.version_info >= (3, 11):
-        return zipfile.ZipFile(path, "r", metadata_encoding="cp437")
-    return zipfile.ZipFile(path, "r")
+    """ZipFile for extract; bpb archives expect cp437 for entry metadata."""
+    return zipfile.ZipFile(path, "r", metadata_encoding="cp437")
 
 
 def _download_request_headers(url: str) -> dict:
@@ -447,9 +443,7 @@ def upgrade_wahl_o_mat_zip_url(url: str) -> str:
     host = parts.netloc.split(":", 1)[0].casefold()
     if host not in ("www.wahl-o-mat.de", "wahl-o-mat.de"):
         return url
-    return urlunsplit(
-        ("https", parts.netloc, parts.path, parts.query, parts.fragment)
-    )
+    return urlunsplit(("https", parts.netloc, parts.path, parts.query, parts.fragment))
 
 
 def pick_datensaetze_bundle_url(html: str) -> str:
@@ -480,126 +474,18 @@ def download_and_extract_datensaetze_bundle(repo_root: pathlib.Path) -> int:
 def download_all_election_zips_plus_datensaetze(repo_root: pathlib.Path) -> int:
     """Download and extract all election ZIPs plus Datensätze bundle into data/."""
     repo_root = repo_root.resolve()
-    os.chdir(repo_root)
-    try:
-        election_html = fetch_html(WEITERE_WAHLEN_URL)
-        zip_files = extract_zip_hrefs(election_html)
-
-        zip_files_links: list[str] = []
-        for f in zip_files:
-            zip_files_links.append(
-                upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(f))
-            )
-
-        datensaetze_html = fetch_html(DATENSAETZE_PAGE_URL)
-        zip_files_links.append(pick_datensaetze_bundle_url(datensaetze_html))
-
-        zip_files_names: list[str] = []
-        for f in zip_files_links:
-            if re.search(r"wahl-o-mat.de", f):
-                zip_files_names.append(f.split(sep="/")[3])
-            elif f.split(sep="/")[2] == "www.bpb.de":
-                zip_files_names.append(f.split(sep="/")[6].split(sep=".")[0])
-        zip_files_names = [
-            x.replace("wahlomat-", "").replace("-", "") for x in zip_files_names
-        ]
-
-        try:
-            os.mkdir(os.path.join(os.getcwd(), "data"))
-        except FileExistsError:
-            print("Folder 'data' already exists.")
-
-        try:
-            os.mkdir(os.path.join(os.getcwd(), "graphs"))
-        except FileExistsError:
-            print("Folder 'graphs' already exists.")
-
-        os.chdir(repo_root / "data")
-        data_dir = pathlib.Path(os.getcwd())
-        downloaded_zip_paths: list[pathlib.Path] = []
-
-        for i, f in enumerate(zip_files_links):
-            dest = data_dir / f"{zip_files_names[i]}.zip"
-            print(f"Downloading {zip_files_names[i]}.zip …")
-            download_to_file(f, str(dest))
-            time.sleep(0.8)
-            downloaded_zip_paths.append(dest)
-
-        # Extract only archives downloaded in this run; do not scan data/ for stray ZIPs.
-        for zpath in downloaded_zip_paths:
-            if not zpath.is_file() or not zipfile.is_zipfile(str(zpath)):
-                continue
-            extract_dir = data_dir / zpath.stem
-            extract_dir.mkdir(parents=True, exist_ok=True)
-            with _zipfile_for_extract(str(zpath)) as zf:
-                zf.extractall(path=str(extract_dir))
-            zpath.unlink(missing_ok=True)
-            print(f"Extracted to: {extract_dir.resolve()}")
-
-        _print_workbook_discovery_status(repo_root / "data", repo_root)
-    finally:
-        os.chdir(repo_root)
-    return 0
+    election_html = fetch_html(WEITERE_WAHLEN_URL)
+    jobs = build_weitere_wahlen_zip_jobs(election_html)
+    jobs.append(build_datensaetze_zip_job())
+    return download_and_extract_zip_jobs(repo_root, jobs, workbook_check=True)
 
 
 def download_all_election_zips_only(repo_root: pathlib.Path) -> int:
     """Download and extract all election ZIPs (no Datensätze bundle) into data/."""
     repo_root = repo_root.resolve()
-    os.chdir(repo_root)
-    try:
-        election_html = fetch_html(WEITERE_WAHLEN_URL)
-        zip_files = extract_zip_hrefs(election_html)
-
-        zip_files_links: list[str] = []
-        for f in zip_files:
-            zip_files_links.append(
-                upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(f))
-            )
-
-        zip_files_names: list[str] = []
-        for f in zip_files_links:
-            if re.search(r"wahl-o-mat.de", f):
-                zip_files_names.append(f.split(sep="/")[3])
-            elif f.split(sep="/")[2] == "www.bpb.de":
-                zip_files_names.append(f.split(sep="/")[6].split(sep=".")[0])
-        zip_files_names = [
-            x.replace("wahlomat-", "").replace("-", "") for x in zip_files_names
-        ]
-
-        try:
-            os.mkdir(os.path.join(os.getcwd(), "data"))
-        except FileExistsError:
-            print("Folder 'data' already exists.")
-
-        try:
-            os.mkdir(os.path.join(os.getcwd(), "graphs"))
-        except FileExistsError:
-            print("Folder 'graphs' already exists.")
-
-        os.chdir(repo_root / "data")
-        data_dir = pathlib.Path(os.getcwd())
-        downloaded_zip_paths: list[pathlib.Path] = []
-
-        for i, f in enumerate(zip_files_links):
-            dest = data_dir / f"{zip_files_names[i]}.zip"
-            print(f"Downloading {zip_files_names[i]}.zip …")
-            download_to_file(f, str(dest))
-            time.sleep(0.8)
-            downloaded_zip_paths.append(dest)
-
-        # Extract only archives downloaded in this run; do not scan data/ for stray ZIPs.
-        for zpath in downloaded_zip_paths:
-            if not zpath.is_file() or not zipfile.is_zipfile(str(zpath)):
-                continue
-            extract_dir = data_dir / zpath.stem
-            extract_dir.mkdir(parents=True, exist_ok=True)
-            with _zipfile_for_extract(str(zpath)) as zf:
-                zf.extractall(path=str(extract_dir))
-            zpath.unlink(missing_ok=True)
-            print(f"Extracted to: {extract_dir.resolve()}")
-    finally:
-        os.chdir(repo_root)
-    return 0
+    election_html = fetch_html(WEITERE_WAHLEN_URL)
+    jobs = build_weitere_wahlen_zip_jobs(election_html)
+    return download_and_extract_zip_jobs(repo_root, jobs, workbook_check=False)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -623,8 +509,8 @@ def main(argv: list[str] | None = None) -> int:
         "--list-election-zips",
         action="store_true",
         help=(
-            "Print local_stem, metadata slug, and URL for each ZIP on the weitere-Wahlen page, "
-            "then exit (no download)."
+            "Print election_id and URL for each ZIP on the weitere-Wahlen page, then exit "
+            "(no download). See docs/DATASET.md for what election_id means."
         ),
     )
     parser.add_argument(
@@ -633,8 +519,8 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         metavar="TOKEN",
         help=(
-            "Substring to match against URL, local folder stem, or metadata slug "
-            "(repeat for several tokens). Only matched archives are downloaded and extracted."
+            "Substring to match against URL or election_id (repeat for several tokens). "
+            "Only matched archives are downloaded and extracted."
         ),
     )
     parser.add_argument(

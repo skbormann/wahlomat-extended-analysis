@@ -1,0 +1,23 @@
+name: cli-contracts
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  cli_contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify CLI help snapshots and doc snippets are up to date
+        run: python tools/gen_cli_contracts.py --check
+

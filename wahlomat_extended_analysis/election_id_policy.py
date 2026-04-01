@@ -2,14 +2,12 @@
 """
 Election identity policy for merging JS exports and the bpb Excel bundle.
 
-When the same logical election appears both as a folder under data/ (JS) and as
-a sheet in the Datensätze workbook, the CSV should contain one canonical row set.
-Excel sheet names are versioned (bpb naming); use them as canonical election_id.
+Package-namespace home for canonical IDs and supersession rules.
 """
 
 from __future__ import annotations
 
-# data/<folder>/ from JS → Excel sheet name as used after spaces → underscores.
+# data/<folder>/ from JS -> Excel sheet name as used after spaces -> underscores.
 # Skip JS ingestion only when the Excel workbook is present AND that sheet exists.
 JS_FOLDER_SUPERSEDED_BY_EXCEL_SHEET: dict[str, str] = {
     "bundestagswahl2021": "BT21_v1.02",

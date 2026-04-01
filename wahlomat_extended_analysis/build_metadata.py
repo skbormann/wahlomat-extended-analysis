@@ -15,13 +15,13 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 
-import pandas as pd
+from wahlomat_extended_analysis.bpb_urls import WEITERE_WAHLEN_URL, fetch_bpb_html
+from wahlomat_extended_analysis.election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
 
-from analysis import discover_bpb_excel_path, excel_sheet_has_data_columns
-from bpb_urls import WEITERE_WAHLEN_URL, fetch_bpb_html
-from election_id_policy import JS_FOLDER_CANONICAL_ELECTION_ID
-from get_zip_files import resolve_internal_bpb_zip, upgrade_wahl_o_mat_zip_url
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def _strip_tags(html_fragment: str) -> str:
@@ -31,6 +31,12 @@ def _strip_tags(html_fragment: str) -> str:
 
 def election_slug_from_zip_href(href: str) -> str:
     """Map a ZIP href to folder-style election slug (matches CSV JS election_id)."""
+    # Local import to keep `python build_metadata.py -h` fast (avoid importing analysis/matplotlib).
+    from wahlomat_extended_analysis.get_zip_files import (
+        resolve_internal_bpb_zip,
+        upgrade_wahl_o_mat_zip_url,
+    )
+
     url = upgrade_wahl_o_mat_zip_url(resolve_internal_bpb_zip(href.strip()))
     path = url.split("?")[0]
     low = path.lower()
@@ -53,11 +59,7 @@ def election_slug_from_zip_href(href: str) -> str:
         if stem.startswith("wahlomat-"):
             body = stem[len("wahlomat-") :]
             segs = body.split("-")
-            if (
-                len(segs) >= 2
-                and segs[-1].isdigit()
-                and len(segs[-1]) == 4
-            ):
+            if len(segs) >= 2 and segs[-1].isdigit() and len(segs[-1]) == 4:
                 return "".join(segs[:-1]) + segs[-1]
             return body.replace("-", "")
         return stem
@@ -129,9 +131,7 @@ def parse_archive_table(html: str) -> list[dict]:
     trs = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.DOTALL | re.IGNORECASE)
     out: list[dict] = []
     for tr in trs[1:]:
-        mth = re.search(
-            r'<th[^>]*scope="row"[^>]*>(.*?)</th>', tr, re.DOTALL | re.I
-        )
+        mth = re.search(r'<th[^>]*scope="row"[^>]*>(.*?)</th>', tr, re.DOTALL | re.I)
         if not mth:
             continue
         wahl_label = _strip_tags(mth.group(1))
@@ -139,9 +139,7 @@ def parse_archive_table(html: str) -> list[dict]:
         if not tds:
             continue
         datum_str = _strip_tags(tds[0])
-        hrefm = re.search(
-            r'href\s*=\s*["\']([^"\']*\.zip[^"\']*)["\']', tr, re.I
-        )
+        hrefm = re.search(r'href\s*=\s*["\']([^"\']*\.zip[^"\']*)["\']', tr, re.I)
         if not hrefm:
             continue
         slug_raw = election_slug_from_zip_href(hrefm.group(1))
@@ -218,6 +216,9 @@ def excel_row_from_election_id(safe_id: str) -> dict | None:
 
 
 def data_sheet_safe_ids(xlsx_path: Path) -> set[str]:
+    import pandas as pd
+    from wahlomat_extended_analysis.analysis import excel_sheet_has_data_columns
+
     xl = pd.ExcelFile(xlsx_path, engine="openpyxl")
     ids: set[str] = set()
     for sheet_name in xl.sheet_names:
@@ -233,7 +234,10 @@ def build_election_metadata(
     *,
     archive_html: str | None = None,
     archive_html_path: Path | None = None,
-) -> pd.DataFrame:
+) -> "pd.DataFrame":
+    import pandas as pd
+    from wahlomat_extended_analysis.analysis import discover_bpb_excel_path
+
     answers = pd.read_csv(answers_path)
     csv_ids = sorted(answers["election_id"].astype(str).unique())
     if archive_html_path is not None:
@@ -285,9 +289,7 @@ def build_election_metadata(
                 continue
             missing.append(eid)
     if missing:
-        raise ValueError(
-            "No metadata for election_id(s): " + ", ".join(sorted(missing))
-        )
+        raise ValueError("No metadata for election_id(s): " + ", ".join(sorted(missing)))
     meta_df = pd.DataFrame(built)
     meta_df = meta_df.sort_values("election_id").reset_index(drop=True)
     meta_df["year"] = meta_df["year"].astype(int)
@@ -299,7 +301,9 @@ def build_election_metadata(
         "year",
         "level",
     ]
-    return meta_df[_cols]
+    # pandas stubs sometimes type DataFrame selection as Series; here we select multiple
+    # columns, so the runtime value is a DataFrame.
+    return cast(Any, meta_df.loc[:, _cols])
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -329,10 +333,13 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=None,
         metavar="PATH",
-        help="Saved bpb archive HTML (skip network)",
+        help=(
+            "Saved bpb 'Wahl-O-Mat-Archiv: Weitere Wahlen' HTML (skip network). "
+            "Save: https://www.bpb.de/themen/wahl-o-mat/45817/wahl-o-mat-archiv-weitere-wahlen/"
+        ),
     )
     args = parser.parse_args(argv)
-    repo_root = (args.repo_root or Path(__file__).resolve().parent).resolve()
+    repo_root = (args.repo_root or Path(__file__).resolve().parents[1]).resolve()
     answers_path = (args.answers or repo_root / "all_wahlomat_answers.csv").resolve()
     out_path = (args.out or repo_root / "election_metadata.csv").resolve()
     env_path = os.environ.get("WAHLOMAT_ARCHIVE_HTML", "").strip()
@@ -343,7 +350,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Answers CSV not found: {answers_path}", file=sys.stderr)
         return 1
     if archive_path is not None and not archive_path.is_file():
-        print(f"--archive-html / WAHLOMAT_ARCHIVE_HTML not a file: {archive_path}", file=sys.stderr)
+        print(
+            f"--archive-html / WAHLOMAT_ARCHIVE_HTML not a file: {archive_path}",
+            file=sys.stderr,
+        )
         return 1
     try:
         meta = build_election_metadata(
@@ -357,8 +367,9 @@ def main(argv: list[str] | None = None) -> int:
     except OSError as e:
         print(
             f"Failed to fetch archive listing ({WEITERE_WAHLEN_URL}): {e}\n"
-            "Save the page HTML and set WAHLOMAT_ARCHIVE_HTML or use "
-            "--archive-html PATH.",
+            "Save the page HTML (Wahl-O-Mat-Archiv: Weitere Wahlen) and set "
+            "WAHLOMAT_ARCHIVE_HTML or use --archive-html PATH.\n"
+            "URL: https://www.bpb.de/themen/wahl-o-mat/45817/wahl-o-mat-archiv-weitere-wahlen/",
             file=sys.stderr,
         )
         return 1

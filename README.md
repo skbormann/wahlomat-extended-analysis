@@ -13,7 +13,7 @@ This repo can build the combined CSV from two sources:
 
 ## Quickstart (first-time users)
 
-Requires **Python 3.10+**.
+Requires **Python 3.12+**.
 
 From the repository root:
 
@@ -127,6 +127,8 @@ They explain the dataset structure, how to join `all_wahlomat_answers.csv` with 
 ## Docs (recommended)
 
 Start here for the longer-form documentation index: [docs/README.md](docs/README.md).
+
+Architecture/code map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Usage (recommended entry point)
 

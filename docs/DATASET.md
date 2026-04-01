@@ -11,6 +11,20 @@ This document describes the generated dataset files and how to use them for your
 - `all_wahlomat_answers.csv` — long table (one row per election × party × question)
 - `election_metadata.csv` — one row per `election_id` (human-readable labels, state, year, level)
 
+## What is `election_id`?
+
+`election_id` is the **stable election identifier used throughout this repo**:
+
+- It is the join key between `all_wahlomat_answers.csv` and `election_metadata.csv`.
+- It is what you pass to commands like `python wahlomat.py graphs --election <election_id>`.
+
+When you download older archived elections from the bpb “Weitere Wahlen” archive, `--list-election-zips` prints a two-column table:
+
+- `election_id`: a short identifier derived from the archive entry (best-effort and stable for this repo)
+- `url`: the ZIP download link as shown on the bpb archive page
+
+If you are unsure which election you want, use the `url` column to match the election name/year you recognize from the bpb archive page, then use the corresponding `election_id` for filtering and graphing.
+
 ## `all_wahlomat_answers.csv` columns
 
 | Column | Type | Description |

@@ -1,0 +1,21 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.0
+    hooks:
+      - id: ruff
+        args: [--select, E9,F821]
+
+  - repo: local
+    hooks:
+      - id: architecture-doc-up-to-date
+        name: docs/ARCHITECTURE.md auto-generated deps block is up to date
+        entry: python tools/gen_architecture.py --check
+        language: system
+        pass_filenames: false
+
+      - id: cli-contracts-up-to-date
+        name: CLI help snapshots + doc snippets are up to date
+        entry: python tools/gen_cli_contracts.py --check
+        language: system
+        pass_filenames: false
+

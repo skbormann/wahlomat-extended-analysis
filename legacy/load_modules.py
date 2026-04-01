@@ -24,12 +24,12 @@ if os.environ.get("WAHLOMAT_LEGACY_LOAD_MODULES", "").strip().lower() not in (
         "  1. python build_dataframe.py   # writes all_wahlomat_answers.csv\n"
         "  2. python build_graphs_from_csv.py\n"
         "Optional: --election ID or ELECTION_IDS=id1,id2 for a subset.\n"
-        "To force the legacy JS-only path: WAHLOMAT_LEGACY_LOAD_MODULES=1 python load_modules.py",
+        "To force the legacy JS-only path: WAHLOMAT_LEGACY_LOAD_MODULES=1 python legacy/load_modules.py",
         file=sys.stderr,
     )
     sys.exit(2)
 
-from analysis import analysis
+from wahlomat_extended_analysis.analysis import analysis
 
 os.chdir("data")
 p = pathlib.Path(".")
@@ -59,7 +59,5 @@ for module in module_list:
         analysis(module_content, module_stem_folder)
         success.append(f"{module_stem_folder}")
     except Exception as e:
-        print(
-            f"Problem {e} occurred while running analysis for {module_stem_folder}"
-        )
+        print(f"Problem {e} occurred while running analysis for {module_stem_folder}")
         fail[f"{module_stem_folder}"] = f"{e}"

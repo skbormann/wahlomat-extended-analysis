@@ -48,6 +48,8 @@ Thumbs.db
 
 # This project: downloaded ZIPs, extracted elections, generated plots
 data/
+# Persisted local state (safe to delete; not project content)
+data/.wahlomat_refresh_state.json
 graphs/
 graphs_backup/
 graphs_backup_*/

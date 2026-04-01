@@ -9,7 +9,7 @@ import unittest
 import zipfile
 from unittest.mock import patch
 
-import get_zip_files
+from wahlomat_extended_analysis import get_zip_files
 
 
 def _minimal_zip_bytes(inner_name: str = "nested/readme.txt", payload: bytes = b"fixture") -> bytes:

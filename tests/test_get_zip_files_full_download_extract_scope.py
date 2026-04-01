@@ -10,7 +10,7 @@ import unittest
 import zipfile
 from unittest.mock import patch
 
-import get_zip_files
+from wahlomat_extended_analysis import get_zip_files
 
 
 def _zip_bytes(inner_name: str = "x.txt", payload: bytes = b"x") -> bytes:
