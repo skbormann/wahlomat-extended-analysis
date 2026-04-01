@@ -62,8 +62,7 @@ python wahlomat.py build-csv
 <!-- AUTOGEN:CLI_SNIPPET:USAGE_DOWNLOAD_SELECTIVE:START -->
 ```text
   --list-election-zips  List ZIPs from the weitere-Wahlen page (election_id, URL); no download.
-                        Same as get_zip_files.py --list-election-zips. See docs/DATASET.md for
-                        what election_id means.
+                        See docs/DATASET.md for what election_id means.
   --election-zip TOKEN  Download only election ZIPs whose URL or derived election_id contains
                         TOKEN (case-insensitive); repeat for multiple tokens. See --list-election-
                         zips.

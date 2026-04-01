@@ -83,7 +83,7 @@ Themen wie *Schuldenbremse* oder *Frauenquote* tauchen in vielen Wahlen auf. Fü
 ### Für Datenanalystinnen und -analysten
 
 **Parteipositionen innerhalb einer Wahl**
-Die naheliegendste Analyse ist eine 2D-Karte der Parteien auf Basis ihrer Antwortmuster mithilfe von PCA oder MDS. Sie zeigt, welche Parteien ideologisch nahe beieinanderliegen und welche weit entfernt sind. Genau das produziert die bestehende Graph-Pipeline (`build_graphs_from_csv.py`) bereits.
+Die naheliegendste Analyse ist eine 2D-Karte der Parteien auf Basis ihrer Antwortmuster mithilfe von PCA oder MDS. Sie zeigt, welche Parteien ideologisch nahe beieinanderliegen und welche weit entfernt sind. Genau das produziert die Graph-Pipeline des Unified CLI (`python wahlomat.py graphs`) bereits.
 
 **Paarweise Parteiähnlichkeit**
 Für jedes Paar von Parteien in derselben Wahl lässt sich berechnen, bei wie vielen Fragen sie identisch geantwortet haben. Dies ist das annahmefreieste Ähnlichkeitsmaß in den Daten.

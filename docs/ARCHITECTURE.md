@@ -14,14 +14,14 @@ If you’re looking for exact CLI behaviors and edge cases, see [`PIPELINE_REFER
 
 - **Unified CLI**: `wahlomat.py`
   - Routes to download/build/update/graphs subcommands.
-- **Download and extract**: `get_zip_files.py`
-  - Downloads archived Wahl-O-Mat ZIPs and/or the bpb “Datensätze” bundle; extracts into `data/`.
-- **Build the combined CSV**: `build_dataframe.py`
-  - Parses extracted JS exports and/or Excel bundle sheets into `all_wahlomat_answers.csv` and then rebuilds `election_metadata.csv`.
-- **Update CSV from Excel only**: `update_excel_csv.py`
-  - Replaces/merges only the workbook-derived election blocks inside `all_wahlomat_answers.csv`, then rebuilds metadata.
-- **Generate graphs from CSV**: `build_graphs_from_csv.py`
-  - Reads `all_wahlomat_answers.csv` and calls into `analysis.py` to write PNG plots to `graphs/`.
+- **Download and extract**: `wahlomat_extended_analysis/get_zip_files.py`
+  - Downloads archived Wahl-O-Mat ZIPs and/or the bpb “Datensätze” bundle; extracts into `data/` (invoked via `python wahlomat.py download ...`).
+- **Build the combined CSV**: `wahlomat_extended_analysis/build_dataframe.py`
+  - Parses extracted JS exports and/or Excel bundle sheets into `all_wahlomat_answers.csv` and then rebuilds `election_metadata.csv` (invoked via `python wahlomat.py build-csv`).
+- **Update CSV from Excel only**: `wahlomat_extended_analysis/update_excel_csv.py`
+  - Replaces/merges only the workbook-derived election blocks inside `all_wahlomat_answers.csv`, then rebuilds metadata (invoked via `python wahlomat.py update-csv` / `refresh-excel`).
+- **Generate graphs from CSV**: `wahlomat_extended_analysis/build_graphs_from_csv.py`
+  - Reads `all_wahlomat_answers.csv` and calls into `wahlomat_extended_analysis/analysis.py` to write PNG plots to `graphs/` (invoked via `python wahlomat.py graphs ...`).
 
 ## Pipeline view (data flow)
 
@@ -29,21 +29,21 @@ If you’re looking for exact CLI behaviors and edge cases, see [`PIPELINE_REFER
 flowchart TD
   user[You] --> wahlomat[wahlomat.py]
 
-  wahlomat -->|"download"| getZip[get_zip_files.py]
+  wahlomat -->|"download"| getZip[wahlomat_extended_analysis/get_zip_files.py]
   getZip --> dataDir[data/]
 
-  wahlomat -->|"build-csv"| buildDf[build_dataframe.py]
+  wahlomat -->|"build-csv"| buildDf[wahlomat_extended_analysis/build_dataframe.py]
   dataDir --> buildDf
   buildDf --> answers[all_wahlomat_answers.csv]
   buildDf --> meta[election_metadata.csv]
 
-  wahlomat -->|"update-csv"| updateCsv[update_excel_csv.py]
+  wahlomat -->|"update-csv"| updateCsv[wahlomat_extended_analysis/update_excel_csv.py]
   dataDir --> updateCsv
   answers --> updateCsv
   updateCsv --> answers
   updateCsv --> meta
 
-  wahlomat -->|"graphs"| graphs[build_graphs_from_csv.py]
+  wahlomat -->|"graphs"| graphs[wahlomat_extended_analysis/build_graphs_from_csv.py]
   answers --> graphs
   graphs --> outGraphs[graphs/ (PNGs)]
 ```
@@ -98,41 +98,41 @@ flowchart LR
 
 Unified CLI entry point. Dispatches to:
 
-- download/extract (`get_zip_files.py`)
-- build CSV (`build_dataframe.py`)
-- update CSV from Excel (`update_excel_csv.py`)
-- graphs from CSV (`build_graphs_from_csv.py`)
+- download/extract (`wahlomat_extended_analysis/get_zip_files.py`)
+- build CSV (`wahlomat_extended_analysis/build_dataframe.py`)
+- update CSV from Excel (`wahlomat_extended_analysis/update_excel_csv.py`)
+- graphs from CSV (`wahlomat_extended_analysis/build_graphs_from_csv.py`)
 
-### `get_zip_files.py`
+### `wahlomat_extended_analysis/get_zip_files.py`
 
 Networking + download logic. Fetches bpb HTML pages (via `bpb_urls.py`), selects ZIPs, downloads them, and extracts datasets into `data/`.
 
-### `build_dataframe.py`
+### `wahlomat_extended_analysis/build_dataframe.py`
 
 Builds `all_wahlomat_answers.csv` from what’s in `data/`:
 
 - JS exports (`module_definition.js`) parsed via `analysis.parse_module_js`
 - Excel bundle sheets (if present) parsed via `analysis.parse_excel_election`
 
-Then triggers a metadata rebuild through `build_metadata.py`.
+Then triggers a metadata rebuild through `wahlomat_extended_analysis/build_metadata.py`.
 
-### `update_excel_csv.py`
+### `wahlomat_extended_analysis/update_excel_csv.py`
 
 Incremental updates: reads the current Excel bundle and replaces only the matching workbook election blocks inside `all_wahlomat_answers.csv`. JS-derived elections remain unchanged.
 
-### `build_graphs_from_csv.py`
+### `wahlomat_extended_analysis/build_graphs_from_csv.py`
 
 Graph runner: loads the combined CSV, filters by `election_id`, converts long rows back into the matrices expected by `analysis.run_analysis`, then writes plots under `graphs/`.
 
-### `analysis.py`
+### `wahlomat_extended_analysis/analysis.py`
 
 Core “engine”:
 
 - parses JS exports and Excel sheets into dataframes
 - converts between “long rows” (CSV form) and “pivot/matrix form” (analysis form)
-- runs PCA/correlation/cluster analysis and writes plots (used by `build_graphs_from_csv.py`)
+- runs PCA/correlation/cluster analysis and writes plots (used by `wahlomat_extended_analysis/build_graphs_from_csv.py`)
 
-### `build_metadata.py`
+### `wahlomat_extended_analysis/build_metadata.py`
 
 Builds `election_metadata.csv` from `all_wahlomat_answers.csv` and bpb archive HTML. Provides helpers used by download logic to interpret archive ZIP links.
 
@@ -146,11 +146,11 @@ Canonicalization and mapping rules for election IDs between sources (JS folder n
 
 ### `graph_kinds.py`
 
-Defines supported graph kinds (choices for CLI flags), used by `analysis.py` and `build_graphs_from_csv.py`.
+Defines supported graph kinds (choices for CLI flags), used by `wahlomat_extended_analysis/analysis.py` and `wahlomat_extended_analysis/build_graphs_from_csv.py`.
 
 ### `skipped_elections.py`
 
-Lists elections to omit from the full rebuild (e.g., known-broken inputs) so `build_dataframe.py` can skip them.
+Lists elections to omit from the full rebuild (e.g., known-broken inputs) so `wahlomat_extended_analysis/build_dataframe.py` can skip them.
 
 ### `load_modules.py` (deprecated)
 
@@ -163,13 +163,13 @@ Helper for diagnosing problematic elections: attempts parsing/analysis for elect
 ## Common change-impact cheatsheet
 
 - If you change **parsing** (`analysis.py`), re-check:
-  - `build_dataframe.py` (full CSV rebuild)
-  - `update_excel_csv.py` (Excel-only merge)
-  - `build_graphs_from_csv.py` (graphs from CSV)
+  - `wahlomat_extended_analysis/build_dataframe.py` (full CSV rebuild)
+  - `wahlomat_extended_analysis/update_excel_csv.py` (Excel-only merge)
+  - `wahlomat_extended_analysis/build_graphs_from_csv.py` (graphs from CSV)
 - If you change **election ID policy** (`election_id_policy.py`), re-check:
-  - `get_zip_files.py` (folder naming / selection)
-  - `build_dataframe.py` (skip/supersession behavior)
-  - `build_metadata.py` (metadata alignment)
+  - `wahlomat_extended_analysis/get_zip_files.py` (folder naming / selection)
+  - `wahlomat_extended_analysis/build_dataframe.py` (skip/supersession behavior)
+  - `wahlomat_extended_analysis/build_metadata.py` (metadata alignment)
 - If you change **graph kinds** (`graph_kinds.py`), re-check:
-  - `analysis.py` (graph generation)
-  - `build_graphs_from_csv.py` CLI choices/dispatch
+  - `wahlomat_extended_analysis/analysis.py` (graph generation)
+  - `wahlomat_extended_analysis/build_graphs_from_csv.py` CLI choices/dispatch

@@ -123,8 +123,9 @@ def _canonicalize_for_compare(
 
 def _block_fingerprint(df: pd.DataFrame) -> int:
     import pandas as pd
+    from pandas.util import hash_pandas_object
 
-    h = pd.util.hash_pandas_object(df, index=False)
+    h = hash_pandas_object(df, index=False)
     return int(h.sum())
 
 

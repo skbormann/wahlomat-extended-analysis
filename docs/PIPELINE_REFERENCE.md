@@ -19,8 +19,8 @@ Use `python wahlomat.py download ...` (recommended). The underlying implementati
 
 `download` fetches Wahl-O-Mat ZIPs listed on the bpb “weitere Wahlen” page, unpacks them into **`data/`**, and can also resolve the current **bundled Datensätze** ZIP from the bpb Datensätze page (the exact file URL is read from the page HTML, not hardcoded). It creates **`graphs/`** if missing.
 
-- **Datensätze only**: `python get_zip_files.py --datensaetze-only` (or `python wahlomat.py download --datensaetze-only`) downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.
-- **Election ZIPs only**: `python get_zip_files.py --election-zips-only` (or `python wahlomat.py download --election-zips-only`) downloads and extracts **only** the archived election ZIPs (no Datensätze bundle).
+- **Datensätze only**: `python wahlomat.py download --datensaetze-only` downloads **only** that Datensätze bundle, extracts **that** ZIP into **`data/<zip-stem>/`**, and does **not** fetch election ZIPs or scan other ZIPs in **`data/`** for extraction.
+- **Election ZIPs only**: `python wahlomat.py download --election-zips-only` downloads and extracts **only** the archived election ZIPs (no Datensätze bundle).
 - **Selective election ZIPs**:
   - `--list-election-zips` prints `election_id` and URL for each ZIP on the weitere-Wahlen page (no download). See [`DATASET.md`](DATASET.md) for what `election_id` means.
   - `--election-zip TOKEN` (repeatable) downloads/extracts **only** archives where TOKEN matches (case-insensitive substring) the URL or derived `election_id`.
@@ -30,8 +30,7 @@ Use `python wahlomat.py download ...` (recommended). The underlying implementati
 <!-- AUTOGEN:CLI_SNIPPET:PIPELINE_DOWNLOAD_SELECTIVE:START -->
 ```text
   --list-election-zips  List ZIPs from the weitere-Wahlen page (election_id, URL); no download.
-                        Same as get_zip_files.py --list-election-zips. See docs/DATASET.md for
-                        what election_id means.
+                        See docs/DATASET.md for what election_id means.
   --election-zip TOKEN  Download only election ZIPs whose URL or derived election_id contains
                         TOKEN (case-insensitive); repeat for multiple tokens. See --list-election-
                         zips.
@@ -49,20 +48,20 @@ Use `python wahlomat.py download ...` (recommended). The underlying implementati
 
 ### 2) Build the combined CSV
 
-**`build_dataframe.py`** (run from the **repository root**) parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in `skipped_elections.py`), then reads every qualifying sheet from the bpb Excel workbook if found (`data/` or repo root).
+**`wahlomat_extended_analysis/build_dataframe.py`** (run from the **repository root**) parses all JS modules under **`data/`** (optionally skipping folder names listed as **`OMIT_FROM_BUILD_DATAFRAME`** in `wahlomat_extended_analysis/skipped_elections.py` — currently empty by default), then reads every qualifying sheet from the bpb Excel workbook if found (`data/` or repo root).
 
 Outputs at the repo root:
 
 - `all_wahlomat_answers.csv`
-- `election_metadata.csv` (via `build_metadata.py`)
+- `election_metadata.csv` (via `wahlomat_extended_analysis/build_metadata.py`)
 
-**JS vs Excel overlap:** `election_id_policy.py` lists folders whose JS export is not ingested when the same election appears in the workbook under the mapped versioned sheet id (e.g. skip JS `bundestagswahl2021` when Excel has `BT21_v1.02`).
+**JS vs Excel overlap:** `wahlomat_extended_analysis/election_id_policy.py` lists folders whose JS export is not ingested when the same election appears in the workbook under the mapped versioned sheet id (e.g. skip JS `bundestagswahl2021` when Excel has `BT21_v1.02`).
 
-**JS answers:** `analysis.py` `parse_module_js` deduplicates `(thesis, party)` before pivoting and uses `aggfunc="first"` so multi-language duplicates are not averaged into fractional codes.
+**JS answers:** `wahlomat_extended_analysis/analysis.py` `parse_module_js` deduplicates `(thesis, party)` before pivoting and uses `aggfunc="first"` so multi-language duplicates are not averaged into fractional codes.
 
 ### 3) Update from the Excel workbook only
 
-**`update_excel_csv.py`** / `python wahlomat.py update-csv` (repository root) is recommended when only the bpb Excel workbook changed. It compares each qualifying workbook sheet to the current `all_wahlomat_answers.csv` by `election_id` (sheet name with spaces → underscores):
+`python wahlomat.py update-csv` (repository root) is recommended when only the bpb Excel workbook changed. (Underlying implementation: `python -m wahlomat_extended_analysis.update_excel_csv`.) It compares each qualifying workbook sheet to the current `all_wahlomat_answers.csv` by `election_id` (sheet name with spaces → underscores):
 
 - **new** ids or **changed** row counts trigger a replace for that `election_id`
 - **same row count but changed content** also triggers a replace (content comparison)
@@ -71,7 +70,7 @@ Outputs at the repo root:
 
 `election_metadata.csv` is regenerated in the same run when the answers CSV is written.
 
-If `update-csv` errors **after** `Wrote … rows` (metadata build failed), the CSV is already updated—run `python build_metadata.py` (and `--answers` if you use a non-default path).
+If `update-csv` errors **after** `Wrote … rows` (metadata build failed), the CSV is already updated—run `python -m wahlomat_extended_analysis.build_metadata` (and `--answers` if you use a non-default path).
 
 `--prune-superseded-excel` drops older versioned bpb `election_id`s left in the CSV when the workbook has another tab with the same land+year prefix (e.g. remove `BW26_v1.01` when the workbook has `BW26_v1.02`), so `election_metadata.csv` matches current workbook tabs.
 
@@ -103,13 +102,13 @@ If the download succeeds but this run writes nothing to the answers CSV or metad
 
 ### 5) Build graphs from the CSV
 
-**`build_graphs_from_csv.py`** (run from the **repository root**) reads `all_wahlomat_answers.csv`, rebuilds each election’s matrices, and writes PNGs to `graphs/` (correlation clustermap, PCA party map, PCA question influences). After each file, the CLI prints `Saved: <absolute path>`.
+**`wahlomat_extended_analysis/build_graphs_from_csv.py`** (run from the **repository root**, typically via `python wahlomat.py graphs …`) reads `all_wahlomat_answers.csv`, rebuilds each election’s matrices, and writes PNGs to `graphs/` (correlation clustermap, PCA party map, PCA question influences). After each file, the CLI prints `Saved: <absolute path>`.
 
-- List valid `election_id` values: `python build_graphs_from_csv.py --list-elections` (or `python wahlomat.py graphs --list-elections`; optional `--csv` path). Add `--with-rows` to also print aligned row counts.
-- All elections: `python build_graphs_from_csv.py`
-- Subset: `python build_graphs_from_csv.py --election bundestagswahl2021 --election berlin2021` or comma-separated `--election a,b`
+- List valid `election_id` values: `python wahlomat.py graphs --list-elections` (optional `--csv` path). Add `--with-rows` to also print aligned row counts.
+- All elections: `python wahlomat.py graphs`
+- Subset: `python wahlomat.py graphs --election bundestagswahl2021 --election berlin2021` or comma-separated `--election a,b`
 - Plot types: `--graph` (repeatable): `c_matrix`, `pca_map`, `pca_influences` (default is all three)
-- Environment: `ELECTION_IDS=bundestagswahl2021,berlin2021 python build_graphs_from_csv.py` (CLI wins if both are set)
+- Environment: `ELECTION_IDS=bundestagswahl2021,berlin2021 python wahlomat.py graphs` (CLI wins if both are set)
 - `--list-elections` cannot be combined with `--election` or `ELECTION_IDS`.
 
 **Outputs:**
@@ -137,7 +136,7 @@ Prefer placing the consolidated workbook under `data/` (e.g. from the Datensätz
 
 When several matching `.xlsx` files exist under those roots, `discover_bpb_excel_path` chooses the newest by filesystem mtime, then breaks ties by filename descending. Rename or move stale copies (e.g. to `*.xlsx.old`) if the wrong file wins.
 
-`analysis.py` expects the standard bpb columns (`Partei: Kurzbezeichnung`, `These: Nr.`, `Position: Position`, etc.) and maps positions **stimme zu / stimme nicht zu / neutral** to `1 / -1 / 0`, consistent with the JS data.
+`wahlomat_extended_analysis/analysis.py` expects the standard bpb columns (`Partei: Kurzbezeichnung`, `These: Nr.`, `Position: Position`, etc.) and maps positions **stimme zu / stimme nicht zu / neutral** to `1 / -1 / 0`, consistent with the JS data.
 
 Use of bpb data is subject to their terms on the bpb Datensätze page: <https://www.bpb.de/themen/wahl-o-mat/556865/datensaetze-des-wahl-o-mat/>.
 
@@ -155,13 +154,15 @@ Run it manually if:
 From the repository root:
 
 ```bash
-python build_metadata.py -h
-python build_metadata.py
+python -m wahlomat_extended_analysis.build_metadata -h
+python -m wahlomat_extended_analysis.build_metadata
 ```
+
+Why `-m`? The module form runs `build_metadata` with the repository root on `sys.path`, so imports like `import wahlomat_extended_analysis...` work reliably. Running `python wahlomat_extended_analysis/build_metadata.py` directly can fail with `ModuleNotFoundError`.
 
 ### Options
 
-- **`--repo-root PATH`**: repository root (default: parent of `build_metadata.py`)
+- **`--repo-root PATH`**: repository root (default: parent of `wahlomat_extended_analysis/build_metadata.py`)
 - **`--answers PATH`**: path to `all_wahlomat_answers.csv` (default: `<repo-root>/all_wahlomat_answers.csv`)
 - **`--out PATH`**: output path for `election_metadata.csv` (default: `<repo-root>/election_metadata.csv`)
 - **`--archive-html PATH`**: use a saved bpb archive HTML file and skip network access
@@ -183,9 +184,9 @@ Writes `election_metadata.csv` and prints:
 
 ## Failure diagnosis helpers
 
-If a specific election under `data/` keeps breaking the pipeline, add its top-level folder name to `OMIT_FROM_BUILD_DATAFRAME` in `skipped_elections.py` until it is fixed.
+If a specific election under `data/` keeps breaking the pipeline, add its top-level folder name to `OMIT_FROM_BUILD_DATAFRAME` in `wahlomat_extended_analysis/skipped_elections.py` (it’s intentionally empty by default) until it is fixed.
 
-`failed_analysis.py` runs `parse_module_js` and then `run_analysis` for each slug in `OMIT_FROM_BUILD_DATAFRAME` (if any), printing parse/plot outcomes. Debug plots use names like `debug_<folder>_*.png` under `graphs/`.
+`wahlomat_extended_analysis/failed_analysis.py` runs `parse_module_js` and then `run_analysis` for each slug in `OMIT_FROM_BUILD_DATAFRAME` (if any), printing parse/plot outcomes. Debug plots use names like `debug_<folder>_*.png` under `graphs/`.
 
 ## See also
 

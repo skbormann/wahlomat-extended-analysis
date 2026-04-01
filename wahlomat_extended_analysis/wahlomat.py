@@ -100,7 +100,7 @@ def main() -> int:
         action="store_true",
         help=(
             "List ZIPs from the weitere-Wahlen page (election_id, URL); no download. "
-            "Same as get_zip_files.py --list-election-zips. See docs/DATASET.md for what election_id means."
+            "See docs/DATASET.md for what election_id means."
         ),
     )
     dl.add_argument(

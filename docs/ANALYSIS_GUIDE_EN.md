@@ -83,7 +83,7 @@ Topics like *Schuldenbremse* (debt brake) and *Frauenquote* (gender quota) appea
 ### For data analysts
 
 **Party positioning within a single election**
-The most natural analysis is a 2D map of parties based on their answer patterns, using PCA or MDS. This shows which parties are ideologically close and which are far apart within one election. This is what the existing graph pipeline (`build_graphs_from_csv.py`) already produces.
+The most natural analysis is a 2D map of parties based on their answer patterns, using PCA or MDS. This shows which parties are ideologically close and which are far apart within one election. This is what the unified CLI graph pipeline (`python wahlomat.py graphs`) already produces.
 
 **Pairwise party similarity**
 For any pair of parties in the same election, compute the proportion of questions where they gave identical answers. This is the most assumption-free similarity measure available in the data.
